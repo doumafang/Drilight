@@ -9,7 +9,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = RGBA(245, 245, 245, 1);
+        self.backgroundColor = [UIColor whiteColor];
         
         self.layer.masksToBounds = YES;
         self.layer.cornerRadius = 3.0f;

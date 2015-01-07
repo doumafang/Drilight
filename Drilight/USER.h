@@ -2,8 +2,8 @@
 //  USER.h
 //  Drilight
 //
-//  Created by doumaaaaaaaa on 14/12/28.
-//  Copyright (c) 2014年 douma. All rights reserved.
+//  Created by doumaaaaaaaa on 15/1/6.
+//  Copyright (c) 2015年 douma. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -15,6 +15,7 @@
 
 @property (nonatomic, retain) NSString * avatar_url;
 @property (nonatomic, retain) NSString * followers_count;
+@property (nonatomic, retain) NSString * followers_lastmodified;
 @property (nonatomic, retain) NSString * following_lastmodified;
 @property (nonatomic, retain) NSString * followings_count;
 @property (nonatomic, retain) NSNumber * i;
@@ -30,14 +31,15 @@
 @property (nonatomic, retain) NSString * user_description;
 @property (nonatomic, retain) NSString * userid;
 @property (nonatomic, retain) NSString * web;
-@property (nonatomic, retain) NSString * followers_lastmodified;
+@property (nonatomic, retain) NSString * buckets_count;
+@property (nonatomic, retain) NSString * bio;
 @property (nonatomic, retain) COMMENTS *comments;
 @property (nonatomic, retain) NSSet *followers;
+@property (nonatomic, retain) USER *followersby;
 @property (nonatomic, retain) NSSet *following;
+@property (nonatomic, retain) USER *followingby;
 @property (nonatomic, retain) NSSet *likes;
 @property (nonatomic, retain) NSSet *shots;
-@property (nonatomic, retain) USER *followingby;
-@property (nonatomic, retain) USER *followersby;
 @end
 
 @interface USER (CoreDataGeneratedAccessors)

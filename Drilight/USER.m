@@ -2,8 +2,8 @@
 //  USER.m
 //  Drilight
 //
-//  Created by doumaaaaaaaa on 14/12/28.
-//  Copyright (c) 2014年 douma. All rights reserved.
+//  Created by doumaaaaaaaa on 15/1/6.
+//  Copyright (c) 2015年 douma. All rights reserved.
 //
 
 #import "USER.h"
@@ -16,6 +16,7 @@
 
 @dynamic avatar_url;
 @dynamic followers_count;
+@dynamic followers_lastmodified;
 @dynamic following_lastmodified;
 @dynamic followings_count;
 @dynamic i;
@@ -31,13 +32,14 @@
 @dynamic user_description;
 @dynamic userid;
 @dynamic web;
-@dynamic followers_lastmodified;
+@dynamic buckets_count;
+@dynamic bio;
 @dynamic comments;
 @dynamic followers;
+@dynamic followersby;
 @dynamic following;
+@dynamic followingby;
 @dynamic likes;
 @dynamic shots;
-@dynamic followingby;
-@dynamic followersby;
 
 @end

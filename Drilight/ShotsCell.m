@@ -1,5 +1,5 @@
 #define TEXTCOLOR [UIColor colorWithRed:200/255.0 green:200/255.0 blue:200/255.0 alpha:1.0]
-#define TEXTFONT [UIFont fontWithName:@"Helvetica Light" size:8]
+#define TEXTFONT [UIFont fontWithName:@"Helvetica" size:10]
 
 #import "ShotsCell.h"
 #import "AppDelegate.h"
@@ -23,12 +23,12 @@
         self.opaque = YES;
         
 
-
         self.shotsIV = [[UIImageView alloc]initWithFrame:CGRectMake(2, 2, frame.size.width - 4, (frame.size.height - 4)*3/4)];
         self.shotsIV.layer.masksToBounds = YES;
         self.shotsIV.layer.cornerRadius = 1.0f;
         self.shotsIV.opaque = YES;
         [self addSubview:self.shotsIV];
+        
         
         self.avatarIV = [[UIImageView alloc]initWithFrame:CGRectMake(8, self.shotsIV.frame.size.height+10, frame.size.height - 18 - (frame.size.height - 4)*3/4, frame.size.height - 18 - (frame.size.height - 4)*3/4)];
         self.avatarIV.layer.masksToBounds = YES;
@@ -36,8 +36,6 @@
         self.avatarIV.opaque = YES;
         [self addSubview:self.avatarIV];
         
-        
-
 
         
         float itemXY =  frame.size.width * 2/25;
@@ -59,11 +57,11 @@
         
         
         UIImageView *commentsIV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"shots_comments"]];
-        commentsIV.frame = CGRectMake(25+self.avatarIV.frame.size.width+frame.size.width/40*9, self.avatarIV.frame.origin.y+self.avatarIV.frame.size.height/2-itemXY/2, itemXY, itemXY);
+        commentsIV.frame = CGRectMake(30+self.avatarIV.frame.size.width+frame.size.width/40*9, self.avatarIV.frame.origin.y+self.avatarIV.frame.size.height/2-itemXY/2, itemXY, itemXY);
         commentsIV.opaque = YES;
         [self addSubview:commentsIV];
         
-        self.comments_countL = [[ UILabel alloc]initWithFrame:CGRectMake(commentsIV.frame.origin.x +commentsIV.frame.size.width+5, commentsIV.frame.origin.y, 25, itemXY)];
+        self.comments_countL = [[UILabel alloc]initWithFrame:CGRectMake(commentsIV.frame.origin.x +commentsIV.frame.size.width+5, commentsIV.frame.origin.y, 25, itemXY)];
         self.comments_countL.textColor = TEXTCOLOR;
         self.comments_countL.font = TEXTFONT;
         self.comments_countL.textAlignment = NSTextAlignmentLeft;
@@ -71,8 +69,10 @@
         [self addSubview:self.comments_countL];
 
         
+        
+        
         UIImageView *likesIV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"shots_likes"]];
-        likesIV.frame = CGRectMake(30+self.avatarIV.frame.size.width+frame.size.width/20*9, self.avatarIV.frame.origin.y+self.avatarIV.frame.size.height/2-itemXY/2, itemXY, itemXY);
+        likesIV.frame = CGRectMake(25 + self.avatarIV.frame.size.width + frame.size.width/20*9, self.avatarIV.frame.origin.y + self.avatarIV.frame.size.height / 2-itemXY/2, itemXY, itemXY);
         likesIV.opaque = YES;
         [self addSubview:likesIV];
         

@@ -5,9 +5,9 @@
 
 #import "ShotsVC.h"
 
-#import "SigninVC.h"
+#import "SignVC.h"
 
-#import "RESideMenu.h"
+#import "REFrostedViewController.h"
 
 #import "AFNetworkActivityIndicatorManager.h"
 
@@ -15,7 +15,6 @@
 
 @property ListVC *listVC;
 @property ShotsVC *shotsVC;
-@property RESideMenu *sideM;
 @end
 
 @implementation AppDelegate
@@ -24,7 +23,6 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     [AFNetworkActivityIndicatorManager sharedManager].enabled =YES;
-
     
     self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
@@ -39,26 +37,32 @@
     [navC.navigationBar setTintColor:[UIColor whiteColor]];
     [navC.navigationBar setBackgroundImage:[UIImage imageNamed:@"bg"] forBarMetrics:UIBarMetricsDefault];
     
-
+    
+    
+    
+    
+    REFrostedViewController *sideV = [[REFrostedViewController alloc]initWithContentViewController:navC menuViewController:self.listVC];
+ 
+    sideV.menuViewSize = CGSizeMake(UI_SCREEN_WIDTH * 4/5, UI_SCREEN_HEIGHT);
+ 
+ 
+ 
+ 
+    self.window.rootViewController = sideV;
+    
+    
     
     
     [[NSUserDefaults standardUserDefaults] setObject:@"50b35eb9a5e107e76e1b1e8759482cc24320c37404ca0b1c7ddacd33b1b9e554" forKey:@"access_token"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 
     
-    self.sideM = [[RESideMenu alloc]initWithContentViewController:navC leftMenuViewController:self.listVC rightMenuViewController:nil];
-    self.sideM.backgroundImage = [UIImage imageNamed:@"bg"];
-    self.sideM.contentViewShadowEnabled = NO;
-    self.sideM.contentViewScaleValue = 0.8f;
-    self.sideM.contentViewInPortraitOffsetCenterX = 0.0f;
     
-    self.window.rootViewController = self.sideM;
     [self.window makeKeyAndVisible];
 
-
-//    
+   
 //    if (![[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"]) {
-//        [SigninVC show];
+//        [SignVC show];
 //    }
 
   

@@ -10,7 +10,7 @@
 
 
 #import "MJRefresh.h"
-#import "RESideMenu.h"
+#import "REFrostedViewController.h"
 #import "AFNetworking.h"
 #import "UIImageView+WebCache.h"
 #import "UIImageView+AFNetworking.h"
@@ -48,7 +48,6 @@ static NSInteger numbersOfItems = 10;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:@"refresh" object:nil];
 
 
-    
     self.view.backgroundColor = BG_COLOR;
     
     self.automaticallyAdjustsScrollViewInsets = NO;
@@ -57,6 +56,7 @@ static NSInteger numbersOfItems = 10;
     
     self.access_token = [[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"];
     
+    [self.view addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)]];
 
     
     UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, UI_NAVIGATION_BAR_HEIGHT, UI_NAVIGATION_BAR_HEIGHT)];
@@ -75,21 +75,15 @@ static NSInteger numbersOfItems = 10;
     
     self.navigationItem.leftBarButtonItem = leftBBI;
     
-//    UIBarButtonItem *rightBBI = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"rightBBI"] landscapeImagePhone:nil style:UIBarButtonItemStylePlain target:self action:nil];
-//    
-//    self.navigationItem.rightBarButtonItem = rightBBI;
-    
 
     NSDictionary * attributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName, nil];
     [self.navigationController.navigationBar setTitleTextAttributes:attributes];
     [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"bg"] forBarMetrics:UIBarMetricsDefault];
-    
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
     
     
     UICollectionViewFlowLayout *popularVFL = [[UICollectionViewFlowLayout alloc]init];
-    
     popularVFL.itemSize = CGSizeMake((UI_SCREEN_WIDTH/2)-9, (UI_SCREEN_WIDTH/2)-9);
     popularVFL.sectionInset = UIEdgeInsetsMake(6, 6, 6, 6);
     popularVFL.minimumInteritemSpacing = 3;
@@ -122,6 +116,7 @@ static NSInteger numbersOfItems = 10;
 
 }
 #pragma mark NetworkAction
+
 
 
 
@@ -199,11 +194,10 @@ static NSInteger numbersOfItems = 10;
                 object.user = user;
                 
                 user.shots_count = [[[dic objectForKey:@"user"]objectForKey:@"shots_count"]stringValue];
-                
+                user.buckets_count = [[[dic objectForKey:@"user"]objectForKey:@"buckets_count"]stringValue];
                 user.likes_count = [[[dic objectForKey:@"user"]objectForKey:@"likes_count"]stringValue];
-                
                 user.followers_count = [[[dic objectForKey:@"user"]objectForKey:@"followers_count"]stringValue];
-                
+                user.bio = [[dic objectForKey:@"user"]objectForKey:@"bio"];
                 user.followings_count = [[[dic objectForKey:@"user"]objectForKey:@"followings_count"]stringValue];
                 
                 user.avatar_url = [[dic objectForKey:@"user"]objectForKey:@"avatar_url"];
@@ -330,9 +324,10 @@ static NSInteger numbersOfItems = 10;
                 user.name = [[dic objectForKey:@"user"]objectForKey:@"name"];
                 
                 user.shots_count = [[[dic objectForKey:@"user"]objectForKey:@"shots_count"]stringValue];
-                
+                user.bio = [[dic objectForKey:@"user"]objectForKey:@"bio"];
                 user.likes_count = [[[dic objectForKey:@"user"]objectForKey:@"likes_count"]stringValue];
-                
+                user.buckets_count = [[[dic objectForKey:@"user"]objectForKey:@"buckets_count"]stringValue];
+
                 user.followers_count = [[[dic objectForKey:@"user"]objectForKey:@"followers_count"]stringValue];
                 
                 user.followings_count = [[[dic objectForKey:@"user"]objectForKey:@"followings_count"]stringValue];
@@ -380,13 +375,9 @@ static NSInteger numbersOfItems = 10;
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     DetailVC *detailVC = [[DetailVC alloc]init];
-    
     SHOTS *object = [self.fRC objectAtIndexPath:indexPath];
-    
     NSManagedObjectID *objectID = [object objectID];
-    
     detailVC.shotsID = [object valueForKey:@"shotsid"];
-    
     detailVC.objectID = objectID;
     
     [self.navigationController pushViewController:detailVC animated:YES];
@@ -401,7 +392,6 @@ static NSInteger numbersOfItems = 10;
 -(NSInteger )collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     id <NSFetchedResultsSectionInfo> sectionInfo = [self.fRC sections][section];
-
     return [sectionInfo numberOfObjects];
 }
 
@@ -416,40 +406,27 @@ static NSInteger numbersOfItems = 10;
 {
     ShotsCell *shotsCell = (ShotsCell *)[collectionView dequeueReusableCellWithReuseIdentifier:POPULAR_REStr forIndexPath:indexPath];
     [self configureCell:shotsCell atIndexPath:indexPath];
-
     return shotsCell;
 }
 
 - (void)configureCell:(ShotsCell *)cell atIndexPath:(NSIndexPath *)indexPath
 {
     SHOTS *object = [self.fRC objectAtIndexPath:indexPath];
-    
     IMAGES *images = object.images;
-    
     USER *user = object.user;
-
     NSURL *shotsURL = [NSURL URLWithString:[images valueForKey:@"teaser"]];
-    
     NSURL *avatarURL = [NSURL URLWithString:[user valueForKey:@"avatar_url"]];
-    
     NSRange range = [[images valueForKey:@"teaser"] rangeOfString:@"teaser"];
-    
     NSString *str = [[images valueForKey:@"teaser"] substringFromIndex:range.location+6];
     
-    [cell.shotsIV sd_setImageWithURL:shotsURL placeholderImage:[UIImage imageNamed:@"imagePlaceHolder"]];
-    
-    [cell.avatarIV sd_setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"imagePlaceHolder"]];
-
+    [cell.shotsIV sd_setImageWithURL:shotsURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+    [cell.avatarIV sd_setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
     [cell.views_countL setText:[object valueForKey:@"views_count"]];
-    
     [cell.comments_countL setText:[object valueForKey:@"comments_count"]];
-    
     [cell.likes_countL setText:[object valueForKey:@"likes_count"]];
     
     if ([str isEqualToString:@".gif"]) {
-        
         [cell.gifIV setImage:[UIImage imageNamed:@"gifImage"]];
-        
     }
     else
     {
@@ -466,7 +443,7 @@ static NSInteger numbersOfItems = 10;
         return _fRC;
     }
     
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc]init];
     
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"SHOTS"inManagedObjectContext:self.myDelegate.managedObjectContext];
     
@@ -483,7 +460,7 @@ static NSInteger numbersOfItems = 10;
     NSPredicate * cdt = [NSPredicate predicateWithFormat:@"source = %@",str];
     [fetchRequest setPredicate:cdt];
 
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:fetchRequest managedObjectContext:self.myDelegate.managedObjectContext sectionNameKeyPath:nil cacheName:nil];
+    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:fetchRequest managedObjectContext:self.myDelegate.managedObjectContext sectionNameKeyPath:nil cacheName:@"popular"];
     
     aFetchedResultsController.delegate = self;
     
@@ -587,7 +564,7 @@ static NSInteger numbersOfItems = 10;
 
 -(void)leftAction
 {
-    [self.sideMenuViewController presentLeftMenuViewController];
+    [self.frostedViewController presentMenuViewController];
     
 }
 

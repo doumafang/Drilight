@@ -4,7 +4,7 @@
 #import "AFNetworking.h"
 #import "UIImageView+AFNetworking.h"
 #import "USER.h"
-#import "RESideMenu.h"
+#import "REFrostedViewController.h"
 #import "DEFINE.h"
 #import "ShotsVC.h"
 
@@ -21,7 +21,7 @@
 @implementation ListVC
 - (void)viewDidLoad {
     
-    float viewX = self.view.frame.size.width/5*3;
+    float viewX = self.view.frame.size.width / 5*4 ;
     float viewY = self.view.frame.size.height;
     
     [super viewDidLoad];
@@ -30,15 +30,17 @@
     self.access_token = [[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"];
     self.myDelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
 
+
     
-    UIImageView *avatarV = [[UIImageView alloc]initWithFrame:CGRectMake(viewX/2-50,viewX/2-50 , 80, 80)];
+    UIImageView *avatarV = [[UIImageView alloc]initWithFrame:CGRectMake(viewX/3,viewX/2-50 , viewX/3, viewX/3)];
+    avatarV.layer.borderColor = [UIColor whiteColor].CGColor;
+    avatarV.layer.borderWidth = 2.0f;
     avatarV.layer.masksToBounds = YES;
-    avatarV.layer.cornerRadius = 40;
+    avatarV.layer.cornerRadius = viewX/6;
     avatarV.userInteractionEnabled = YES;
     avatarV.opaque = YES;
     [self.view addSubview:avatarV];
-    UITapGestureRecognizer *avatarTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(avatarAction)];
-    [avatarV addGestureRecognizer:avatarTap];
+
     
     
     
@@ -55,7 +57,7 @@
     _userL = userL;
     
     
-    UIView *lineV = [[UIView alloc]initWithFrame:CGRectMake(40, userL.frame.origin.y+userL.frame.size.height, 110, 0.5)];
+    UIView *lineV = [[UIView alloc]initWithFrame:CGRectMake(40, userL.frame.origin.y+userL.frame.size.height, viewX-80, 0.5)];
     lineV.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:lineV];
     
@@ -263,8 +265,8 @@
         case 0:
             switch (indexPath.row) {
                 case 0:
-                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:[[ShotsVC alloc]init]] animated:YES];
-                    [self.sideMenuViewController hideMenuViewController];
+                    [self.frostedViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:[[ShotsVC alloc]init]]];
+                    [self.frostedViewController hideMenuViewController];
                     break;
                 case 1:
                     

@@ -1,6 +1,6 @@
 
 
-#import "SigninVC.h"
+#import "SignVC.h"
 
 #import "ShotsVC.h"
 #import "DetailVC.h"
@@ -9,13 +9,16 @@
 
 #import "AFNetworking.h"
 
-@interface SigninVC ()<UIWebViewDelegate>
+
+@interface SignVC ()<UIWebViewDelegate>
 {
     UIView *_signinV;
+
 }
+@property UIImageView *drilight;
 @end
 
-@implementation SigninVC
+@implementation SignVC
 
 @synthesize animating = _animating;
 
@@ -27,11 +30,11 @@
     return self;
 }
 
-+ (SigninVC *)sharedSignin
++ (SignVC *)sharedSignin
 {
     @synchronized(self)
     {
-        static SigninVC *sharedSignin = nil;
+        static SignVC *sharedSignin = nil;
         if (sharedSignin == nil)
         {
             sharedSignin = [[self alloc] init];
@@ -49,13 +52,13 @@
     
     UIImageView *bg = [[UIImageView alloc]initWithFrame:self.view.frame];
     bg.userInteractionEnabled = YES;
-    [bg setImage:[UIImage imageNamed:@"Default-568h"]];
+    [bg setImage:[UIImage imageNamed:@"SignBG"]];
     self.view = bg;
 
     
-    UIImageView *drilight = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"drilight"]];
-    drilight.frame = CGRectMake(viewX/10*3, 0.28*viewY, viewX/5*2 , viewX/5*2/13*5);
-    [self.view addSubview:drilight];
+    self.drilight = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"Default"]];
+    self.drilight.frame = CGRectMake(viewX/14*5, 0.28*viewY, viewX/7*2 , viewX/7*2);
+    [self.view addSubview:self.drilight];
 
     UIImageView *uniquestudio = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"UniqueStudio"]];
     uniquestudio.frame = CGRectMake(0.39*viewX, viewY-0.22*viewX/14*3-10, 0.22*viewX, 0.22*viewX/14*3);
@@ -63,9 +66,13 @@
 
     
     UIButton *signinB = [[UIButton alloc]initWithFrame:CGRectMake(viewX/8, 0.73*viewY, viewX/4*3, viewX/8)];
-    signinB.backgroundColor = RGBA(254, 142, 185, 0.5);
     [signinB setTitle:@"Sign In" forState:UIControlStateNormal];
     [signinB setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [signinB setBackgroundImage:[UIImage imageNamed:@"signIn_1"] forState:UIControlStateNormal];
+    [signinB setBackgroundImage:[UIImage imageNamed:@"signIn_2"] forState:UIControlStateHighlighted];
+    
+    
+    
     [signinB.titleLabel setFont:[UIFont fontWithName:@"Helvetica Light" size:12]];
     [signinB addTarget:self action:@selector(signAction:) forControlEvents:UIControlEventTouchUpInside];
     signinB.tag = 0;
@@ -76,17 +83,76 @@
     UIButton *signupB = [[UIButton alloc]initWithFrame:CGRectMake(viewX/8, 0.73*viewY+viewX/6*1, viewX/4*3, viewX/8)];
     signupB.backgroundColor = RGBA(150, 160, 249, 0.5);
     [signupB setTitle:@"Sign Up" forState:UIControlStateNormal];
+    [signupB setBackgroundImage:[UIImage imageNamed:@"signUp_1"] forState:UIControlStateNormal];
+    [signupB setBackgroundImage:[UIImage imageNamed:@"signUp_2"] forState:UIControlStateHighlighted];
+
     [signupB setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [signupB.titleLabel setFont:[UIFont fontWithName:@"Helvetica Light" size:12]];
     [signupB addTarget:self action:@selector(signAction:) forControlEvents:UIControlEventTouchUpInside];
     signupB.tag = 1;
     [self.view addSubview:signupB];
+    
+    
+    //旋转动画
+    CABasicAnimation* rotationAnimation;
+    rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 0.8 ];
+    rotationAnimation.duration = 2.0;
+    rotationAnimation.cumulative = YES;
+    rotationAnimation.repeatCount = 10000;
+    [self.drilight.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
+
+    
+    
+    // 透明动画
+    [self drilightAnimationBegin];
+    
+}
+
+
+-(void)drilightAnimationBegin
+{
+    float viewX = self.view.frame.size.width;
+    float viewY = self.view.frame.size.height;
+    
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:7.0f];
+    [UIView setAnimationDelegate:self];
+    [UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
+    [UIView setAnimationDidStopSelector:@selector(drilightAnimationBack)];
+    
+    self.drilight.alpha = 0.3f;
+    self.drilight.frame = CGRectMake(viewX/7*2, 0.28*viewY-viewX/14, viewX/7*3 , viewX/7*3);
+    
+    [UIView commitAnimations];
+
+    
+}
+
+-(void)drilightAnimationBack
+{
+    float viewX = self.view.frame.size.width;
+    float viewY = self.view.frame.size.height;
+    
+
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:5.0f];
+    [UIView setAnimationDelegate:self];
+    [UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
+    [UIView setAnimationDidStopSelector:@selector(drilightAnimationBegin)];
+    
+    self.drilight.alpha = 1.0f;
+    self.drilight.frame = CGRectMake(viewX/14*5, 0.28*viewY, viewX/7*2 , viewX/7*2);
+
+    [UIView commitAnimations];
 
 }
 
 -(void)signAction:(UIButton *)button
 {
   
+    
+    
     UIView *signinV = [[UIView alloc]initWithFrame:[self offscreenFrame]];
     signinV.backgroundColor = RGBA(50, 50, 50, 1);
     UINavigationBar *nav = [[UINavigationBar alloc]initWithFrame:CGRectMake(0, 0,self.view.frame.size.width, UI_NAVIGATION_BAR_HEIGHT+UI_STATUS_BAR_HEIGHT)];
@@ -98,7 +164,7 @@
     NSDictionary * attributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName, nil];
     [nav setTitleTextAttributes:attributes];
     [nav setTintColor:[UIColor whiteColor]];
-    UIBarButtonItem *leftB = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"xia"] style:UIBarButtonItemStylePlain target:self action:@selector(leftAction)];
+    UIBarButtonItem *leftB = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"cancel"] style:UIBarButtonItemStylePlain target:self action:@selector(leftAction)];
     UINavigationItem *item = [[UINavigationItem alloc]init];
     item.leftBarButtonItem = leftB;
    
@@ -110,9 +176,12 @@
     [titleLabel setFont:[UIFont fontWithName:@"Honduro" size:20]];
     [nav addSubview:titleLabel];
     
+    
     UIWebView *loginW = [[UIWebView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width , self.view.frame.size.height - 64)];
     loginW.delegate = self;
     loginW.backgroundColor = RGBA(66, 66, 66, 1);
+    
+    
     
     switch (button.tag) {
         case 0:
@@ -138,6 +207,7 @@
             break;
         }
     }
+    
     
     [self.view addSubview:signinV];
     [UIView beginAnimations:nil context:nil];
@@ -234,7 +304,7 @@
 
 + (void)show
 {
-    [[SigninVC sharedSignin] showGuide];
+    [[SignVC sharedSignin] showGuide];
 }
 
 
@@ -242,13 +312,13 @@
 {
     if (!_animating && self.view.superview == nil)
     {
-        [SigninVC sharedSignin].view.frame = [self offscreenFrame];
+        [SignVC sharedSignin].view.frame = [self offscreenFrame];
         
-        [[self mainWindow] addSubview:[SigninVC sharedSignin].view];
+        [[self mainWindow] addSubview:[SignVC sharedSignin].view];
         
         _animating = YES;
 
-        [SigninVC sharedSignin].view.frame = [self onscreenFrame];
+        [SignVC sharedSignin].view.frame = [self onscreenFrame];
     }
 }
 
@@ -260,7 +330,7 @@
 + (void)hide
 {
 
-    [[SigninVC sharedSignin] hideGuide];
+    [[SignVC sharedSignin] hideGuide];
 }
 
 - (void)hideGuide
@@ -270,14 +340,14 @@
     [UIView setAnimationDuration:0.2f];
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(guideHidden)];
-    [SigninVC sharedSignin].view.frame = [self offscreenFrame];
+    [SignVC sharedSignin].view.frame = [self offscreenFrame];
     [UIView commitAnimations];
 }
 
 - (void)guideHidden
 {
     _animating = NO;
-    [[[SigninVC sharedSignin] view] removeFromSuperview];
+    [[[SignVC sharedSignin] view] removeFromSuperview];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"refresh" object:nil];
 
 

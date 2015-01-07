@@ -10,7 +10,7 @@
 #import "USER.h"
 #import "ShotsCell.h"
 #import "FollowCell.h"
-
+#import "HTMLLabel.h"
 #import "SHOTS.h"
 #import "IMAGES.h"
 #import "AppDelegate.h"
@@ -180,7 +180,7 @@ static NSInteger followersN = 12;
     
     
     
-    UIView *mapV = [[UIView alloc]initWithFrame:CGRectMake(0, 30+ userL.frame.origin.y, viewX, 30)];
+    UIView *mapV = [[UIView alloc]initWithFrame:CGRectMake(0, 30 + userL.frame.origin.y, viewX, 30)];
     mapV.userInteractionEnabled = YES;
     [blackIV addSubview:mapV];
     [mapV addSubview:mapI];
@@ -188,7 +188,7 @@ static NSInteger followersN = 12;
     [mapV addSubview:lineL];
     _mapV = mapV;
     
-    NSArray *listArray = [[NSArray alloc]initWithObjects:@"shots",@"likes",@"following",@"followers",@"about",nil];
+    NSArray *listArray = [[NSArray alloc]initWithObjects:@"shots",@"likes",@"buckets",@"following",@"followers",@"about",nil];
     UIScrollView * listSV = [[UIScrollView alloc] initWithFrame:CGRectMake(0, mapV.frame.size.height+mapV.frame.origin.y, viewX, avatarBG.frame.size.height-mapV.frame.origin.y-mapV.frame.size.height)];
     [listSV setShowsHorizontalScrollIndicator:NO];
     listSV.userInteractionEnabled = YES;
@@ -375,7 +375,8 @@ static NSInteger followersN = 12;
                      user.likes_count = [[[shotDic objectForKey:@"user"]objectForKey:@"likes_count"]stringValue];
                      user.followers_count = [[[shotDic objectForKey:@"user"]objectForKey:@"followers_count"]stringValue];
                      user.followings_count = [[[shotDic objectForKey:@"user"]objectForKey:@"followings_count"]stringValue];
-                     
+                     user.buckets_count = [[[shotDic objectForKey:@"user"]objectForKey:@"buckets_count"]stringValue];
+                     user.bio = [[shotDic objectForKey:@"user"]objectForKey:@"bio"];
                      if ( [[[shotDic objectForKey:@"user"]objectForKey:@"location"]class] != [NSNull class])
                      {
                          user.location = [[shotDic objectForKey:@"user"]objectForKey:@"location"];
@@ -459,8 +460,10 @@ static NSInteger followersN = 12;
                      object.likes_count = [[followeeDic objectForKey:@"likes_count"]stringValue];
                      
                      object.followers_count = [[followeeDic objectForKey:@"followers_count"] stringValue];
-                     
+                     object.buckets_count = [[followeeDic objectForKey:@"buckets_count"]stringValue];
                      object.followings_count = [[followeeDic objectForKey:@"followings_count"] stringValue];
+                     
+                     object.bio = [followeeDic objectForKey:@"bio"];
                      
                      if ( [[followeeDic objectForKey:@"location"]class] != [NSNull class])
                      {
@@ -501,12 +504,9 @@ static NSInteger followersN = 12;
          {
              
              NSRange footrange = [[[operation.response allHeaderFields]valueForKey:@"Link"] rangeOfString:@">"];
-             
              NSString *footstr = [[[[operation.response allHeaderFields]valueForKey:@"Link"] substringFromIndex:1]
                                   substringToIndex:footrange.location-1];
              followersFootURL = footstr;
-             
-             
              
              NSString *lastModified = [[operation.response allHeaderFields]objectForKey:@"Last-Modified"];
              if (![self.user.followers_lastmodified isEqualToString:lastModified]) {
@@ -539,13 +539,14 @@ static NSInteger followersN = 12;
                      object.avatar_url = [followeeDic objectForKey:@"avatar_url"];
                      
                      object.shots_count = [[followeeDic objectForKey:@"shots_count"]stringValue];
-                     
+                     object.buckets_count = [[followeeDic objectForKey:@"buckets_count"]stringValue];
                      object.likes_count = [[followeeDic objectForKey:@"likes_count"]stringValue];
                      
                      object.followers_count = [[followeeDic objectForKey:@"followers_count"] stringValue];
                      
                      object.followings_count = [[followeeDic objectForKey:@"followings_count"] stringValue];
-                     
+                     object.bio = [followeeDic objectForKey:@"bio"];
+
                      if ( [[followeeDic objectForKey:@"location"]class] != [NSNull class])
                      {
                          object.location = [followeeDic objectForKey:@"location"];
@@ -593,9 +594,12 @@ static NSInteger followersN = 12;
 
 -(void) initPageView:(UIView *)view
 {
+    float viewX = view.frame.size.width;
+
     switch (view.tag) {
         case 1:
         {
+            
             UICollectionViewFlowLayout *shotsCVFL = [[UICollectionViewFlowLayout alloc]init];
             shotsCVFL.itemSize = CGSizeMake((UI_SCREEN_WIDTH/2)-10, (UI_SCREEN_WIDTH/2)-10);
             shotsCVFL.sectionInset = UIEdgeInsetsMake(10, 6, 5, 6);
@@ -624,10 +628,28 @@ static NSInteger followersN = 12;
             headerL .textAlignment = NSTextAlignmentLeft;
             headerL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
             [shotsCV addSubview:headerL ];
+            
+            
+            UIImageView *noShotsV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_shots"]];
+            noShotsV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
 
+
+            UILabel *noShotsL = [[UILabel alloc]initWithFrame:CGRectMake(0, noShotsV.frame.size.height+noShotsV.frame.origin.y-30, viewX, 40)];
+            noShotsL.text = @"no shots";
+            noShotsL.textAlignment = NSTextAlignmentCenter;
+            noShotsL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
+            noShotsL.textColor = RGBA(146, 146, 146, 1);
             
             
-            [view addSubview:shotsCV];
+
+            if (![self.user.shots_count isEqualToString:@"0"]) {
+                [view addSubview:shotsCV];
+            }
+            else
+            {
+                [view addSubview:noShotsV];
+                [view addSubview:noShotsL];
+            }
          
             
             
@@ -664,16 +686,54 @@ static NSInteger followersN = 12;
             headerL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
             [likesCV addSubview:headerL ];
             
+            UIImageView *noLikesV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_likes"]];
+            noLikesV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
             
             
+            UILabel *noLikesL = [[UILabel alloc]initWithFrame:CGRectMake(0, noLikesV.frame.size.height+noLikesV.frame.origin.y-30, viewX, 40)];
+            noLikesL.text = @"no likes";
+            noLikesL.textAlignment = NSTextAlignmentCenter;
+            noLikesL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
+            noLikesL.textColor = RGBA(146, 146, 146, 1);
+
             
+            if (![self.user.likes_count isEqualToString:@"0"]) {
+                [view addSubview:likesCV];
+            }
+            else
+            {
+                [view addSubview:noLikesV];
+                [view addSubview:noLikesL];
+            }
             
-            [view addSubview:likesCV];
 
         }
             break;
-        
         case 3:
+        {
+            
+            UIImageView *noBucketsV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_buckets"]];
+            noBucketsV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
+            
+            
+            UILabel *noBucketsL = [[UILabel alloc]initWithFrame:CGRectMake(0, noBucketsV.frame.size.height+noBucketsV.frame.origin.y-30, viewX, 40)];
+            noBucketsL.text = @"no buckets";
+            noBucketsL.textAlignment = NSTextAlignmentCenter;
+            noBucketsL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
+            noBucketsL.textColor = RGBA(146, 146, 146, 1);
+
+            if (![self.user.buckets_count isEqualToString:@"0"]) {
+                
+            }
+            else
+            {
+                [view addSubview:noBucketsV];
+                [view addSubview:noBucketsL];
+            }
+        }
+            break;
+        
+        case 4:
         {
             UICollectionViewFlowLayout *followingVFL = [[UICollectionViewFlowLayout alloc]init];
             followingVFL.itemSize = CGSizeMake(UI_SCREEN_WIDTH-12, UI_SCREEN_WIDTH*5/32);
@@ -703,12 +763,31 @@ static NSInteger followersN = 12;
             headerL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
             [followingCV addSubview:headerL ];
 
-            [view addSubview:followingCV];
+            
+            UIImageView *noFollowingV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_following"]];
+            noFollowingV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
+            
+            
+            UILabel *noFollowingL = [[UILabel alloc]initWithFrame:CGRectMake(0, noFollowingV.frame.size.height+noFollowingV.frame.origin.y-30, viewX, 40)];
+            noFollowingL.text = @"no following";
+            noFollowingL.textAlignment = NSTextAlignmentCenter;
+            noFollowingL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
+            noFollowingL.textColor = RGBA(146, 146, 146, 1);
+            
+            
+            if (![self.user.followings_count isEqualToString:@"0"]) {
+                [view addSubview:followingCV];
+            }
+            else
+            {
+                [view addSubview:noFollowingV];
+                [view addSubview:noFollowingL];
+            }
 
         
         }
             break;
-        case 4:
+        case 5:
         {
             UICollectionViewFlowLayout *followersVFL = [[UICollectionViewFlowLayout alloc]init];
             followersVFL.itemSize = CGSizeMake(UI_SCREEN_WIDTH-12, UI_SCREEN_WIDTH*5/32);
@@ -738,13 +817,59 @@ static NSInteger followersN = 12;
             headerL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
             [followersCV addSubview:headerL ];
 
-            [view addSubview:followersCV];
+            UIImageView *noFollowersV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_following"]];
+            noFollowersV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
+            
+            
+            UILabel *noFollowersL = [[UILabel alloc]initWithFrame:CGRectMake(0, noFollowersV.frame.size.height+noFollowersV.frame.origin.y-30, viewX, 40)];
+            noFollowersL.text = @"no followers";
+            noFollowersL.textAlignment = NSTextAlignmentCenter;
+            noFollowersL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
+            noFollowersL.textColor = RGBA(146, 146, 146, 1);
+            
+            
+            if (![self.user.followers_count isEqualToString:@"0"]) {
+                [view addSubview:followersCV];
+            }
+            else
+            {
+                [view addSubview:noFollowersV];
+                [view addSubview:noFollowersL];
+            }
 
         }
             break;
-        case 5:
+        case 6:
         {
-            UIView *twitterV = [[UIView alloc]initWithFrame:CGRectMake(12, 12, view.frame.size.width-24, MIN(self.user.twitter.length, 1) * 50)];
+            
+            UIFont *font = [UIFont fontWithName:@"Nexa Bold" size:14];
+            NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+            paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+            NSDictionary *attributes = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:paragraphStyle.copy};
+            CGSize size = [self.user.bio boundingRectWithSize:CGSizeMake(viewX - 70, 10000) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
+            
+            
+            
+            
+            UIView *bioView = [[UIView alloc]initWithFrame:CGRectMake(12, 12, viewX - 24, MIN(self.user.bio.length, 1) * (size.height + 30))];
+            bioView.backgroundColor = [UIColor whiteColor];
+            bioView.clipsToBounds = YES;
+            [view addSubview:bioView];
+
+            HTMLLabel *bioL = [[HTMLLabel alloc]initWithFrame:CGRectMake(25, 15, bioView.frame.size.width - 50, size.height)];
+            bioL.font = font;
+            bioL.textColor = [UIColor grayColor];
+            bioL.text = self.user.bio;
+            bioL.textAlignment = NSTextAlignmentLeft;
+            bioL.numberOfLines = 0;
+            [bioView addSubview:bioL];
+            
+            
+            
+            
+            
+            
+            UIView *twitterV = [[UIView alloc]initWithFrame:CGRectMake(12, bioView.frame.size.height + bioView.frame.origin.y + 20, viewX - 24, MIN(self.user.twitter.length, 1) * 50)];
             twitterV.backgroundColor = [UIColor whiteColor];
             twitterV.userInteractionEnabled = YES;
             twitterV.clipsToBounds = YES;
@@ -847,7 +972,6 @@ static NSInteger followersN = 12;
                 object.created_at = [dic objectForKey:@"created_at"];
                 object.source = @"userShots";
                 object.i = [NSNumber numberWithInteger:shotsN];
-                
                 object.user = self.user;
                 NSData *tagsData = [NSKeyedArchiver archivedDataWithRootObject:[dic objectForKey:@"tags"]];
                 object.tags = tagsData;
@@ -928,14 +1052,14 @@ static NSInteger followersN = 12;
                 
                 USER *user = EntityObjects(@"USER");
                 object.user = user;
-                
+                 user.bio = [[shotDic objectForKey:@"user"]objectForKey:@"bio"];
                 user.avatar_url = [[shotDic objectForKey:@"user"]objectForKey:@"avatar_url"];
                 user.name = [[shotDic objectForKey:@"user"]objectForKey:@"name"];
                 user.shots_count = [[[shotDic objectForKey:@"user"]objectForKey:@"shots_count"]stringValue];
                 user.likes_count = [[[shotDic objectForKey:@"user"]objectForKey:@"likes_count"]stringValue];
                 user.followers_count = [[[shotDic objectForKey:@"user"]objectForKey:@"followers_count"]stringValue];
                 user.followings_count = [[[shotDic objectForKey:@"user"]objectForKey:@"followings_count"]stringValue];
-                
+                user.buckets_count = [[[shotDic objectForKey:@"user"]objectForKey:@"buckets_count"]stringValue];
                 if ( [[[shotDic objectForKey:@"user"]objectForKey:@"location"]class] != [NSNull class])
                 {
                     user.location = [[shotDic objectForKey:@"user"]objectForKey:@"location"];
@@ -1020,6 +1144,8 @@ static NSInteger followersN = 12;
                 
                 object.name = [followeeDic objectForKey:@"name"];
                 
+                object.bio = [followeeDic objectForKey:@"bio"];
+
                 object.avatar_url = [followeeDic objectForKey:@"avatar_url"];
                 
                 object.shots_count = [[followeeDic objectForKey:@"shots_count"]stringValue];
@@ -1027,7 +1153,8 @@ static NSInteger followersN = 12;
                 object.likes_count = [[followeeDic objectForKey:@"likes_count"]stringValue];
                 
                 object.followers_count = [[followeeDic objectForKey:@"followers_count"] stringValue];
-                
+                object.buckets_count = [[followeeDic objectForKey:@"buckets_count"]stringValue];
+
                 object.followings_count = [[followeeDic objectForKey:@"followings_count"] stringValue];
                 
                 if ( [[followeeDic objectForKey:@"location"]class] != [NSNull class])
@@ -1115,9 +1242,11 @@ static NSInteger followersN = 12;
                 object.shots_count = [[followeeDic objectForKey:@"shots_count"]stringValue];
                 
                 object.likes_count = [[followeeDic objectForKey:@"likes_count"]stringValue];
-                
+                object.bio = [followeeDic objectForKey:@"bio"];
+
                 object.followers_count = [[followeeDic objectForKey:@"followers_count"] stringValue];
-                
+                object.buckets_count = [[followeeDic objectForKey:@"buckets_count"]stringValue];
+
                 object.followings_count = [[followeeDic objectForKey:@"followings_count"] stringValue];
                 
                 if ( [[followeeDic objectForKey:@"location"]class] != [NSNull class])
@@ -1237,8 +1366,8 @@ static NSInteger followersN = 12;
     NSRange range = [images.teaser rangeOfString:@"teaser"];
     NSString *str = [images.teaser substringFromIndex:range.location+6];
     
-    [cell.shotsIV sd_setImageWithURL:shotsURL placeholderImage:[UIImage imageNamed:@"imagePlaceHolder"]];
-    [cell.avatarIV sd_setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"imagePlaceHolder"]];
+    [cell.shotsIV sd_setImageWithURL:shotsURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+    [cell.avatarIV sd_setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
     
     [cell.views_countL setText:object.views_count];
     [cell.comments_countL setText:object.comments_count];
@@ -1269,7 +1398,8 @@ static NSInteger followersN = 12;
 
     NSURL *avatarURL = [NSURL URLWithString:object.avatar_url];
 
-    [cell.avatarV sd_setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"imagePlaceHolder"]];
+    
+    [cell.avatarV sd_setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
     [cell.userL setText:object.name];
     [cell.descriptionL setText:object.web];
     
@@ -1394,7 +1524,7 @@ static NSInteger followersN = 12;
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    float xx = _mainSV.contentOffset.x * (30 / self.view.frame.size.width) - 30;
+    float xx = _mainSV.contentOffset.x * (40 / self.view.frame.size.width) ;
     [_listSV scrollRectToVisible:CGRectMake(xx, 0, _listSV.frame.size.width, _listSV.frame.size.height) animated:YES];
 }
 
@@ -1525,16 +1655,27 @@ static NSInteger followersN = 12;
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"back"] style:UIBarButtonItemStylePlain target:self action:@selector(backAction)];
     self.navigationItem.leftBarButtonItem = backItem;
     
-    UIBarButtonItem *followItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:nil];
+    UIBarButtonItem *followItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(followUser)];
     self.navigationItem.rightBarButtonItem = followItem;
     
 }
 
 #pragma -mark Other
 
+
 -(void)backAction
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+-(void)followUser
+{
+    UIBarButtonItem *followedItem = [[UIBarButtonItem alloc]initWithTitle:@"followed" style:UIBarButtonItemStylePlain target:self action:nil];
+    [followedItem setTitleTextAttributes:@{
+                                         NSFontAttributeName: [UIFont fontWithName:@"Nexa Light" size:16],
+                                         NSForegroundColorAttributeName: [UIColor whiteColor]
+                                         } forState:UIControlStateNormal];
+    self.navigationItem.rightBarButtonItem = followedItem;
 }
 
 #pragma -mark View

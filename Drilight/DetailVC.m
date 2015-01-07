@@ -35,6 +35,8 @@ static NSString *cellRe = @"cell";
     
     [self setNav];
     
+    float viewX = self.view.frame.size.width;
+    
     self.automaticallyAdjustsScrollViewInsets = NO;
     
     self.myDelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
@@ -73,79 +75,61 @@ static NSString *cellRe = @"cell";
     
     if (images.hidpi != nil) {
         NSURL *hidpiURL = [NSURL URLWithString:images.hidpi];
-        [shotsV sd_setImageWithPreviousCachedImageWithURL:hidpiURL andPlaceholderImage:[UIImage imageNamed:@"imagePlaceHolder"] options:SDWebImageRetryFailed | SDWebImageLowPriority  |SDWebImageProgressiveDownload progress:nil completed:nil];
+        [shotsV sd_setImageWithPreviousCachedImageWithURL:hidpiURL andPlaceholderImage:[UIImage imageNamed:@"shotsPlaceHolder"] options:SDWebImageRetryFailed | SDWebImageLowPriority  |SDWebImageProgressiveDownload progress:nil completed:nil];
     }
     else
     {
-        [shotsV sd_setImageWithPreviousCachedImageWithURL:normalUrl andPlaceholderImage:[UIImage imageNamed:@"imagePlaceHolder"] options:SDWebImageRetryFailed | SDWebImageLowPriority  |SDWebImageProgressiveDownload progress:nil completed:nil];
+        [shotsV sd_setImageWithPreviousCachedImageWithURL:normalUrl andPlaceholderImage:[UIImage imageNamed:@"shotsPlaceHolder"] options:SDWebImageRetryFailed | SDWebImageLowPriority  |SDWebImageProgressiveDownload progress:nil completed:nil];
     }
 
     [whiteBG addSubview:shotsV];
 
     
-
-    UIScrollView *tagsV = [[UIScrollView alloc]init];
-    tagsV.showsHorizontalScrollIndicator = NO;
     
     
-    NSMutableArray *tagsArray = [NSKeyedUnarchiver unarchiveObjectWithData:[shotsObject valueForKey:@"tags"]];
+    UIView *buttonV = [[UIView alloc]initWithFrame:CGRectMake(0, whiteBG.frame.size.height + bigBG.frame.origin.y, viewX, 50)];
+    buttonV.userInteractionEnabled = YES;
     
-    float tagLength = 0;
-    for (NSString *tag in tagsArray) {
-        UIFont *font = [UIFont fontWithName:@"Helvetica Neue" size:15];
-        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
-        paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
-        NSDictionary *attributes = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:paragraphStyle.copy};
-        CGSize size = [tag boundingRectWithSize:CGSizeMake(250, 20) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
+    
+    NSArray *buttonArray = @[@"detail_comment",@"detail_bucket",@"detail_like"];
+    
+    float sum = 40;
+    for (int i = 0; i < buttonArray.count; i ++) {
         
-        UIButton *tagButton = [[UIButton alloc]initWithFrame:CGRectMake(10 + tagLength, 8, size.width+20, 24)];
-        [tagButton setTitle:tag forState:UIControlStateNormal];
-        [tagButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        tagButton.titleLabel.font = font;
-        tagButton.titleEdgeInsets = UIEdgeInsetsMake(0, 0,0, 0);
-        tagButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        tagButton.layer.cornerRadius = 12;
-        tagButton.layer.masksToBounds = YES;
-        tagButton.backgroundColor = [UIColor clearColor];
-        tagButton.layer.borderColor = [UIColor grayColor].CGColor;
-        tagButton.layer.borderWidth = 1.0f;
-        tagLength = tagLength + size.width+30;
-        [tagsV addSubview:tagButton];
+        UIButton *button = [[UIButton alloc]initWithFrame:CGRectMake(sum, 10, 40, 40)];
+        button.tag = i;
+        NSString *buttonStr_1 = buttonArray[i];
+        NSString *buttonStr_2 = [buttonStr_1 stringByAppendingString:@"_1"];
+        
+        [button setBackgroundImage:[UIImage imageNamed:buttonStr_1] forState:UIControlStateNormal];
+        [button setBackgroundImage:[UIImage imageNamed:buttonStr_2] forState:UIControlStateSelected];
+        [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
+        
+        
+        sum = sum + viewX/3;
+        [buttonV addSubview:button];
         
     }
-    tagsV.frame = CGRectMake(0, whiteBG.frame.size.height+whiteBG.frame.origin.y, self.view.frame.size.width, 40*MIN(1, tagsArray.count));
-    tagsV.contentSize = CGSizeMake(10+tagLength, tagsV.frame.size.height);
-    [bigBG addSubview:tagsV];
-    
-    UIView *tagsViewLine = [[UIView alloc]initWithFrame:CGRectMake(-100, tagsV.frame.size.height-0.7f, tagsV.contentSize.width+200, 0.7f)];
-    tagsViewLine.backgroundColor = RGBA(200, 200, 200, 1);
-    [tagsV addSubview:tagsViewLine];
-
     
     
+    [bigBG addSubview:buttonV];
     
-    NSInteger attachments_count =[[shotsObject valueForKey:@"attachments_count"]intValue];
-    UIScrollView *attachmentsV = [[UIScrollView alloc]initWithFrame:CGRectMake(0, tagsV.frame.origin.y+tagsV.frame.size.height,self.view.frame.size.width, 40*MIN(1,attachments_count))];
-    attachmentsV.showsHorizontalScrollIndicator = NO;
+    UIView *lineV = [[UIView alloc]initWithFrame:CGRectMake(0, buttonV.frame.size.height - 0.7f, viewX, 0.7f)];
+    lineV.backgroundColor = RGBA(200, 200, 200, 1);
+    lineV.opaque = YES ;
+    [buttonV addSubview:lineV];
     
-    UIView *attachmentsViewLine = [[UIView alloc]initWithFrame:CGRectMake(-100, attachmentsV.frame.size.height-0.7, 10000, 0.7f)];
-    attachmentsViewLine.backgroundColor = RGBA(200, 200, 200, 1);
-    [attachmentsV addSubview:attachmentsViewLine];
-
-    if (attachments_count != 0) {
-        [self attachmentInfoAction:attachmentsV];
-    }
-    [bigBG addSubview:attachmentsV];
-
     
     UIFont *font = [UIFont systemFontOfSize:11];
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     NSDictionary *descriptionA = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:paragraphStyle.copy};
     CGSize descriptionSize = [self.shot.shot_description boundingRectWithSize:CGSizeMake(UI_SCREEN_WIDTH - 90, 10000) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:descriptionA context:nil].size;
-    AvatarV *avatarV = [[AvatarV alloc]initWithFrame:CGRectMake(0, attachmentsV.frame.origin.y+attachmentsV.frame.size.height, self.view.frame.size.width, descriptionSize.height+110)];
+    
+    AvatarV *avatarV = [[AvatarV alloc]initWithFrame:CGRectMake(0, buttonV.frame.size.height+buttonV.frame.origin.y, self.view.frame.size.width, descriptionSize.height+110)];
 
     NSURL *avatarURL = [NSURL URLWithString:self.shot.user.avatar_url];
+    
     [avatarV.avatarIV sd_setImageWithURL:avatarURL];
     [avatarV.userL setText:self.shot.user.name];
     [avatarV.likesL  setText:self.shot.likes_count];
@@ -161,8 +145,8 @@ static NSString *cellRe = @"cell";
 
 
     avatarV.timeL.frame = CGRectMake(self.view.frame.size.width - 120, descriptionSize.height+70 , 100 , 20);
-    avatarV.commentsCountL.frame = CGRectMake(avatarV.avatarIV.frame.origin.x, avatarV.timeL.frame.origin.y+20, self.view.frame.size.width, 10);
-    avatarV.lineV .frame = CGRectMake(0, avatarV.commentsCountL.frame.origin.y+avatarV.commentsCountL.frame.size.height+5, self.view.frame.size.width, 0.7f);
+    avatarV.commentsCountL.frame = CGRectMake(avatarV.avatarIV.frame.origin.x, avatarV.timeL.frame.origin.y+20, viewX, 10);
+    avatarV.lineV.frame = CGRectMake(0, avatarV.commentsCountL.frame.origin.y + avatarV.commentsCountL.frame.size.height+5, viewX, 0.7f);
     [bigBG addSubview:avatarV];
     
     UITapGestureRecognizer *commentTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(commentTapAction:)];
@@ -178,16 +162,14 @@ static NSString *cellRe = @"cell";
     
 
     
-    bigBG.frame = CGRectMake(0, 0, self.view.frame.size.width, tagsV.frame.origin.y+tagsV.frame.size.height+attachmentsV.frame.size.height+avatarV.frame.size.height);
+    bigBG.frame = CGRectMake(0, 0, viewX, avatarV.frame.origin.y +avatarV.frame.size.height);
 
-    
     self.commentsView = [[UITableView alloc]initWithFrame:self.view.frame style:UITableViewStylePlain];
     self.commentsView.delegate = self;
     self.commentsView.dataSource = self;
     self.commentsView.backgroundColor = BG_COLOR;
     [self.commentsView registerClass:[CommentsCell class] forCellReuseIdentifier:cellRe];
     self.commentsView.tableHeaderView = bigBG;
-
     self.commentsView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
 
@@ -200,61 +182,11 @@ static NSString *cellRe = @"cell";
     
 }
 
-
-
-#pragma mark - NetworkAction
-
--(void)attachmentInfoAction :(UIScrollView *)scrollview
+-(void)buttonAction:(UIButton *)button
 {
-    BACK((^{
-        NSString *str = [[NSString stringWithFormat:@"https://api.dribbble.com/v1/shots/%@/attachments?access_token=%@",self.shotsID,self.access_token]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        NSURL *url = [NSURL URLWithString:str];
-        NSURLRequest *request = [NSURLRequest requestWithURL:url];
-        AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc]initWithRequest:request];
-        operation.responseSerializer = [AFJSONResponseSerializer serializer];
-        [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-            MAIN((^{
-                UIFont *font = [UIFont systemFontOfSize:13];
-                NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
-                paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
-                NSDictionary *attributes = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:paragraphStyle.copy};
-                NSArray *array = (NSArray *)responseObject;
-                float attachmentLength = 0;
-                for (NSDictionary *dic in array) {
-                    
-                    NSString *attachmentTitle = [[dic objectForKey:@"url"]lastPathComponent];
-                    CGSize size = [attachmentTitle boundingRectWithSize:CGSizeMake(250, 20) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
-                    UIView *attachmentV = [[UIView alloc]initWithFrame:CGRectMake(attachmentLength, 4, size.width+50, 32)];
-                    [scrollview addSubview:attachmentV];
-                    UILabel *attachmentL = [[UILabel alloc]initWithFrame:CGRectMake(50, 0, size.width, 32)];
-                    attachmentL.text = attachmentTitle;
-                    attachmentL.textColor = RGBA(94, 94, 94, 1);
-                    attachmentL.font = font;
-                    attachmentL.textAlignment = NSTextAlignmentCenter;
-                    [attachmentV addSubview:attachmentL];
-                    
-                    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(10, 0, 30, 30)];
-                    UIImageView *IV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"attachments"]];
-                    IV.frame = CGRectMake(5, 5, 20, 20);
-                    view.layer.masksToBounds = YES;
-                    view.backgroundColor = RGBA(229, 229, 229, 1);
-                    view.layer.cornerRadius = 15;
-                    [view addSubview:IV];
-                    [attachmentV addSubview:view];
-                    
-                    attachmentLength = attachmentLength + size.width+70;
-                    
-                }
-                scrollview.contentSize  = CGSizeMake(attachmentLength, scrollview.frame.size.height );
-              
-            }));
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            NSLog(@"Error:%@ ___ %@",error ,[error userInfo]);
-        }];
-        [operation start];
-        
-    }));
+    
 }
+#pragma mark - NetworkAction
 
 -(void)commentsAction
 {
@@ -301,7 +233,12 @@ static NSString *cellRe = @"cell";
                     user.likes_count = [[[dic objectForKey:@"user"]objectForKey:@"likes_count"]stringValue];
                     user.followers_count = [[[dic objectForKey:@"user"]objectForKey:@"followers_count"]stringValue];
                     user.followings_count = [[[dic objectForKey:@"user"]objectForKey:@"followings_count"]stringValue];
-                    user.pro = [[[dic objectForKey:@"user"]objectForKey:@"pro"]stringValue];                    
+                    user.buckets_count = [[[dic objectForKey:@"user"]objectForKey:@"buckets_count"]stringValue];
+                    
+                    user.bio = [[dic objectForKey:@"user"]objectForKey:@"bio"];
+                    
+                    user.pro = [[[dic objectForKey:@"user"]objectForKey:@"pro"]stringValue];
+                    
                     if ( [[[[dic objectForKey:@"user"]objectForKey:@"links"] objectForKey:@"web"] class] != [NSNull class])
                     {
                         user.web = [[[dic objectForKey:@"user"]objectForKey:@"links"] objectForKey:@"web"];
@@ -597,7 +534,7 @@ static NSString *cellRe = @"cell";
     cell.timeL.frame = CGRectMake(self.view.frame.size.width - 120, commentSize.height+40 , 100 , 20);
     cell.lineV.frame = CGRectMake(cell.userL.frame.origin.x, commentSize.height+69, self.view.frame.size.width, 0.7f);
     NSURL *avatarURL = [NSURL URLWithString:object.user.avatar_url];
-    [cell.avatarIV sd_setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"imagePlaceHolder"]];
+    [cell.avatarIV sd_setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
     UITapGestureRecognizer *avatarTap = (UITapGestureRecognizer *)[cell.avatarIV.gestureRecognizers objectAtIndex:0];
     [avatarTap addTarget:self action:@selector(avatarAction:)];
         

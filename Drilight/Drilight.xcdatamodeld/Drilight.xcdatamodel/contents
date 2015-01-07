@@ -37,6 +37,8 @@
     </entity>
     <entity name="USER" representedClassName="USER" syncable="YES">
         <attribute name="avatar_url" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="bio" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="buckets_count" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="followers_count" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="followers_lastmodified" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="following_lastmodified" optional="YES" attributeType="String" syncable="YES"/>
@@ -66,6 +68,6 @@
         <element name="COMMENTS" positionX="-252" positionY="99" width="128" height="163"/>
         <element name="IMAGES" positionX="18" positionY="117" width="128" height="105"/>
         <element name="SHOTS" positionX="-470" positionY="23" width="128" height="298"/>
-        <element name="USER" positionX="-72" positionY="-27" width="128" height="418"/>
+        <element name="USER" positionX="-72" positionY="-27" width="128" height="448"/>
     </elements>
 </model>

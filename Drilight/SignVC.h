@@ -3,7 +3,7 @@
 
 
 
-@interface SigninVC : UIViewController
+@interface SignVC : UIViewController
 {
     BOOL _animating;
 
@@ -15,7 +15,7 @@
 
 
 
-+(SigninVC *)sharedSignin;
++(SignVC *)sharedSignin;
 
 +(void)show;
 +(void)hide;
