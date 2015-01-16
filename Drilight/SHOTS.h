@@ -2,14 +2,14 @@
 //  SHOTS.h
 //  Drilight
 //
-//  Created by doumaaaaaaaa on 14/12/23.
-//  Copyright (c) 2014年 douma. All rights reserved.
+//  Created by doumaaaaaaaa on 15/1/11.
+//  Copyright (c) 2015年 douma. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class COMMENTS, IMAGES, USER;
+@class BUCKETS, COMMENTS, IMAGES, USER;
 
 @interface SHOTS : NSManagedObject
 
@@ -28,8 +28,9 @@
 @property (nonatomic, retain) NSString * views_count;
 @property (nonatomic, retain) NSSet *comments;
 @property (nonatomic, retain) IMAGES *images;
-@property (nonatomic, retain) USER *user;
 @property (nonatomic, retain) USER *likedby;
+@property (nonatomic, retain) USER *user;
+@property (nonatomic, retain) BUCKETS *buckets;
 @end
 
 @interface SHOTS (CoreDataGeneratedAccessors)

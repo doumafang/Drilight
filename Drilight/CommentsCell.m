@@ -15,7 +15,6 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     
     if (self) {
-        float width = UI_SCREEN_WIDTH;
         
         self.backgroundColor = BG_COLOR;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -31,7 +30,7 @@
         [self addSubview:self.avatarIV];
 
         
-        self.likeB = [[UIButton alloc]initWithFrame:CGRectMake(width - 50,self.avatarIV.frame.origin.y, 20, 20)];
+        self.likeB = [[UIButton alloc]initWithFrame:CGRectMake(SCREENX - 50,self.avatarIV.frame.origin.y, 20, 20)];
         self.likeB.opaque = YES;
         [self.likeB setBackgroundImage:[UIImage imageNamed:@"commentLike_0"] forState:UIControlStateNormal];
         [self.likeB setBackgroundImage:[UIImage imageNamed:@"commentLike_1"] forState:UIControlStateSelected];

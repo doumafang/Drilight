@@ -4,20 +4,21 @@
 #define Drilight_DEFINE_h
 
 //颜色
-#define BG_COLOR [UIColor colorWithRed:235/255.0f green:235/255.0f blue:235/255.0f alpha:1.0];
-#define RGBA(r,g,b,a) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:a/1.0];
+#define BG_COLOR [UIColor colorWithRed:220/255.0f green:220/255.0f blue:220/255.0f alpha:1.0]
+#define RGBA(r,g,b,a) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:a/1.0]
+#define TEXTCOLOR [UIColor colorWithRed:200/255.0 green:200/255.0 blue:200/255.0 alpha:1.0]
+
 
 //屏幕固定高度
 #define UI_NAVIGATION_BAR_HEIGHT        44
 #define UI_STATUS_BAR_HEIGHT            20
 
-#define UI_SCREEN_WIDTH                 [[UIScreen mainScreen] bounds].size.width
-#define UI_SCREEN_HEIGHT                [[UIScreen mainScreen] bounds].size.height
-#define UI_SCREEN_BOUNDS                [[UIScreen mainScreen] bounds]
+#define SCREENX                 [[UIScreen mainScreen] bounds].size.width
+#define SCREENY                [[UIScreen mainScreen] bounds].size.height
 
 
 //DRIBBBLE_API
-#define POPULAR_API  @"https://api.dribbble.com/v1/shots?page=1&per_page=10&access_token="
+#define POPULAR_API  @"https://api.dribbble.com/v1/shots?access_token="
 
 #define CLIENT_ID @"57762c2c3eb608a90fbb385b963e4cf1e34f08dce88c1d24cdbbf9f6fad1d3e8"
 #define CLIENT_SECRET @"46621dde79531416c6ffa128c150b15eff45cf71e11404e41c36b55e829777b2"

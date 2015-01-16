@@ -2,8 +2,8 @@
 //  IMAGES.m
 //  Drilight
 //
-//  Created by doumaaaaaaaa on 14/12/23.
-//  Copyright (c) 2014年 douma. All rights reserved.
+//  Created by doumaaaaaaaa on 15/1/11.
+//  Copyright (c) 2015年 douma. All rights reserved.
 //
 
 #import "IMAGES.h"

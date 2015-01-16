@@ -6,9 +6,10 @@
 #import "DetailVC.h"
 
 #import "DEFINE.h"
+#import "USER.h"
 
 #import "AFNetworking.h"
-
+#import "AppDelegate.h"
 
 @interface SignVC ()<UIWebViewDelegate>
 {
@@ -16,6 +17,8 @@
 
 }
 @property UIImageView *drilight;
+@property AppDelegate *myDelegate;
+
 @end
 
 @implementation SignVC
@@ -43,6 +46,17 @@
     }
 }
 
+-(void)viewWillAppear:(BOOL)animated
+{
+    CABasicAnimation* rotationAnimation;
+    rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 0.8 ];
+    rotationAnimation.duration = 2.0;
+    rotationAnimation.cumulative = YES;
+    rotationAnimation.repeatCount = 10000;
+    [self.drilight.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
+
+}
 - (void)viewDidLoad {
     
     [super viewDidLoad];
@@ -54,6 +68,7 @@
     bg.userInteractionEnabled = YES;
     [bg setImage:[UIImage imageNamed:@"SignBG"]];
     self.view = bg;
+    self.myDelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
 
     
     self.drilight = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"Default"]];
@@ -242,28 +257,102 @@
     NSRange range = [string rangeOfString:@"code="];
 
     if (range.length > 0) {
+        
         NSString *postURlStr = TOKEN_URL;
-        NSString *code = [string substringFromIndex:range.location+5];
+
+        NSString *code = [string substringFromIndex:range.location + 5];
+        
         NSDictionary *kv = @{@"client_id":CLIENT_ID,@"client_secret":CLIENT_SECRET,@"code":code};
+        
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         manager.requestSerializer = [AFJSONRequestSerializer serializer];
         [manager POST:postURlStr parameters:kv success:^(AFHTTPRequestOperation *operation, id responseObject) {
             
             NSDictionary *dic = (NSDictionary * )responseObject;
             
-            [[NSUserDefaults standardUserDefaults]setObject:[dic objectForKey:@"access_token"] forKey:@"access_token"];
+            NSString *access_token = [dic objectForKey:@"access_token"];
+            
+            [[NSUserDefaults standardUserDefaults]setObject:access_token forKey:@"access_token"];
             [[NSUserDefaults standardUserDefaults]synchronize];
+            
+            [self userNerAction:access_token];
             
             [self hideGuide];
             
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {                    }];
-        
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"%@",error);
+        }];
     }
     return YES;
 }
 
+-(void)userNerAction:(NSString *)access_token
+{
+    BACK((^{
+        NSString *str = [[NSString stringWithFormat:@"https://api.dribbble.com/v1/user?access_token=%@",access_token]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        
+        NSURL *url = [NSURL URLWithString:str];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc]initWithRequest:request];
+        operation.responseSerializer = [AFJSONResponseSerializer serializer];
+        
+        [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+            
+            NSDictionary *dic = (NSDictionary *)responseObject;
+            USER *user = EntityObjects(@"USER");
+            
+            user.source = @"self";
+            
+            user.avatar_url = [dic objectForKey:@"avatar_url"];
+            
+            user.name = [dic  objectForKey:@"name"];
+            
+            user.userid = [[dic objectForKey:@"id"]stringValue];
+            
+            user.shots_count = [[dic objectForKey:@"shots_count"]stringValue];
+            user.likes_count = [[dic objectForKey:@"likes_count"]stringValue];
+            user.buckets_count = [[dic objectForKey:@"buckets_count"]stringValue];
+            
+            user.followers_count = [[dic objectForKey:@"followers_count"]stringValue];
+            user.followings_count = [[dic objectForKey:@"followings_count"]stringValue];
+            
+            user.pro = [[dic objectForKey:@"pro"]stringValue];
+            user.bio = [dic objectForKey:@"user"];
+            
+            if ( [[[dic objectForKey:@"links"] objectForKey:@"web"] class] != [NSNull class])
+            {
+                user.web = [[dic objectForKey:@"links"] objectForKey:@"web"];
+            }
+            if ( [[[dic objectForKey:@"links"] objectForKey:@"twitter"] class] != [NSNull class])
+            {
+                user.twitter = [[dic objectForKey:@"links"] objectForKey:@"twitter"];
+            }
+            
+            if ([[dic  objectForKey:@"location"]class] != [NSNull class]) {
+                user.location = [dic  objectForKey:@"location"];
+            }
+            
+            [self douma_save];
+            
+            
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Error:%@ ___ %@",error ,[error userInfo]);
+        }];
+        [operation start];
+        
+    }));
+    
+}
 
-
+-(void)douma_save
+{
+    NSError *error = nil;
+    if (![self.myDelegate.managedObjectContext save:&error])
+    {
+        NSLog(@"Error%@:%@",error,[error userInfo]);
+    }
+    
+}
 
 - (UIWindow *)mainWindow
 {

@@ -1,19 +1,10 @@
-//
-//  UIScrollView+MJRefresh.m
-//  MJRefreshExample
-//
-//  Created by MJ Lee on 14-5-28.
-//  Copyright (c) 2014年 itcast. All rights reserved.
-//
+
 
 #import "UIScrollView+MJRefresh.h"
-#import "MJRefreshHeaderView.h"
-#import "MJRefreshFooterView.h"
-#import <objc/runtime.h>
+
 
 @interface UIScrollView()
-@property (weak, nonatomic) MJRefreshHeaderView *header;
-@property (weak, nonatomic) MJRefreshFooterView *footer;
+
 @end
 
 
@@ -23,6 +14,15 @@
 static char MJRefreshHeaderViewKey;
 static char MJRefreshFooterViewKey;
 
+-(UIImageView *)drilight
+{
+    return self.header.arrowImage;
+}
+
+-(void)setDrilight:(UIImageView *)drilight
+{
+    
+}
 - (void)setHeader:(MJRefreshHeaderView *)header {
     [self willChangeValueForKey:@"MJRefreshHeaderViewKey"];
     objc_setAssociatedObject(self, &MJRefreshHeaderViewKey,
@@ -71,7 +71,6 @@ static char MJRefreshFooterViewKey;
     self.header.beginRefreshingCallback = callback;
     
     // 3.设置存储刷新时间的key
-    self.header.dateKey = dateKey;
 }
 
 /**
@@ -98,8 +97,8 @@ static char MJRefreshFooterViewKey;
     self.header.beginRefreshingTaget = target;
     self.header.beginRefreshingAction = action;
     
+    
     // 3.设置存储刷新时间的key
-    self.header.dateKey = dateKey;
 }
 
 /**
@@ -227,66 +226,4 @@ static char MJRefreshFooterViewKey;
     return self.footer.isRefreshing;
 }
 
-/**
- *  文字
- */
-- (void)setFooterPullToRefreshText:(NSString *)footerPullToRefreshText
-{
-    self.footer.pullToRefreshText = footerPullToRefreshText;
-}
-
-- (NSString *)footerPullToRefreshText
-{
-    return self.footer.pullToRefreshText;
-}
-
-- (void)setFooterReleaseToRefreshText:(NSString *)footerReleaseToRefreshText
-{
-    self.footer.releaseToRefreshText = footerReleaseToRefreshText;
-}
-
-- (NSString *)footerReleaseToRefreshText
-{
-    return self.footer.releaseToRefreshText;
-}
-
-- (void)setFooterRefreshingText:(NSString *)footerRefreshingText
-{
-    self.footer.refreshingText = footerRefreshingText;
-}
-
-- (NSString *)footerRefreshingText
-{
-    return self.footer.refreshingText;
-}
-
-- (void)setHeaderPullToRefreshText:(NSString *)headerPullToRefreshText
-{
-    self.header.pullToRefreshText = headerPullToRefreshText;
-}
-
-- (NSString *)headerPullToRefreshText
-{
-    return self.header.pullToRefreshText;
-}
-
-- (void)setHeaderReleaseToRefreshText:(NSString *)headerReleaseToRefreshText
-{
-    self.header.releaseToRefreshText = headerReleaseToRefreshText;
-}
-
-- (NSString *)headerReleaseToRefreshText
-{
-    return self.header.releaseToRefreshText;
-}
-
-- (void)setHeaderRefreshingText:(NSString *)headerRefreshingText
-{
-    self.header.refreshingText = headerRefreshingText;
-}
-
-- (NSString *)headerRefreshingText
-{
-    return self.header.refreshingText;
-}
 @end

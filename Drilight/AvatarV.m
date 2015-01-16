@@ -18,23 +18,9 @@
         [self addSubview:self.avatarIV];
         
         
-        UIButton *likeV = [[UIButton alloc]init];
-        likeV.frame = CGRectMake(self.frame.size.width - 50,self.avatarIV.frame.origin.y, 20, 20);
-        likeV.opaque = YES;
-        [likeV setBackgroundImage:[UIImage imageNamed:@"commentLike_0"] forState:UIControlStateNormal];
-        [likeV setBackgroundImage:[UIImage imageNamed:@"commentLike_1"] forState:UIControlStateSelected];
-        [self addSubview:likeV];
-        self.likeB = likeV;
     
-        self.likesL = [[UILabel alloc]initWithFrame:CGRectMake(likeV.frame.origin.x+likeV.frame.size.width, likeV.frame.origin.y, 30, 20)];
-        self.likesL.font = [UIFont systemFontOfSize:10];
-        self.likesL.textAlignment = NSTextAlignmentLeft;
-        self.likesL.textColor = RGBA(146, 146, 146, 1);
-        self.likesL.opaque =YES;
-        [self addSubview:self.likesL];
         
-        
-        self.userL = [[UILabel alloc]initWithFrame:CGRectMake((self.avatarIV.frame.origin.x)*1.5+self.avatarIV.frame.size.width,self.avatarIV.frame.origin.y ,self.likeB.frame.origin.x - (self.avatarIV.frame.origin.x)*1.5-self.avatarIV.frame.size.width, 20)];
+        self.userL = [[UILabel alloc]initWithFrame:CGRectMake((self.avatarIV.frame.origin.x)*1.5+self.avatarIV.frame.size.width,self.avatarIV.frame.origin.y ,self.frame.size.width - 50 - (self.avatarIV.frame.origin.x)*1.5-self.avatarIV.frame.size.width, 20)];
         self.userL.textColor = RGBA(224, 24, 87, 1);
         self.userL.textAlignment = NSTextAlignmentLeft;
         self.userL.userInteractionEnabled = YES;

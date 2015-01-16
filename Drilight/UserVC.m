@@ -1,20 +1,32 @@
-
+//difine
 #import "DEFINE.h"
+
+//vc+delegate
 #import "AppDelegate.h"
 #import "UserVC.h"
+#import "DetailVC.h"
+#import "BucketsDetailVC.h"
+
+
+//model
+#import "USER.h"
+#import "BUCKETS.h"
+#import "SHOTS.h"
+#import "IMAGES.h"
+
+//view
+#import "ShotsCell.h"
+#import "FollowCell.h"
+#import "BucketsCell.h"
+
+//frame
+#import "MJRefresh.h"
+#import "HTMLLabel.h"
 #import "GPUImage.h"
 #import "UIImageView+WebCache.h"
 #import "UIImageView+AFNetworking.h"
 #import "AFNetworking.h"
 
-#import "USER.h"
-#import "ShotsCell.h"
-#import "FollowCell.h"
-#import "HTMLLabel.h"
-#import "SHOTS.h"
-#import "IMAGES.h"
-#import "AppDelegate.h"
-#import "MJRefresh.h"
 
 static NSString *shotsFootURL = nil;
 static NSInteger shotsN = 12;
@@ -31,12 +43,10 @@ static NSInteger followersN = 12;
 {
     UIView *_navV;
     
-    UIImageView *_blackIV;
+    UIView *_blackIV;
     UIImageView *_avatarBG;
     UIImageView *_avatarIV;
-    UILabel *_userL;
-    UIView *_mapV;
-
+    
     UIScrollView *_listSV;
     UIScrollView *_mainSV;
     UIScrollView *_bgSV;
@@ -45,11 +55,13 @@ static NSInteger followersN = 12;
     UICollectionView *_likesCV;
     UICollectionView *_followingCV;
     UICollectionView *_followersCV;
+    UICollectionView *_bucketsCV;
 
     NSMutableArray *_shotsChanges;
     NSMutableArray *_likesChanges;
     NSMutableArray *_followingChanges;
     NSMutableArray *_followersChanges;
+    NSMutableArray *_bucketsChanges;
     NSMutableArray *_sectionChanges;
 }
 
@@ -60,9 +72,31 @@ static NSInteger followersN = 12;
 @property (nonatomic)  NSFetchedResultsController *likesFRC;
 @property (nonatomic)  NSFetchedResultsController *followingFRC;
 @property (nonatomic)  NSFetchedResultsController *followersFRC;
+@property (nonatomic)  NSFetchedResultsController *bucketsFRC;
 @end
 
 @implementation UserVC
+
+
+#pragma mark -View
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"touming"] forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setBarStyle:UIBarStyleBlackTranslucent];
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;
+    
+    if ([self.navigationController.navigationBar respondsToSelector:@selector( setBackgroundImage:forBarMetrics:)]){
+        NSArray *list=self.navigationController.navigationBar.subviews;
+        for (id obj in list) {
+            if ([obj isKindOfClass:[UIImageView class]]) {
+                UIImageView *imageView=(UIImageView *)obj;
+                imageView.hidden = YES;
+            }
+        }
+    }
+    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+}
 
 - (void)viewDidLoad {
     
@@ -71,16 +105,16 @@ static NSInteger followersN = 12;
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.view.backgroundColor = BG_COLOR;
     
-    [self setNavigationBar];
-    
     self.access_token = [[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"];
     self.myDelegate = [[UIApplication sharedApplication]delegate];
-    NSError *objectError= nil;
     
+    NSError *objectError= nil;
     NSManagedObject *userObject = [self.myDelegate.managedObjectContext existingObjectWithID:self.userObjectID error:&objectError];
     self.user = (USER *)userObject;
     
-    
+    [self setNavigationBar];
+    float viewX = self.view.frame.size.width;
+
     UIScrollView *bgSV = [[UIScrollView alloc]initWithFrame:self.view.frame];
     bgSV.backgroundColor = BG_COLOR;
     bgSV.delegate = self;
@@ -90,25 +124,19 @@ static NSInteger followersN = 12;
     bgSV.showsVerticalScrollIndicator = NO;
     [self.view addSubview:bgSV];
     _bgSV = bgSV;
+    
 
     
-    UIView *navV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64)];
-    navV.backgroundColor = RGBA(50, 50, 50, 0);
-    [self.view addSubview:navV];
-    _navV = navV;
-    
-    
-    UIImageView *avatarBG = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.width*25/32)];
+    UIImageView *avatarBG = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, viewX, viewX )];
     avatarBG.userInteractionEnabled = YES;
     [bgSV addSubview:avatarBG];
     _avatarBG = avatarBG;
 
-    float viewX = self.view.frame.size.width;
     
     NSURL *avatar_url = [NSURL URLWithString:self.user.avatar_url];
+    
     UIImageView *avatarIV = [[UIImageView alloc ]init];
     [avatarIV sd_setImageWithURL:avatar_url];
-
     avatarIV.frame = CGRectMake(viewX * 3/8, viewX/4-10, viewX/4, viewX/4);
     avatarIV.layer.masksToBounds = YES;
     avatarIV.layer.cornerRadius = viewX/8;
@@ -116,9 +144,6 @@ static NSInteger followersN = 12;
     avatarIV.layer.borderWidth = 2.0f;
     _avatarIV = avatarIV;
 
-    
-
-   
     if (avatarIV.image) {
         BACK(^{
             GPUImageGaussianBlurFilter *mainViewImageFilter = [[GPUImageGaussianBlurFilter alloc]init];
@@ -131,70 +156,27 @@ static NSInteger followersN = 12;
         });
     }
     
-    
-    UIImageView *blackIV = [[UIImageView alloc]initWithFrame:avatarBG.frame];
-    blackIV.image = [UIImage imageNamed:@"backBlack"];
+    UIView *blackIV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, viewX, viewX * 20/32)];
+    blackIV.backgroundColor = RGBA(150, 150, 150, 0.4);
     blackIV.userInteractionEnabled = YES;
     [avatarBG addSubview:blackIV];
     _blackIV = blackIV;
     [blackIV addSubview:avatarIV];
 
-    
-    
-    UILabel *userL = [[UILabel alloc]initWithFrame:CGRectMake(0, avatarIV.frame.size.height+avatarIV.frame.origin.y, viewX, 40)];
-    userL.text = self.user.name;
-    userL.font = [UIFont fontWithName:@"Nexa Bold" size:15];
-    userL.textColor = [UIColor whiteColor];
-    userL.textAlignment = NSTextAlignmentCenter;
 
-
-    [blackIV addSubview:userL];
-    _userL = userL;
+   
     
-    
-    
-    UIFont *font = [UIFont fontWithName:@"Nexa Bold" size:12];
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
-    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
-    NSDictionary *attributes = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:paragraphStyle.copy};
-    
-    CGSize size = [self.user.location boundingRectWithSize:CGSizeMake(viewX, 20) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
-    
-    float mapX = size.width + 18;
-    
-    UILabel *mapL = [[UILabel alloc]initWithFrame:CGRectMake(viewX/2 - mapX/2+18, 15-size.height/2, size.width, size.height)];
-    mapL.textColor = [UIColor whiteColor];
-    mapL.font = font;
-    mapL.text = self.user.location;
-    mapL.textAlignment = NSTextAlignmentCenter;
-    
-
-    UIImageView *mapI = [[UIImageView alloc]initWithFrame:CGRectMake(mapL.frame.origin.x - 18, 4, 18, 18)];
-    mapI.image = [UIImage imageNamed:@"map"];
-
-
-    
-    
-    UIView *lineL = [[UIView alloc]initWithFrame:CGRectMake(0, 29, viewX, 0.25)];
-    lineL.backgroundColor = [UIColor whiteColor];
-    
-    
-    
-    UIView *mapV = [[UIView alloc]initWithFrame:CGRectMake(0, 30 + userL.frame.origin.y, viewX, 30)];
-    mapV.userInteractionEnabled = YES;
-    [blackIV addSubview:mapV];
-    [mapV addSubview:mapI];
-    [mapV addSubview:mapL];
-    [mapV addSubview:lineL];
-    _mapV = mapV;
-    
-    NSArray *listArray = [[NSArray alloc]initWithObjects:@"shots",@"likes",@"buckets",@"following",@"followers",@"about",nil];
-    UIScrollView * listSV = [[UIScrollView alloc] initWithFrame:CGRectMake(0, mapV.frame.size.height+mapV.frame.origin.y, viewX, avatarBG.frame.size.height-mapV.frame.origin.y-mapV.frame.size.height)];
+    NSArray *listArray = [[NSArray alloc]initWithObjects:@"shots",@"likes",@"following",@"followers",@"about",nil];
+    UIScrollView * listSV = [[UIScrollView alloc] initWithFrame:CGRectMake(0, avatarIV.frame.size.height+avatarIV.frame.origin.y + 15  , viewX, viewX/9)];
     [listSV setShowsHorizontalScrollIndicator:NO];
     listSV.userInteractionEnabled = YES;
-
     listSV.scrollEnabled = YES;
-    [blackIV insertSubview:listSV atIndex:0];
+    
+    UIView *lineL = [[UIView alloc]initWithFrame:CGRectMake(-200,0, 1000, 0.5)];
+    lineL.backgroundColor = [UIColor whiteColor];
+    lineL.opaque = YES;
+    [listSV addSubview:lineL];
+    [blackIV addSubview:listSV];
     _listSV = listSV;
     
     float sum = 20;
@@ -225,10 +207,9 @@ static NSInteger followersN = 12;
         {
             [self changeColorForButton:listB percent:0];
         }
-        
         [listSV addSubview:listB];
     }
-    [listSV setContentSize:CGSizeMake(sum, avatarBG.frame.size.height-mapV.frame.origin.y-mapV.frame.size.height)];
+    [listSV setContentSize:CGSizeMake(sum, viewX/9)];
 
     UIScrollView *mainSV = [[UIScrollView alloc]initWithFrame:CGRectMake(0,blackIV.frame.size.height, self.view.frame.size.width,self.view.frame.size.height-64)];
     mainSV.delegate = self;
@@ -244,12 +225,414 @@ static NSInteger followersN = 12;
     bgSV.contentSize = CGSizeMake(self.view.frame.size.width, blackIV.frame.size.height+mainSV.frame.size.height);
 
     [self shotsNetAction];
-    [self likesNetAction];
-    [self followingNetAction];
-    [self followersNetAction];
+
+    [self addNav];
+
+    [bgSV addHeaderWithTarget:self action:@selector(test)];
+    bgSV.header.frame = CGRectMake(0, 20, viewX, 50);
+    bgSV.drilight.bounds = CGRectMake(0, 0, 0, 0);
+    
+    
 }
 
-#pragma mark - NetworkAction
+-(void)test
+{
+    [self performSelector:@selector(test1) withObject:self afterDelay:1.0f];
+}
+-(void)test1
+{
+    [_bgSV headerEndRefreshing];
+
+}
+#pragma mark -
+#pragma mark InitFiveViews
+
+- (void)addView2Page:(UIScrollView *)scrollV count:(NSUInteger)pageCount
+{
+    for (int i = 1; i <= pageCount; i++)
+    {
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(scrollV.frame.size.width * (i-1), 0, scrollV.frame.size.width, scrollV.frame.size.height)];
+        view.tag = i;
+        view.userInteractionEnabled = YES;
+        [self initPageView:view];
+        [scrollV addSubview:view];
+    }
+    [scrollV setContentSize:CGSizeMake(scrollV.frame.size.width * pageCount, scrollV.frame.size.height)];
+}
+
+-(void) initPageView:(UIView *)view
+{
+    float viewX = view.frame.size.width;
+    
+    switch (view.tag) {
+        case 1:
+        {
+            
+            UICollectionViewFlowLayout *shotsCVFL = [[UICollectionViewFlowLayout alloc]init];
+            shotsCVFL.itemSize = CGSizeMake((SCREENX/2)-10, (SCREENX/2)-10);
+            shotsCVFL.sectionInset = UIEdgeInsetsMake(10, 6, 5, 6);
+            shotsCVFL.minimumInteritemSpacing = 0;
+            
+            static NSString *shotsCellRI = @"shotsCellRI";
+            UICollectionView *shotsCV = [[UICollectionView alloc]initWithFrame:view.frame collectionViewLayout:shotsCVFL];
+            shotsCV.backgroundColor = BG_COLOR;
+            shotsCV.contentInset = UIEdgeInsetsMake(30, 0, 0, 0);
+            shotsCV.delegate = self;
+            shotsCV.dataSource = self;
+            shotsCV.scrollEnabled = NO;
+            [shotsCV addFooterWithTarget:self action:@selector(shotsFootAction)];
+            [shotsCV registerClass:[ShotsCell class] forCellWithReuseIdentifier:shotsCellRI];
+            _shotsCV = shotsCV;
+            
+            
+            
+            UIImageView *headerV = [[UIImageView alloc]initWithFrame:CGRectMake(20, -20, 20, 20)];
+            headerV.image = [UIImage imageNamed:@"shotsTag"];
+            [shotsCV addSubview:headerV];
+            
+            UILabel *headerL = [[UILabel alloc]initWithFrame:CGRectMake(50, -25, view.frame.size.width, 30)];
+            headerL.text =[NSString stringWithFormat:@"%@ shots",self.user.shots_count];
+            headerL .textColor = RGBA(146, 146, 146, 1);
+            headerL .textAlignment = NSTextAlignmentLeft;
+            headerL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
+            [shotsCV addSubview:headerL ];
+            
+            
+            UIImageView *noShotsV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_shots"]];
+            noShotsV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
+            
+            
+            UILabel *noShotsL = [[UILabel alloc]initWithFrame:CGRectMake(0, noShotsV.frame.size.height+noShotsV.frame.origin.y-30, viewX, 40)];
+            noShotsL.text = @"no shots";
+            noShotsL.textAlignment = NSTextAlignmentCenter;
+            noShotsL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
+            noShotsL.textColor = RGBA(146, 146, 146, 1);
+            
+            
+            
+            if (![self.user.shots_count isEqualToString:@"0"]) {
+                [view addSubview:shotsCV];
+            }
+            else
+            {
+                [view addSubview:noShotsV];
+                [view addSubview:noShotsL];
+            }
+            
+            
+            
+            
+        }
+            break;
+        case 2:
+        {
+            UICollectionViewFlowLayout *likesCFL = [[UICollectionViewFlowLayout alloc]init];
+            likesCFL.itemSize = CGSizeMake((SCREENX/2)-10, (SCREENX/2)-10);
+            likesCFL.sectionInset = UIEdgeInsetsMake(10, 6, 5, 6);
+            likesCFL.minimumInteritemSpacing = 0;
+            
+            static NSString *likesCellRI = @"likesCellRI";
+            UICollectionView *likesCV = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height) collectionViewLayout:likesCFL];
+            likesCV.backgroundColor = BG_COLOR;
+            likesCV.contentInset = UIEdgeInsetsMake(30, 0, 0, 0);
+            likesCV.delegate = self;
+            likesCV.dataSource = self;
+            likesCV.scrollEnabled = NO;
+            [likesCV addFooterWithTarget:self action:@selector(likesFootAction)];
+            [likesCV registerClass:[ShotsCell class] forCellWithReuseIdentifier:likesCellRI];
+            _likesCV = likesCV;
+            
+            
+            UIImageView *headerV = [[UIImageView alloc]initWithFrame:CGRectMake(20, -20, 20, 20)];
+            headerV.image = [UIImage imageNamed:@"likesTag"];
+            [likesCV addSubview:headerV];
+            
+            UILabel *headerL = [[UILabel alloc]initWithFrame:CGRectMake(50, -25, view.frame.size.width, 30)];
+            headerL.text =[NSString stringWithFormat:@"%@ likes",self.user.likes_count];
+            headerL .textColor = RGBA(146, 146, 146, 1);
+            headerL .textAlignment = NSTextAlignmentLeft;
+            headerL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
+            [likesCV addSubview:headerL ];
+            
+            UIImageView *noLikesV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_likes"]];
+            noLikesV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
+            
+            
+            UILabel *noLikesL = [[UILabel alloc]initWithFrame:CGRectMake(0, noLikesV.frame.size.height+noLikesV.frame.origin.y-30, viewX, 40)];
+            noLikesL.text = @"no likes";
+            noLikesL.textAlignment = NSTextAlignmentCenter;
+            noLikesL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
+            noLikesL.textColor = RGBA(146, 146, 146, 1);
+            
+            
+            if (![self.user.likes_count isEqualToString:@"0"]) {
+                [view addSubview:likesCV];
+            }
+            else
+            {
+                [view addSubview:noLikesV];
+                [view addSubview:noLikesL];
+            }
+            
+            
+        }
+            break;
+
+        case 3:
+        {
+            UICollectionViewFlowLayout *followingVFL = [[UICollectionViewFlowLayout alloc]init];
+            followingVFL.itemSize = CGSizeMake(SCREENX-12, SCREENX*5/32);
+            followingVFL.sectionInset = UIEdgeInsetsMake(10, 6, 5, 6);
+            followingVFL.minimumInteritemSpacing = 0;
+            
+            static NSString *followingCellRI = @"followingCellRI";
+            UICollectionView *followingCV = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height) collectionViewLayout:followingVFL];
+            followingCV.backgroundColor = BG_COLOR;
+            followingCV.contentInset = UIEdgeInsetsMake(30, 0, 0, 0);
+            followingCV.delegate = self;
+            followingCV.dataSource = self;
+            followingCV.scrollEnabled = NO;
+            [followingCV addFooterWithTarget:self action:@selector(followingFootAction)];
+            [followingCV registerClass:[FollowCell class] forCellWithReuseIdentifier:followingCellRI];
+            _followingCV = followingCV;
+            
+            
+            UIImageView *headerV = [[UIImageView alloc]initWithFrame:CGRectMake(20, -20, 20, 20)];
+            headerV.image = [UIImage imageNamed:@"usersTag"];
+            [followingCV addSubview:headerV];
+            
+            UILabel *headerL = [[UILabel alloc]initWithFrame:CGRectMake(50, -25, view.frame.size.width, 30)];
+            headerL.text =[NSString stringWithFormat:@"%@ following",self.user.followings_count];
+            headerL .textColor = RGBA(146, 146, 146, 1);
+            headerL .textAlignment = NSTextAlignmentLeft;
+            headerL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
+            [followingCV addSubview:headerL ];
+            
+            
+            
+            
+            
+            UIImageView *noFollowingV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_following"]];
+            noFollowingV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
+            
+            
+            UILabel *noFollowingL = [[UILabel alloc]initWithFrame:CGRectMake(0, noFollowingV.frame.size.height+noFollowingV.frame.origin.y-30, viewX, 40)];
+            noFollowingL.text = @"no following";
+            noFollowingL.textAlignment = NSTextAlignmentCenter;
+            noFollowingL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
+            noFollowingL.textColor = RGBA(146, 146, 146, 1);
+            
+            
+            if (![self.user.followings_count isEqualToString:@"0"]) {
+                [view addSubview:followingCV];
+            }
+            else
+            {
+                [view addSubview:noFollowingV];
+                [view addSubview:noFollowingL];
+            }
+            
+            
+        }
+            break;
+        case 4:
+        {
+            UICollectionViewFlowLayout *followersVFL = [[UICollectionViewFlowLayout alloc]init];
+            followersVFL.itemSize = CGSizeMake(SCREENX-12, SCREENX*5/32);
+            followersVFL.sectionInset = UIEdgeInsetsMake(10, 6, 5, 6);
+            followersVFL.minimumInteritemSpacing = 0;
+            
+            static NSString *followersCellRI = @"followersCellRI";
+            UICollectionView *followersCV = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height) collectionViewLayout:followersVFL];
+            followersCV.backgroundColor = BG_COLOR;
+            followersCV.contentInset = UIEdgeInsetsMake(30, 0, 0, 0);
+            followersCV.delegate = self;
+            followersCV.dataSource = self;
+            followersCV.scrollEnabled = NO;
+            [followersCV addFooterWithTarget:self action:@selector(followersFootAction)];
+            [followersCV registerClass:[FollowCell class] forCellWithReuseIdentifier:followersCellRI];
+            _followersCV = followersCV;
+            
+            
+            UIImageView *headerV = [[UIImageView alloc]initWithFrame:CGRectMake(20, -20, 20, 20)];
+            headerV.image = [UIImage imageNamed:@"usersTag"];
+            [followersCV addSubview:headerV];
+            
+            UILabel *headerL = [[UILabel alloc]initWithFrame:CGRectMake(50, -25, view.frame.size.width, 30)];
+            headerL.text =[NSString stringWithFormat:@"%@ followers",self.user.followers_count];
+            headerL .textColor = RGBA(146, 146, 146, 1);
+            headerL .textAlignment = NSTextAlignmentLeft;
+            headerL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
+            [followersCV addSubview:headerL ];
+            
+            UIImageView *noFollowersV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_following"]];
+            noFollowersV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
+            
+            
+            UILabel *noFollowersL = [[UILabel alloc]initWithFrame:CGRectMake(0, noFollowersV.frame.size.height+noFollowersV.frame.origin.y-30, viewX, 40)];
+            noFollowersL.text = @"no followers";
+            noFollowersL.textAlignment = NSTextAlignmentCenter;
+            noFollowersL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
+            noFollowersL.textColor = RGBA(146, 146, 146, 1);
+            
+            
+            if (![self.user.followers_count isEqualToString:@"0"]) {
+                [view addSubview:followersCV];
+            }
+            else
+            {
+                [view addSubview:noFollowersV];
+                [view addSubview:noFollowersL];
+            }
+            
+        }
+            break;
+        case 5:
+        {
+            NSString *bioText = nil;
+            
+            if (self.user.bio == nil) {
+                bioText = self.user.bio;
+            }
+            else
+            {
+                bioText = [NSString stringWithFormat:@"%@ said nothing.",self.user.name];
+            }
+            
+            
+            UIFont *font = [UIFont fontWithName:@"Nexa Bold" size:14];
+            NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+            paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+            NSDictionary *attributes = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:paragraphStyle.copy};
+            CGSize size = [bioText boundingRectWithSize:CGSizeMake(viewX - 52, 10000) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
+            
+            
+            
+            UIImageView *mapV = [[UIImageView alloc]initWithFrame:CGRectMake(10, 5, 30, 30)];
+            mapV.image = [UIImage imageNamed:@"mapTag"];
+            [view addSubview:mapV];
+            
+
+            UILabel *mapL = [[UILabel alloc]initWithFrame:CGRectMake(40, 10, view.frame.size.width, 20)];
+            mapL.text = self.user.location;
+            mapL .textColor = RGBA(146, 146, 146, 1);
+            mapL .textAlignment = NSTextAlignmentLeft;
+            mapL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
+            [view addSubview:mapL ];
+            
+            
+            UIView *bioView = [[UIView alloc]initWithFrame:CGRectMake(6, 40, viewX - 12, size.height + 30)];
+            bioView.backgroundColor = [UIColor whiteColor];
+            bioView.clipsToBounds = YES;
+            bioView.layer.masksToBounds = YES;
+            bioView.layer.cornerRadius = 2.0f;
+            [view addSubview:bioView];
+            
+            
+            HTMLLabel *bioL = [[HTMLLabel alloc]initWithFrame:CGRectMake(20, 15, bioView.frame.size.width - 40, size.height)];
+            bioL.font = font;
+            bioL.textColor = [UIColor grayColor];
+            bioL.text = bioText;
+            bioL.textAlignment = NSTextAlignmentLeft;
+            bioL.numberOfLines = 0;
+            [bioView addSubview:bioL];
+            
+            
+            
+            UICollectionViewFlowLayout *bucketsVFL = [[UICollectionViewFlowLayout alloc]init];
+            bucketsVFL.itemSize = CGSizeMake(((viewX-20)/2)-2, ((viewX-20)/2)-4+42);
+            bucketsVFL.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
+            bucketsVFL.minimumInteritemSpacing = 0;
+            
+            static NSString *bucketsRI = @"bucketsCellRI";
+            UICollectionView *bucketsCV = [[UICollectionView alloc]initWithFrame:CGRectMake(6, bioView.frame.size.height + bioView.frame.origin.y + MIN([self.user.buckets_count integerValue], 1)*12 , viewX-12, MIN([self.user.buckets_count integerValue], 1) * (((viewX-20)/2)-4+70)) collectionViewLayout:bucketsVFL];
+            bucketsCV.backgroundColor = BG_COLOR;
+            bucketsCV.contentInset = UIEdgeInsetsMake(30, 0, 0, 0);
+            bucketsCV.delegate = self;
+            bucketsCV.dataSource = self;
+            bucketsCV.scrollEnabled = NO;
+            [bucketsCV addFooterWithTarget:self action:nil];
+            [bucketsCV registerClass:[BucketsCell class] forCellWithReuseIdentifier:bucketsRI];
+            _bucketsCV = bucketsCV;
+            [view addSubview:bucketsCV];
+            
+            UIImageView *headerV = [[UIImageView alloc]initWithFrame:CGRectMake(4, -25 , 30, MIN([self.user.buckets_count integerValue], 1)*30)];
+            headerV.image = [UIImage imageNamed:@"bucketsTag"];
+            [bucketsCV addSubview:headerV];
+            
+            
+            UILabel *headerL = [[UILabel alloc]initWithFrame:CGRectMake(34, -25, view.frame.size.width, MIN([self.user.buckets_count integerValue], 1)*30)];
+            headerL.text =[NSString stringWithFormat:@"%@ buckets",self.user.buckets_count];
+            headerL .textColor = RGBA(146, 146, 146, 1);
+            headerL .textAlignment = NSTextAlignmentLeft;
+            headerL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
+            [bucketsCV addSubview:headerL ];
+            
+            
+            UIButton *seeAllB = [[UIButton alloc]initWithFrame:CGRectMake(bucketsCV.frame.size.width+bucketsCV.frame.origin.x-60, headerL.frame.origin.y+5, 50, MIN([self.user.buckets_count integerValue], 1)*18)];
+            seeAllB.backgroundColor = [UIColor whiteColor];
+            seeAllB.layer.masksToBounds = YES;
+            seeAllB.layer.cornerRadius = 2;
+            seeAllB.titleLabel.textAlignment = NSTextAlignmentCenter;
+            seeAllB.titleLabel.adjustsFontSizeToFitWidth = YES;
+            [seeAllB setTitle:@"See all" forState:UIControlStateNormal];
+            [seeAllB setTitleColor:headerL.textColor forState:UIControlStateNormal];
+            seeAllB.titleLabel.font = [UIFont fontWithName:@"Nexa Bold" size:11];
+            [bucketsCV addSubview:seeAllB];
+            
+            
+            
+            UIView *twitterV = [[UIView alloc]initWithFrame:CGRectMake(6, bucketsCV.frame.origin.y + bucketsCV.frame.size.height + 20, viewX - 12, MIN(self.user.twitter.length, 1) * 50)];
+            twitterV.backgroundColor = [UIColor whiteColor];
+            twitterV.userInteractionEnabled = YES;
+            twitterV.clipsToBounds = YES;
+            [view addSubview:twitterV];
+            
+            
+            
+            UILabel *twitterL = [[UILabel alloc]initWithFrame:CGRectMake(25, 15, twitterV.frame.size.width, 20)];
+            twitterL.font = [UIFont fontWithName:@"Nexa Bold" size:12];
+            twitterL.textColor = [UIColor grayColor];
+            twitterL.textAlignment = NSTextAlignmentLeft;
+            twitterL.text = self.user.twitter;
+            [twitterV addSubview:twitterL];
+            
+            
+            
+            UIImageView *twitterView  = [[UIImageView alloc]initWithFrame:CGRectMake(twitterV.frame.size.width - 50, 10, 30, 30)];
+            twitterView.image = [UIImage imageNamed:@"twitter"];
+            twitterView.userInteractionEnabled = YES;
+            [twitterV addSubview:twitterView];
+            
+            
+            
+            UIView *webV = [[UIView alloc]initWithFrame:CGRectMake(6, twitterV.frame.size.height + twitterV.frame.origin.y + 2, twitterV.frame.size.width, MIN(self.user.web.length, 1) * 50)];
+            webV.userInteractionEnabled = YES;
+            webV.backgroundColor = [UIColor whiteColor];
+            webV.clipsToBounds = YES;
+            [view addSubview:webV];
+            
+            
+            UILabel *webL = [[UILabel alloc]initWithFrame:CGRectMake(25, 15, webV.frame.size.width, 20)];
+            webL.font = [UIFont fontWithName:@"Nexa Bold" size:12];
+            webL.textColor = [UIColor grayColor];
+            webL.textAlignment = NSTextAlignmentLeft;
+            webL.text = self.user.web;
+            [webV addSubview:webL];
+            
+            UIImageView *webView  = [[UIImageView alloc]initWithFrame:CGRectMake(webV.frame.size.width - 50, 10, 30, 30)];
+            webView.image = [UIImage imageNamed:@"web"];
+            webView.userInteractionEnabled = YES;
+            [webV addSubview:webView];
+            
+        }
+            break;
+    }
+    
+    
+}
+
+#pragma mark - NetAction
 
 -(void)shotsNetAction
 {
@@ -268,16 +651,13 @@ static NSInteger followersN = 12;
                 }
                 NSArray *array = (NSArray *)responseObject;
                 NSInteger x = 0;
-                
-                
-                
+            
                 NSRange footrange = [[[operation.response allHeaderFields]valueForKey:@"Link"] rangeOfString:@">"];
                 
                 NSString *footstr = [[[[operation.response allHeaderFields]valueForKey:@"Link"] substringFromIndex:1]
                                      substringToIndex:footrange.location-1];
                 shotsFootURL = footstr;
 
-                
                 for (NSDictionary *dic in array) {
                     SHOTS *object = EntityObjects(@"SHOTS");
                     object.shotsid = [[dic objectForKey:@"id"] stringValue];
@@ -336,7 +716,7 @@ static NSInteger followersN = 12;
              NSString *footstr = [[[[operation.response allHeaderFields]valueForKey:@"Link"] substringFromIndex:1]
                                   substringToIndex:footrange.location-1];
              likesFootURL = footstr;
-
+             
              
              
              NSString *lastModified = [[operation.response allHeaderFields]objectForKey:@"Last-Modified"];
@@ -345,6 +725,7 @@ static NSInteger followersN = 12;
                      [self.user removeLikes:self.user.likes];
                  }
                  NSArray *array = (NSArray *)responseObject;
+                 
                  NSInteger x = 0;
                  
                  for (NSDictionary *dic in array) {
@@ -574,352 +955,107 @@ static NSInteger followersN = 12;
     }));
 }
 
-
-
-
-
-
-- (void)addView2Page:(UIScrollView *)scrollV count:(NSUInteger)pageCount
+-(void)getBuckets
 {
-    for (int i = 1; i <= pageCount; i++)
-    {
-        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(scrollV.frame.size.width * (i-1), 0, scrollV.frame.size.width, scrollV.frame.size.height)];
-        view.tag = i;
-        view.userInteractionEnabled = YES;
-        [self initPageView:view];
-        [scrollV addSubview:view];
-    }
-    [scrollV setContentSize:CGSizeMake(scrollV.frame.size.width * pageCount, scrollV.frame.size.height)];
+    BACK((^{
+        NSString *str = [NSString stringWithFormat:@"https://api.dribbble.com/v1/users/%@/buckets?access_token=%@&per_page=2",self.user.userid,self.access_token];
+        NSURL *url = [NSURL URLWithString:[str stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc]initWithRequest:request];
+        operation.responseSerializer = [AFJSONResponseSerializer serializer];
+        [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSArray *array = (NSArray *)responseObject;
+            for (NSDictionary *dic in array) {
+                BUCKETS *buckets = EntityObjects(@"BUCKETS");
+                buckets.user = self.user;
+                if ([[dic objectForKey:@"description"]class] != [NSNull class]) {
+                    buckets.bucketdescription = [dic objectForKey:@"description"];
+                }
+                buckets.bucketID = [[dic objectForKey:@"id"]stringValue];
+                buckets.name = [dic objectForKey:@"name"];
+                buckets.shots_count = [[dic objectForKey:@"shots_count"]stringValue];
+                
+                [self douma_save];
+                [self bucketsShots:buckets];
+            }
+            
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            
+        }];
+        [operation start];
+        
+    }));
+
 }
 
--(void) initPageView:(UIView *)view
+-(void)bucketsShots:(BUCKETS *)buckets
 {
-    float viewX = view.frame.size.width;
-
-    switch (view.tag) {
-        case 1:
-        {
-            
-            UICollectionViewFlowLayout *shotsCVFL = [[UICollectionViewFlowLayout alloc]init];
-            shotsCVFL.itemSize = CGSizeMake((UI_SCREEN_WIDTH/2)-10, (UI_SCREEN_WIDTH/2)-10);
-            shotsCVFL.sectionInset = UIEdgeInsetsMake(10, 6, 5, 6);
-            shotsCVFL.minimumInteritemSpacing = 0;
-            
-            static NSString *shotsCellRI = @"shotsCellRI";
-            UICollectionView *shotsCV = [[UICollectionView alloc]initWithFrame:view.frame collectionViewLayout:shotsCVFL];
-            shotsCV.backgroundColor = BG_COLOR;
-            shotsCV.contentInset = UIEdgeInsetsMake(30, 0, 0, 0);
-            shotsCV.delegate = self;
-            shotsCV.dataSource = self;
-            shotsCV.scrollEnabled = NO;
-            [shotsCV addFooterWithTarget:self action:@selector(shotsFootAction)];
-            [shotsCV registerClass:[ShotsCell class] forCellWithReuseIdentifier:shotsCellRI];
-            _shotsCV = shotsCV;
-            
-            
-            
-            UIImageView *headerV = [[UIImageView alloc]initWithFrame:CGRectMake(20, -20, 20, 20)];
-            headerV.image = [UIImage imageNamed:@"shotsTag"];
-            [shotsCV addSubview:headerV];
-
-            UILabel *headerL = [[UILabel alloc]initWithFrame:CGRectMake(50, -25, view.frame.size.width, 30)];
-            headerL.text =[NSString stringWithFormat:@"%@ shots",self.user.shots_count];
-            headerL .textColor = RGBA(146, 146, 146, 1);
-            headerL .textAlignment = NSTextAlignmentLeft;
-            headerL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
-            [shotsCV addSubview:headerL ];
-            
-            
-            UIImageView *noShotsV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_shots"]];
-            noShotsV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
-
-
-            UILabel *noShotsL = [[UILabel alloc]initWithFrame:CGRectMake(0, noShotsV.frame.size.height+noShotsV.frame.origin.y-30, viewX, 40)];
-            noShotsL.text = @"no shots";
-            noShotsL.textAlignment = NSTextAlignmentCenter;
-            noShotsL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
-            noShotsL.textColor = RGBA(146, 146, 146, 1);
-            
-            
-
-            if (![self.user.shots_count isEqualToString:@"0"]) {
-                [view addSubview:shotsCV];
-            }
-            else
-            {
-                [view addSubview:noShotsV];
-                [view addSubview:noShotsL];
-            }
-         
-            
-            
-            
-        }
-            break;
-        case 2:
-        {
-            UICollectionViewFlowLayout *likesCFL = [[UICollectionViewFlowLayout alloc]init];
-            likesCFL.itemSize = CGSizeMake((UI_SCREEN_WIDTH/2)-10, (UI_SCREEN_WIDTH/2)-10);
-            likesCFL.sectionInset = UIEdgeInsetsMake(10, 6, 5, 6);
-            likesCFL.minimumInteritemSpacing = 0;
-            
-            static NSString *likesCellRI = @"likesCellRI";
-            UICollectionView *likesCV = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height) collectionViewLayout:likesCFL];
-            likesCV.backgroundColor = BG_COLOR;
-            likesCV.contentInset = UIEdgeInsetsMake(30, 0, 0, 0);
-            likesCV.delegate = self;
-            likesCV.dataSource = self;
-            likesCV.scrollEnabled = NO;
-            [likesCV addFooterWithTarget:self action:@selector(likesFootAction)];
-            [likesCV registerClass:[ShotsCell class] forCellWithReuseIdentifier:likesCellRI];
-            _likesCV = likesCV;
-            
-            
-            UIImageView *headerV = [[UIImageView alloc]initWithFrame:CGRectMake(20, -20, 20, 20)];
-            headerV.image = [UIImage imageNamed:@"likesTag"];
-            [likesCV addSubview:headerV];
-            
-            UILabel *headerL = [[UILabel alloc]initWithFrame:CGRectMake(50, -25, view.frame.size.width, 30)];
-            headerL.text =[NSString stringWithFormat:@"%@ likes",self.user.likes_count];
-            headerL .textColor = RGBA(146, 146, 146, 1);
-            headerL .textAlignment = NSTextAlignmentLeft;
-            headerL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
-            [likesCV addSubview:headerL ];
-            
-            UIImageView *noLikesV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_likes"]];
-            noLikesV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
-            
-            
-            UILabel *noLikesL = [[UILabel alloc]initWithFrame:CGRectMake(0, noLikesV.frame.size.height+noLikesV.frame.origin.y-30, viewX, 40)];
-            noLikesL.text = @"no likes";
-            noLikesL.textAlignment = NSTextAlignmentCenter;
-            noLikesL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
-            noLikesL.textColor = RGBA(146, 146, 146, 1);
-
-            
-            if (![self.user.likes_count isEqualToString:@"0"]) {
-                [view addSubview:likesCV];
-            }
-            else
-            {
-                [view addSubview:noLikesV];
-                [view addSubview:noLikesL];
-            }
-            
-
-        }
-            break;
-        case 3:
-        {
-            
-            UIImageView *noBucketsV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_buckets"]];
-            noBucketsV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
-            
-            
-            UILabel *noBucketsL = [[UILabel alloc]initWithFrame:CGRectMake(0, noBucketsV.frame.size.height+noBucketsV.frame.origin.y-30, viewX, 40)];
-            noBucketsL.text = @"no buckets";
-            noBucketsL.textAlignment = NSTextAlignmentCenter;
-            noBucketsL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
-            noBucketsL.textColor = RGBA(146, 146, 146, 1);
-
-            if (![self.user.buckets_count isEqualToString:@"0"]) {
+    BACK((^{
+        NSString *str = [NSString stringWithFormat:@"https://api.dribbble.com/v1/buckets/%@/shots?access_token=%@",buckets.bucketID,self.access_token];
+        NSURL *url = [NSURL URLWithString:[str stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc]initWithRequest:request];
+        operation.responseSerializer = [AFJSONResponseSerializer serializer];
+        [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSArray *array = (NSArray *)responseObject;
+            NSInteger x = 0;
+            for (NSDictionary *dic  in array) {
+                SHOTS *object = EntityObjects(@"SHOTS");
+                NSDictionary *shotDic = dic;
+                object.shotsid = [[shotDic objectForKey:@"id"] stringValue];
+                
+                if ([[shotDic objectForKey:@"description"]class] != [NSNull class]) {
+                    object.shot_description = [shotDic objectForKey:@"description"];
+                }
+                object.title = [shotDic objectForKey:@"title"];
+                object.likes_count = [[shotDic objectForKey:@"likes_count"]stringValue];
+                object.comments_count = [[shotDic objectForKey:@"comments_count"]stringValue];
+                object.views_count = [[shotDic objectForKey:@"views_count"]stringValue];
+                object.attachments_count = [[shotDic objectForKey:@"attachments_count"]stringValue];
+                object.created_at = [shotDic objectForKey:@"created_at"];
+                object.i = [NSNumber numberWithInteger:x];
+                object.buckets = buckets;
+                
+                USER *user = EntityObjects(@"USER");
+                object.user = user;
+                
+                user.avatar_url = [[shotDic objectForKey:@"user"]objectForKey:@"avatar_url"];
+                user.name = [[shotDic objectForKey:@"user"]objectForKey:@"name"];
+                user.shots_count = [[[shotDic objectForKey:@"user"]objectForKey:@"shots_count"]stringValue];
+                user.likes_count = [[[shotDic objectForKey:@"user"]objectForKey:@"likes_count"]stringValue];
+                user.followers_count = [[[shotDic objectForKey:@"user"]objectForKey:@"followers_count"]stringValue];
+                user.followings_count = [[[shotDic objectForKey:@"user"]objectForKey:@"followings_count"]stringValue];
+                user.buckets_count = [[[shotDic objectForKey:@"user"]objectForKey:@"buckets_count"]stringValue];
+                user.bio = [[shotDic objectForKey:@"user"]objectForKey:@"bio"];
+                if ( [[[shotDic objectForKey:@"user"]objectForKey:@"location"]class] != [NSNull class])
+                {
+                    user.location = [[shotDic objectForKey:@"user"]objectForKey:@"location"];
+                }
+                user.userid = [[[shotDic objectForKey:@"user"]objectForKey:@"id"]stringValue];
+                
+                
+                IMAGES*images = EntityObjects(@"IMAGES");
+                object.images = images;
+                
+                if ([[[shotDic objectForKey:@"images"]objectForKey:@"hidpi"]class] != [NSNull class]) {
+                    images.hidpi = [[shotDic objectForKey:@"images"]objectForKey:@"hidpi"];
+                }
+                images.normal = [[shotDic objectForKey:@"images"]objectForKey:@"normal"];
+                images.teaser = [[shotDic objectForKey:@"images"]objectForKey:@"teaser"];
+                
+                x ++;
+                
+                
+                [self douma_save];
+                
                 
             }
-            else
-            {
-                [view addSubview:noBucketsV];
-                [view addSubview:noBucketsL];
-            }
-        }
-            break;
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+
+        }];
+        [operation start];
         
-        case 4:
-        {
-            UICollectionViewFlowLayout *followingVFL = [[UICollectionViewFlowLayout alloc]init];
-            followingVFL.itemSize = CGSizeMake(UI_SCREEN_WIDTH-12, UI_SCREEN_WIDTH*5/32);
-            followingVFL.sectionInset = UIEdgeInsetsMake(10, 6, 5, 6);
-            followingVFL.minimumInteritemSpacing = 0;
-            
-            static NSString *followingCellRI = @"followingCellRI";
-            UICollectionView *followingCV = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height) collectionViewLayout:followingVFL];
-            followingCV.backgroundColor = BG_COLOR;
-            followingCV.contentInset = UIEdgeInsetsMake(30, 0, 0, 0);
-            followingCV.delegate = self;
-            followingCV.dataSource = self;
-            followingCV.scrollEnabled = NO;
-            [followingCV addFooterWithTarget:self action:@selector(followingFootAction)];
-            [followingCV registerClass:[FollowCell class] forCellWithReuseIdentifier:followingCellRI];
-            _followingCV = followingCV;
-            
-            
-            UIImageView *headerV = [[UIImageView alloc]initWithFrame:CGRectMake(20, -20, 20, 20)];
-            headerV.image = [UIImage imageNamed:@"usersTag"];
-            [followingCV addSubview:headerV];
-            
-            UILabel *headerL = [[UILabel alloc]initWithFrame:CGRectMake(50, -25, view.frame.size.width, 30)];
-            headerL.text =[NSString stringWithFormat:@"%@ following",self.user.followings_count];
-            headerL .textColor = RGBA(146, 146, 146, 1);
-            headerL .textAlignment = NSTextAlignmentLeft;
-            headerL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
-            [followingCV addSubview:headerL ];
-
-            
-            UIImageView *noFollowingV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_following"]];
-            noFollowingV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
-            
-            
-            UILabel *noFollowingL = [[UILabel alloc]initWithFrame:CGRectMake(0, noFollowingV.frame.size.height+noFollowingV.frame.origin.y-30, viewX, 40)];
-            noFollowingL.text = @"no following";
-            noFollowingL.textAlignment = NSTextAlignmentCenter;
-            noFollowingL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
-            noFollowingL.textColor = RGBA(146, 146, 146, 1);
-            
-            
-            if (![self.user.followings_count isEqualToString:@"0"]) {
-                [view addSubview:followingCV];
-            }
-            else
-            {
-                [view addSubview:noFollowingV];
-                [view addSubview:noFollowingL];
-            }
-
-        
-        }
-            break;
-        case 5:
-        {
-            UICollectionViewFlowLayout *followersVFL = [[UICollectionViewFlowLayout alloc]init];
-            followersVFL.itemSize = CGSizeMake(UI_SCREEN_WIDTH-12, UI_SCREEN_WIDTH*5/32);
-            followersVFL.sectionInset = UIEdgeInsetsMake(10, 6, 5, 6);
-            followersVFL.minimumInteritemSpacing = 0;
-            
-            static NSString *followersCellRI = @"followersCellRI";
-            UICollectionView *followersCV = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height) collectionViewLayout:followersVFL];
-            followersCV.backgroundColor = BG_COLOR;
-            followersCV.contentInset = UIEdgeInsetsMake(30, 0, 0, 0);
-            followersCV.delegate = self;
-            followersCV.dataSource = self;
-            followersCV.scrollEnabled = NO;
-            [followersCV addFooterWithTarget:self action:@selector(followersFootAction)];
-            [followersCV registerClass:[FollowCell class] forCellWithReuseIdentifier:followersCellRI];
-            _followersCV = followersCV;
-            
-            
-            UIImageView *headerV = [[UIImageView alloc]initWithFrame:CGRectMake(20, -20, 20, 20)];
-            headerV.image = [UIImage imageNamed:@"usersTag"];
-            [followersCV addSubview:headerV];
-            
-            UILabel *headerL = [[UILabel alloc]initWithFrame:CGRectMake(50, -25, view.frame.size.width, 30)];
-            headerL.text =[NSString stringWithFormat:@"%@ followers",self.user.followers_count];
-            headerL .textColor = RGBA(146, 146, 146, 1);
-            headerL .textAlignment = NSTextAlignmentLeft;
-            headerL .font = [UIFont fontWithName:@"Nexa Bold" size:11];
-            [followersCV addSubview:headerL ];
-
-            UIImageView *noFollowersV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"no_following"]];
-            noFollowersV.frame = CGRectMake(viewX/3,viewX/4,viewX/3,viewX/3);
-            
-            
-            UILabel *noFollowersL = [[UILabel alloc]initWithFrame:CGRectMake(0, noFollowersV.frame.size.height+noFollowersV.frame.origin.y-30, viewX, 40)];
-            noFollowersL.text = @"no followers";
-            noFollowersL.textAlignment = NSTextAlignmentCenter;
-            noFollowersL.font = [UIFont fontWithName:@"Nexa Bold" size:16];
-            noFollowersL.textColor = RGBA(146, 146, 146, 1);
-            
-            
-            if (![self.user.followers_count isEqualToString:@"0"]) {
-                [view addSubview:followersCV];
-            }
-            else
-            {
-                [view addSubview:noFollowersV];
-                [view addSubview:noFollowersL];
-            }
-
-        }
-            break;
-        case 6:
-        {
-            
-            UIFont *font = [UIFont fontWithName:@"Nexa Bold" size:14];
-            NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
-            paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
-            NSDictionary *attributes = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:paragraphStyle.copy};
-            CGSize size = [self.user.bio boundingRectWithSize:CGSizeMake(viewX - 70, 10000) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
-            
-            
-            
-            
-            UIView *bioView = [[UIView alloc]initWithFrame:CGRectMake(12, 12, viewX - 24, MIN(self.user.bio.length, 1) * (size.height + 30))];
-            bioView.backgroundColor = [UIColor whiteColor];
-            bioView.clipsToBounds = YES;
-            [view addSubview:bioView];
-
-            HTMLLabel *bioL = [[HTMLLabel alloc]initWithFrame:CGRectMake(25, 15, bioView.frame.size.width - 50, size.height)];
-            bioL.font = font;
-            bioL.textColor = [UIColor grayColor];
-            bioL.text = self.user.bio;
-            bioL.textAlignment = NSTextAlignmentLeft;
-            bioL.numberOfLines = 0;
-            [bioView addSubview:bioL];
-            
-            
-            
-            
-            
-            
-            UIView *twitterV = [[UIView alloc]initWithFrame:CGRectMake(12, bioView.frame.size.height + bioView.frame.origin.y + 20, viewX - 24, MIN(self.user.twitter.length, 1) * 50)];
-            twitterV.backgroundColor = [UIColor whiteColor];
-            twitterV.userInteractionEnabled = YES;
-            twitterV.clipsToBounds = YES;
-            [view addSubview:twitterV];
-            
-
-            
-            UILabel *twitterL = [[UILabel alloc]initWithFrame:CGRectMake(25, 15, twitterV.frame.size.width, 20)];
-            twitterL.font = [UIFont fontWithName:@"Nexa Bold" size:12];
-            twitterL.textColor = [UIColor grayColor];
-            twitterL.textAlignment = NSTextAlignmentLeft;
-            twitterL.text = self.user.twitter;
-            [twitterV addSubview:twitterL];
-            
-            
-            
-            
-            UIImageView *twitterView  = [[UIImageView alloc]initWithFrame:CGRectMake(twitterV.frame.size.width - 50, 10, 30, 30)];
-            twitterView.image = [UIImage imageNamed:@"twitter"];
-            twitterView.userInteractionEnabled = YES;
-            [twitterV addSubview:twitterView];
-            
-            
-            
-            UIView *webV = [[UIView alloc]initWithFrame:CGRectMake(12, twitterV.frame.size.height + twitterV.frame.origin.y + 2, twitterV.frame.size.width, MIN(self.user.web.length, 1) * 50)];
-            webV.userInteractionEnabled = YES;
-            webV.backgroundColor = [UIColor whiteColor];
-            webV.clipsToBounds = YES;
-            [view addSubview:webV];
-            
-            
-            
-            
-            UILabel *webL = [[UILabel alloc]initWithFrame:CGRectMake(25, 15, webV.frame.size.width, 20)];
-            webL.font = [UIFont fontWithName:@"Nexa Bold" size:12];
-            webL.textColor = [UIColor grayColor];
-            webL.textAlignment = NSTextAlignmentLeft;
-            webL.text = self.user.web;
-            [webV addSubview:webL];
-
-            UIImageView *webView  = [[UIImageView alloc]initWithFrame:CGRectMake(webV.frame.size.width - 50, 10, 30, 30)];
-            webView.image = [UIImage imageNamed:@"web"];
-            webView.userInteractionEnabled = YES;
-            [webV addSubview:webView];
-            
-        }
-            break;
-    }
-  
-    
+    }));
 }
 
 #pragma mark -
@@ -940,7 +1076,6 @@ static NSInteger followersN = 12;
             });
             return;
         }
-
         
         
         NSURL *url = [NSURL URLWithString:[shotsFootURL stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
@@ -992,7 +1127,7 @@ static NSInteger followersN = 12;
                     [_shotsCV footerEndRefreshing];
                 });
             }
-         }failure:^(AFHTTPRequestOperation *operation, NSError *error)
+        }failure:^(AFHTTPRequestOperation *operation, NSError *error)
          {
              NSLog(@"%@",error);
          }];
@@ -1052,7 +1187,7 @@ static NSInteger followersN = 12;
                 
                 USER *user = EntityObjects(@"USER");
                 object.user = user;
-                 user.bio = [[shotDic objectForKey:@"user"]objectForKey:@"bio"];
+                user.bio = [[shotDic objectForKey:@"user"]objectForKey:@"bio"];
                 user.avatar_url = [[shotDic objectForKey:@"user"]objectForKey:@"avatar_url"];
                 user.name = [[shotDic objectForKey:@"user"]objectForKey:@"name"];
                 user.shots_count = [[[shotDic objectForKey:@"user"]objectForKey:@"shots_count"]stringValue];
@@ -1077,7 +1212,7 @@ static NSInteger followersN = 12;
                 }
                 images.normal = [[shotDic objectForKey:@"images"]objectForKey:@"normal"];
                 images.teaser = [[shotDic objectForKey:@"images"]objectForKey:@"teaser"];
-            
+                
                 
                 likesN ++;
                 
@@ -1093,7 +1228,7 @@ static NSInteger followersN = 12;
          }];
         [operation start];
     }));
-
+    
 }
 -(void)followingFootAction
 {
@@ -1145,7 +1280,7 @@ static NSInteger followersN = 12;
                 object.name = [followeeDic objectForKey:@"name"];
                 
                 object.bio = [followeeDic objectForKey:@"bio"];
-
+                
                 object.avatar_url = [followeeDic objectForKey:@"avatar_url"];
                 
                 object.shots_count = [[followeeDic objectForKey:@"shots_count"]stringValue];
@@ -1154,7 +1289,7 @@ static NSInteger followersN = 12;
                 
                 object.followers_count = [[followeeDic objectForKey:@"followers_count"] stringValue];
                 object.buckets_count = [[followeeDic objectForKey:@"buckets_count"]stringValue];
-
+                
                 object.followings_count = [[followeeDic objectForKey:@"followings_count"] stringValue];
                 
                 if ( [[followeeDic objectForKey:@"location"]class] != [NSNull class])
@@ -1186,7 +1321,7 @@ static NSInteger followersN = 12;
          }];
         [operation start];
     }));
-
+    
 }
 
 -(void) followersFootAction
@@ -1243,10 +1378,10 @@ static NSInteger followersN = 12;
                 
                 object.likes_count = [[followeeDic objectForKey:@"likes_count"]stringValue];
                 object.bio = [followeeDic objectForKey:@"bio"];
-
+                
                 object.followers_count = [[followeeDic objectForKey:@"followers_count"] stringValue];
                 object.buckets_count = [[followeeDic objectForKey:@"buckets_count"]stringValue];
-
+                
                 object.followings_count = [[followeeDic objectForKey:@"followings_count"] stringValue];
                 
                 if ( [[followeeDic objectForKey:@"location"]class] != [NSNull class])
@@ -1278,9 +1413,15 @@ static NSInteger followersN = 12;
          }];
         [operation start];
     }));
-
+    
 }
-#pragma mark - UICollectionViewDataSource
+
+
+
+
+
+#pragma mark -
+#pragma mark UICollectionViewDataSource
 
 -(NSInteger )collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
@@ -1294,6 +1435,11 @@ static NSInteger followersN = 12;
         id <NSFetchedResultsSectionInfo> sectionInfo = [self.likesFRC sections][section];
         numbersItem = [sectionInfo numberOfObjects];
     }
+    if (collectionView == _bucketsCV) {
+        id <NSFetchedResultsSectionInfo> sectionInfo = [self.bucketsFRC sections][section];
+        numbersItem = [sectionInfo numberOfObjects];
+    }
+
     if (collectionView == _followingCV) {
         id <NSFetchedResultsSectionInfo> sectionInfo = [self.followingFRC sections][section];
         numbersItem = [sectionInfo numberOfObjects];
@@ -1330,6 +1476,13 @@ static NSInteger followersN = 12;
         [self configureCell:likesCell atIndexPath:indexPath forView:_likesCV];
         cell = likesCell;
     }
+    if (collectionView == _bucketsCV) {
+        static NSString *bucketsCellRI = @"bucketsCellRI";
+        BucketsCell *bucketsCell = (BucketsCell *)[_bucketsCV dequeueReusableCellWithReuseIdentifier:bucketsCellRI forIndexPath:indexPath];
+        [self configurebucketsCell:bucketsCell atIndexPath:indexPath forView:_bucketsCV];
+        cell = bucketsCell;
+    }
+
     if (collectionView == _followingCV) {
         static NSString *followingCellRI = @"followingCellRI";
         FollowCell *followingCell = (FollowCell *)[_followingCV dequeueReusableCellWithReuseIdentifier:followingCellRI forIndexPath:indexPath];
@@ -1406,6 +1559,135 @@ static NSInteger followersN = 12;
     
  
 }
+
+-(void)configurebucketsCell:(BucketsCell *)cell atIndexPath:(NSIndexPath *)indexPath forView:(UICollectionView *)collectionView
+{
+    
+    BUCKETS *buckets = [self.bucketsFRC objectAtIndexPath:indexPath];
+    NSArray *array = [buckets.shots allObjects];
+    
+    if (array.count == 1) {
+        
+        SHOTS *mainShots = [array objectAtIndex:0];
+        NSURL *mainURL = [NSURL URLWithString:mainShots.images.teaser];
+        [cell.mainIV sd_setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+
+        
+    }
+    if (array.count == 2) {
+        
+        SHOTS *mainShots = [array objectAtIndex:0];
+        NSURL *mainURL = [NSURL URLWithString:mainShots.images.teaser];
+        
+        SHOTS *fShots = [array objectAtIndex:1];
+        NSURL *fURL = [NSURL URLWithString:fShots.images.teaser];
+        
+        [cell.mainIV sd_setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.fIV sd_setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+
+        
+        
+    }
+    if (array.count == 3) {
+        
+        SHOTS *mainShots = [array objectAtIndex:0];
+        NSURL *mainURL = [NSURL URLWithString:mainShots.images.teaser];
+        
+        SHOTS *fShots = [array objectAtIndex:1];
+        NSURL *fURL = [NSURL URLWithString:fShots.images.teaser];
+        
+        SHOTS *sShots = [array objectAtIndex:2];
+        NSURL *sURL = [NSURL URLWithString:sShots.images.teaser];
+        
+        [cell.mainIV sd_setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        
+        [cell.fIV sd_setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.sIV sd_setImageWithURL:sURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        
+        
+    }
+    if (array.count >= 4) {
+        
+        SHOTS *mainShots = [array objectAtIndex:0];
+        NSURL *mainURL = [NSURL URLWithString:mainShots.images.teaser];
+        
+        SHOTS *fShots = [array objectAtIndex:1];
+        NSURL *fURL = [NSURL URLWithString:fShots.images.teaser];
+        
+        SHOTS *sShots = [array objectAtIndex:2];
+        NSURL *sURL = [NSURL URLWithString:sShots.images.teaser];
+        
+        SHOTS *tShots = [array objectAtIndex:3];
+        NSURL *tURL = [NSURL URLWithString:tShots.images.teaser];
+        
+        
+        [cell.mainIV sd_setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.fIV sd_setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.sIV sd_setImageWithURL:sURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.tIV sd_setImageWithURL:tURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        
+        
+    }
+    cell.bucketsNumber.text = [NSString stringWithFormat:@"%@ shots",buckets.shots_count];
+    cell.buctetsName .text = buckets.name;
+
+    
+    
+}
+
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (collectionView == _shotsCV) {
+        
+        DetailVC *detailVC = [[DetailVC alloc]init];
+        SHOTS *object = [_shotsFRC objectAtIndexPath:indexPath];
+        NSManagedObjectID *objectID = [object objectID];
+        
+        detailVC.shotsID = [object valueForKey:@"shotsid"];
+        
+        detailVC.objectID = objectID;
+        
+        [self.navigationController pushViewController:detailVC animated:YES];
+    }
+    if (collectionView == _likesCV) {
+        DetailVC *detailVC = [[DetailVC alloc]init];
+        
+        SHOTS *object = [_likesFRC objectAtIndexPath:indexPath];
+        
+        NSManagedObjectID *objectID = [object objectID];
+        
+        detailVC.shotsID = [object valueForKey:@"shotsid"];
+        
+        detailVC.objectID = objectID;
+        
+        [self.navigationController pushViewController:detailVC animated:YES];
+        
+    }
+    if (collectionView == _followingCV) {
+        
+        UserVC *userVC = [[UserVC alloc]init];
+        USER *object = [_followingFRC objectAtIndexPath:indexPath];
+        NSManagedObjectID *userObjectID = [object objectID];
+        userVC.userID = object.userid;
+        userVC.userObjectID = userObjectID;
+        [self.navigationController pushViewController:userVC animated:YES];
+        
+    }
+    if (collectionView == _followersCV) {
+        
+        UserVC *userVC = [[UserVC alloc]init];
+        USER *object = [_followersFRC objectAtIndexPath:indexPath];
+        NSManagedObjectID *userObjectID = [object objectID];
+        userVC.userID = object.userid;
+        userVC.userObjectID = userObjectID;
+        [self.navigationController pushViewController:userVC animated:YES];
+    }
+}
+
+
+
+#pragma mark - FollowAction
+
 -(void)followAction1:(UIButton *)button
 {
     FollowCell *cell = (FollowCell*)button.superview;
@@ -1459,60 +1741,10 @@ static NSInteger followersN = 12;
     }
 
 }
--(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (collectionView == _shotsCV) {
-        
-        DetailVC *detailVC = [[DetailVC alloc]init];
-        
-        SHOTS *object = [_shotsFRC objectAtIndexPath:indexPath];
-        
-        NSManagedObjectID *objectID = [object objectID];
-        
-        detailVC.shotsID = [object valueForKey:@"shotsid"];
-        
-        detailVC.objectID = objectID;
-        
-        [self.navigationController pushViewController:detailVC animated:YES];
-    }
-    if (collectionView == _likesCV) {
-        DetailVC *detailVC = [[DetailVC alloc]init];
-        
-        SHOTS *object = [_likesFRC objectAtIndexPath:indexPath];
-        
-        NSManagedObjectID *objectID = [object objectID];
-        
-        detailVC.shotsID = [object valueForKey:@"shotsid"];
-        
-        detailVC.objectID = objectID;
-        
-        [self.navigationController pushViewController:detailVC animated:YES];
-
-    }
-    if (collectionView == _followingCV) {
-        
-        UserVC *userVC = [[UserVC alloc]init];
-        USER *object = [_followingFRC objectAtIndexPath:indexPath];
-        NSManagedObjectID *userObjectID = [object objectID];
-        userVC.userID = object.userid;
-        userVC.userObjectID = userObjectID;
-        [self.navigationController pushViewController:userVC animated:YES];
-
-    }
-    if (collectionView == _followersCV) {
-        
-        UserVC *userVC = [[UserVC alloc]init];
-        USER *object = [_followersFRC objectAtIndexPath:indexPath];
-        NSManagedObjectID *userObjectID = [object objectID];
-        userVC.userID = object.userid;
-        userVC.userObjectID = userObjectID;
-        [self.navigationController pushViewController:userVC animated:YES];        
-    }
-}
-
 
 
 #pragma mark - UIScorllViewDelegate
+
 
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
@@ -1522,17 +1754,89 @@ static NSInteger followersN = 12;
     [self controllScroll];
 }
 
+
+
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
+    
     float xx = _mainSV.contentOffset.x * (40 / self.view.frame.size.width) ;
     [_listSV scrollRectToVisible:CGRectMake(xx, 0, _listSV.frame.size.width, _listSV.frame.size.height) animated:YES];
+    
+    NSInteger scrollToWhere = _mainSV.contentOffset.x/self.view.frame.size.width;
+    switch (scrollToWhere) {
+        case 0:{
+            NSUInteger number = [[self.shotsFRC sections][0] numberOfObjects];
+            if (number == 0) {
+                [self shotsNetAction];
+            }
+        }
+
+            
+            break;
+        case 1:{
+            NSUInteger number = [[self.likesFRC sections][0] numberOfObjects];
+                if (number == 0) {
+                    [self likesNetAction];
+                }
+            }
+            break;
+            
+        case 2:{
+            NSUInteger number = [[self.followingFRC sections][0] numberOfObjects];
+            if (number == 0) {
+                [self followingNetAction];
+            }
+        }
+            break;
+            
+        case 3:
+        {
+            NSUInteger number = [[self.followersFRC sections][0] numberOfObjects];
+            if (number == 0) {
+                [self followersNetAction];
+            }
+        }
+            break;
+            
+        case 4:
+        {
+            NSUInteger number = [[self.bucketsFRC sections][0] numberOfObjects];
+            
+            if (number == 0 && self.user.buckets_count != 0) {
+                [self getBuckets];
+            }
+        }
+            break;
+            
+
+    }
+    
 }
 
 #pragma mark UIScrollAction
 
+
+-(void)changeAvatarView:(UIScrollView * )scrollV
+{
+    float y = _bgSV.contentOffset.y;
+    float viewX = self.view.frame.size.width;
+    CGFloat drilightX = _bgSV.frame.origin.x;
+    CGFloat drilightY = _bgSV.frame.origin.y;
+    
+    if( y <= 0 )
+    {
+        float scaleX = MIN(30, -y);
+        _avatarBG.frame = CGRectMake(y, y, -2*y + viewX, -y + viewX+10);
+        _blackIV.frame = CGRectMake(y, 0, -2*y + viewX, -y + viewX*25/32+10);
+        _avatarIV.frame = CGRectMake(-2*y + viewX*3/8, -y + viewX/4 - 10, viewX/4, viewX/4);
+        _listSV.frame = CGRectMake(-2*y , -y + viewX/2 + 5 , viewX, viewX/9);
+        _bgSV.drilight.bounds = CGRectMake(drilightX, drilightY, scaleX, scaleX);
+    }
+    
+}
+
 -(void)controllScroll
 {
-  
     
     if (_bgSV.contentOffset.y > self.view.frame.size.width*25/32-63) {
         _shotsCV.scrollEnabled = YES;
@@ -1582,7 +1886,6 @@ static NSInteger followersN = 12;
 - (void)changeViewfor:(UIScrollView *)scrollView
 {
     float x = _mainSV.contentOffset.x;
-    
     float xx = x * (80 / self.view.frame.size.width);
     float startX = xx;
     
@@ -1591,6 +1894,7 @@ static NSInteger followersN = 12;
     {
         return;
     }
+    
     UIButton *btn = (UIButton *)[_listSV viewWithTag:sT];
     float percent = (startX - 80 * (sT - 1))/80;
     
@@ -1604,20 +1908,7 @@ static NSInteger followersN = 12;
     
 }
 
--(void)changeAvatarView:(UIScrollView * )scrollV
-{
-    float y = _bgSV.contentOffset.y;
-    float viewX = self.view.frame.size.width;
-    if( y < 0 )
-    {
-        _avatarBG.frame = CGRectMake(y, y, -2*y + scrollV.frame.size.width, -y + viewX*25/32+10);
-        _blackIV.frame = CGRectMake(y, 0, -2*y + scrollV.frame.size.width, -y + viewX*25/32+10);
-        _avatarIV.frame = CGRectMake(-2*y + viewX*3/8, -y + viewX/4 - 10, viewX/4, viewX/4);
-        _userL.frame = CGRectMake(-2*y , -y + viewX/2 - 10, viewX, 40);
-        _mapV.frame = CGRectMake(-2*y, -y + viewX/2 + 20, viewX, 30);
-        _listSV.frame = CGRectMake(-2*y , -y + viewX/2 + 50, viewX, viewX*25/32-40-viewX/2);
-    }
-}
+
 
 - (void)changeColorForButton:(UIButton *)btn percent:(float)percent
 {
@@ -1630,76 +1921,43 @@ static NSInteger followersN = 12;
     [_mainSV scrollRectToVisible:CGRectMake(_mainSV.frame.size.width * (btn.tag - 1), _mainSV.frame.origin.y, _mainSV.frame.size.width, _mainSV.frame.size.height) animated:YES];
 }
 
-#pragma mark - Nav
+#pragma mark - 
+#pragma mark NavAction
+
+-(void)addNav
+{
+    UIView *navV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64)];
+    navV.backgroundColor = RGBA(50, 50, 50, 0);
+    [self.view addSubview:navV];
+    _navV = navV;
+
+}
 
 -(void)setNavigationBar
 {
     
     UILabel *titlLabel = [[UILabel alloc]initWithFrame:CGRectMake(150, 0, 30, 40)];
-    titlLabel.text = @"Player";
+    titlLabel.text = self.user.name;
     titlLabel.textColor = [UIColor whiteColor];
     [titlLabel setFont:[UIFont fontWithName:@"Honduro" size:20]];
     self.navigationItem.titleView = titlLabel;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
-
     
-    if ([self.navigationController.navigationBar respondsToSelector:@selector( setBackgroundImage:forBarMetrics:)]){
-        NSArray *list=self.navigationController.navigationBar.subviews;
-        for (id obj in list) {
-            if ([obj isKindOfClass:[UIImageView class]]) {
-                UIImageView *imageView=(UIImageView *)obj;
-                imageView.hidden=YES;
-            }
-        }
-    }
+
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"back"] style:UIBarButtonItemStylePlain target:self action:@selector(backAction)];
     self.navigationItem.leftBarButtonItem = backItem;
     
-    UIBarButtonItem *followItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(followUser)];
-    self.navigationItem.rightBarButtonItem = followItem;
     
 }
-
-#pragma -mark Other
-
 
 -(void)backAction
 {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
--(void)followUser
-{
-    UIBarButtonItem *followedItem = [[UIBarButtonItem alloc]initWithTitle:@"followed" style:UIBarButtonItemStylePlain target:self action:nil];
-    [followedItem setTitleTextAttributes:@{
-                                         NSFontAttributeName: [UIFont fontWithName:@"Nexa Light" size:16],
-                                         NSForegroundColorAttributeName: [UIColor whiteColor]
-                                         } forState:UIControlStateNormal];
-    self.navigationItem.rightBarButtonItem = followedItem;
-}
-
-#pragma -mark View
--(void)viewWillAppear:(BOOL)animated
-{
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"touming"] forBarMetrics:UIBarMetricsDefault];
-    [self.navigationController.navigationBar setBarStyle:UIBarStyleBlackTranslucent];
-    self.navigationController.interactivePopGestureRecognizer.delegate = self;
 
 
-    if ([self.navigationController.navigationBar respondsToSelector:@selector( setBackgroundImage:forBarMetrics:)]){
-        NSArray *list=self.navigationController.navigationBar.subviews;
-        for (id obj in list) {
-            if ([obj isKindOfClass:[UIImageView class]]) {
-                UIImageView *imageView=(UIImageView *)obj;
-                imageView.hidden=YES;
-            }
-        }
-    }
-    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
-
-}
 #pragma mark - NSFetchedResultsControllerDelegate
-
 
 - (NSFetchedResultsController *)likesFRC
 {
@@ -1823,6 +2081,36 @@ static NSInteger followersN = 12;
     return _followersFRC;
 }
 
+- (NSFetchedResultsController *)bucketsFRC
+{
+    if (_bucketsFRC != nil) {
+        return _bucketsFRC;
+    }
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"BUCKETS"inManagedObjectContext:self.myDelegate.managedObjectContext];
+    [fetchRequest setEntity:entity];
+    
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+    NSArray *sortDescriptors = @[sortDescriptor];
+    [fetchRequest setSortDescriptors:sortDescriptors];
+    
+    NSPredicate * cdt = [NSPredicate predicateWithFormat:@"user = %@",self.user];
+    [fetchRequest setPredicate:cdt];
+    
+    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:fetchRequest managedObjectContext:self.myDelegate.managedObjectContext sectionNameKeyPath:nil cacheName:nil];
+    aFetchedResultsController.delegate = self;
+    _bucketsFRC = aFetchedResultsController;
+    
+    NSError *error = nil;
+    if (![_bucketsFRC performFetch:&error]) {
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    
+    return _bucketsFRC;
+}
+
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
         _sectionChanges = [[NSMutableArray alloc] init];
     
@@ -1830,6 +2118,7 @@ static NSInteger followersN = 12;
         _likesChanges = [[NSMutableArray alloc] init];
         _followingChanges = [[NSMutableArray alloc] init];
         _followersChanges = [[NSMutableArray alloc]init];
+        _bucketsChanges = [[NSMutableArray alloc]init];
 }
 
 - (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo
@@ -1874,6 +2163,10 @@ static NSInteger followersN = 12;
     }
     if (controller == _followersFRC) {
         [_followersChanges addObject:change];
+        
+    }
+    if (controller == _bucketsFRC) {
+        [_bucketsChanges addObject:change];
         
     }
 }
@@ -1995,6 +2288,34 @@ static NSInteger followersN = 12;
         }];
         
     }
+    if (controller == _bucketsFRC) {
+        [_bucketsCV performBatchUpdates:^{
+            
+            for (NSDictionary *change in _bucketsChanges) {
+                [change enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+                    NSFetchedResultsChangeType type = [key unsignedIntegerValue];
+                    switch(type) {
+                        case NSFetchedResultsChangeInsert:
+                            [_bucketsCV insertItemsAtIndexPaths:@[obj]];
+                            break;
+                        case NSFetchedResultsChangeDelete:
+                            [_bucketsCV deleteItemsAtIndexPaths:@[obj]];
+                            break;
+                        case NSFetchedResultsChangeUpdate:
+                            [_bucketsCV reloadItemsAtIndexPaths:@[obj]];
+                            break;
+                        case NSFetchedResultsChangeMove:
+                            [_bucketsCV moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
+                            break;
+                    }
+                }];
+            }
+        } completion:^(BOOL finished) {
+            _sectionChanges = nil;
+            _bucketsChanges = nil;
+        }];
+        
+    }
 
 
 }
@@ -2008,12 +2329,11 @@ static NSInteger followersN = 12;
     }
     
 }
-         
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
 
-#pragma mark - UIGestureRecognizerDelegate
+
+#pragma mark -
+#pragma mark UIGestureRecognizerDelegate
+
 - (BOOL)isRootViewController
 {
     return (self == self.navigationController.viewControllers.firstObject);
@@ -2037,5 +2357,12 @@ static NSInteger followersN = 12;
 {
     return [gestureRecognizer isKindOfClass:UIScreenEdgePanGestureRecognizer.class];
 }
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+}
+
+
 
 @end

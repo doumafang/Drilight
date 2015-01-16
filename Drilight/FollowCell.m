@@ -14,10 +14,9 @@
         self.layer.masksToBounds = YES;
         self.layer.cornerRadius = 3.0f;
         
-        float viewX = UI_SCREEN_WIDTH;
         
         
-        _avatarV = [[UIImageView alloc]initWithFrame:CGRectMake(viewX/32, viewX/64, viewX/8, viewX/8)];
+        _avatarV = [[UIImageView alloc]initWithFrame:CGRectMake(SCREENX/32, SCREENX/64, SCREENX/8, SCREENX/8)];
         self.avatarV.opaque = YES;
         self.avatarV.userInteractionEnabled = YES;
         self.avatarV.layer.masksToBounds = YES;
@@ -26,7 +25,7 @@
         [self addSubview:_avatarV];
         
         
-        _followB = [[UIButton alloc]initWithFrame:CGRectMake(viewX*21/32, viewX/32, viewX*9/32,self.frame.size.height-viewX/16)];
+        _followB = [[UIButton alloc]initWithFrame:CGRectMake(SCREENX*21/32, SCREENX/32, SCREENX*9/32,SCREENX/12)];
         self.followB.layer.masksToBounds = YES;
         self.followB.layer.cornerRadius = _followB.frame.size.height/2;
         self.followB.layer.borderColor = [UIColor colorWithRed:224/255.0f green:24/255.0f blue:87/255.0f alpha:1.0].CGColor;
@@ -38,9 +37,6 @@
         
         [self.followB setTitleColor:[UIColor colorWithRed:224/255.0f green:24/255.0f blue:87/255.0f alpha:1.0] forState:UIControlStateNormal];
         [self.followB setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
-        
-
-        
         
         [self.followB.titleLabel setFont:[UIFont fontWithName:@"Nexa Bold" size:11]];
         [self addSubview:_followB];

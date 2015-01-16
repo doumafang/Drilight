@@ -86,7 +86,7 @@
     self.access_token = [[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"];
     BACK((^{
         NSString *str = [[NSString stringWithFormat:@"https://api.dribbble.com/v1/user?access_token=%@",self.access_token]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        
+                                    
         NSURL *url = [NSURL URLWithString:str];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc]initWithRequest:request];
@@ -108,13 +108,14 @@
             user.userid = [[dic objectForKey:@"id"]stringValue];
             
             user.shots_count = [[dic objectForKey:@"shots_count"]stringValue];
-            
             user.likes_count = [[dic objectForKey:@"likes_count"]stringValue];
+            user.buckets_count = [[dic objectForKey:@"buckets_count"]stringValue];
             
             user.followers_count = [[dic objectForKey:@"followers_count"]stringValue];
             user.followings_count = [[dic objectForKey:@"followings_count"]stringValue];
             
             user.pro = [[dic objectForKey:@"pro"]stringValue];
+            user.bio = [dic objectForKey:@"user"];
             
             if ( [[[dic objectForKey:@"links"] objectForKey:@"web"] class] != [NSNull class])
             {
@@ -155,7 +156,7 @@
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"USER" inManagedObjectContext:self.myDelegate.managedObjectContext];
     [fetchRequest setEntity:entity];
     NSString *str = @"self";
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"source=%@", str];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"source = %@", str];
     [fetchRequest setPredicate:predicate];
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"i"
                                                                    ascending:YES];

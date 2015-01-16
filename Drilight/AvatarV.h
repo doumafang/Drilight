@@ -7,12 +7,12 @@
 @property UIImageView *avatarIV;
 @property UILabel *userL;
 @property UILabel *timeL;
-@property UILabel *likesL;
+//@property UILabel *likesL;
 @property HTMLLabel *descriptionL;
 @property UILabel *commentsCountL;
 @property UIView *lineV;
 @property UITableView *tableV;
-@property UIButton *likeB;
+//@property UIButton *likeB;
 
 @end
 

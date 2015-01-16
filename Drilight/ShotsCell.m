@@ -1,13 +1,20 @@
-#define TEXTCOLOR [UIColor colorWithRed:200/255.0 green:200/255.0 blue:200/255.0 alpha:1.0]
 #define TEXTFONT [UIFont fontWithName:@"Helvetica" size:10]
 
+//define
+#import "DEFINE.h"
+
+//h
 #import "ShotsCell.h"
 #import "AppDelegate.h"
 
+
+//model
 #import "SHOTS.h"
 #import "IMAGES.h"
 @interface ShotsCell ()
+
 @property AppDelegate *myDelegate;
+
 @end
 
 @implementation ShotsCell
@@ -34,6 +41,8 @@
         self.avatarIV.layer.masksToBounds = YES;
         self.avatarIV.layer.cornerRadius = (frame.size.height - 18 - (frame.size.height - 4)*3/4)/2;
         self.avatarIV.opaque = YES;
+        [self.avatarIV addGestureRecognizer:[[UITapGestureRecognizer alloc]initWithTarget:self action:nil]];
+        self.avatarIV.userInteractionEnabled = YES;
         [self addSubview:self.avatarIV];
         
 

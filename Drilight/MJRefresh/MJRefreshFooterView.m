@@ -1,10 +1,4 @@
-//
-//  MJRefreshFooterView.m
-//  MJRefresh
-//
-//  Created by mj on 13-2-26.
-//  Copyright (c) 2013年 itcast. All rights reserved.
-//  上拉加载更多
+
 
 #import "MJRefreshFooterView.h"
 #import "MJRefreshConst.h"
@@ -22,22 +16,8 @@
     return [[MJRefreshFooterView alloc] init];
 }
 
-- (id)initWithFrame:(CGRect)frame
-{
-    if (self = [super initWithFrame:frame]) {
-        self.pullToRefreshText = MJRefreshFooterPullToRefresh;
-        self.releaseToRefreshText = MJRefreshFooterReleaseToRefresh;
-        self.refreshingText = MJRefreshFooterRefreshing;
-    }
-    return self;
-}
 
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    
-    self.statusLabel.frame = self.bounds;
-}
+
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {

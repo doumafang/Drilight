@@ -2,18 +2,21 @@
 //  USER.h
 //  Drilight
 //
-//  Created by doumaaaaaaaa on 15/1/6.
+//  Created by doumaaaaaaaa on 15/1/11.
 //  Copyright (c) 2015年 douma. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class COMMENTS, SHOTS, USER;
+@class BUCKETS, COMMENTS, SHOTS, USER;
 
 @interface USER : NSManagedObject
 
 @property (nonatomic, retain) NSString * avatar_url;
+@property (nonatomic, retain) NSString * bio;
+@property (nonatomic, retain) NSString * bucket_lastmodified;
+@property (nonatomic, retain) NSString * buckets_count;
 @property (nonatomic, retain) NSString * followers_count;
 @property (nonatomic, retain) NSString * followers_lastmodified;
 @property (nonatomic, retain) NSString * following_lastmodified;
@@ -31,8 +34,7 @@
 @property (nonatomic, retain) NSString * user_description;
 @property (nonatomic, retain) NSString * userid;
 @property (nonatomic, retain) NSString * web;
-@property (nonatomic, retain) NSString * buckets_count;
-@property (nonatomic, retain) NSString * bio;
+@property (nonatomic, retain) NSSet *buckets;
 @property (nonatomic, retain) COMMENTS *comments;
 @property (nonatomic, retain) NSSet *followers;
 @property (nonatomic, retain) USER *followersby;
@@ -43,6 +45,11 @@
 @end
 
 @interface USER (CoreDataGeneratedAccessors)
+
+- (void)addBucketsObject:(BUCKETS *)value;
+- (void)removeBucketsObject:(BUCKETS *)value;
+- (void)addBuckets:(NSSet *)values;
+- (void)removeBuckets:(NSSet *)values;
 
 - (void)addFollowersObject:(USER *)value;
 - (void)removeFollowersObject:(USER *)value;

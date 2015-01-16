@@ -22,6 +22,10 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
+
+    
+
+    
     [AFNetworkActivityIndicatorManager sharedManager].enabled =YES;
     
     self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
@@ -37,35 +41,22 @@
     [navC.navigationBar setTintColor:[UIColor whiteColor]];
     [navC.navigationBar setBackgroundImage:[UIImage imageNamed:@"bg"] forBarMetrics:UIBarMetricsDefault];
     
-    
-    
-    
+//    [[NSUserDefaults standardUserDefaults]setObject:@"757ba868501cb304d88db72cc2d005b4d59392c5ad734f9938668198d5842596" forKey:@"access_token"];
+//    [[NSUserDefaults standardUserDefaults]synchronize];
     
     REFrostedViewController *sideV = [[REFrostedViewController alloc]initWithContentViewController:navC menuViewController:self.listVC];
  
-    sideV.menuViewSize = CGSizeMake(UI_SCREEN_WIDTH * 4/5, UI_SCREEN_HEIGHT);
- 
- 
- 
+    sideV.menuViewSize = CGSizeMake(SCREENX * 4/5, SCREENY);
  
     self.window.rootViewController = sideV;
-    
-    
-    
-    
-    [[NSUserDefaults standardUserDefaults] setObject:@"50b35eb9a5e107e76e1b1e8759482cc24320c37404ca0b1c7ddacd33b1b9e554" forKey:@"access_token"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-
     
     
     [self.window makeKeyAndVisible];
 
    
-//    if (![[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"]) {
-//        [SignVC show];
-//    }
-
-  
+    if (![[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"]) {
+        [SignVC show];
+    }
 
     [application setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 
