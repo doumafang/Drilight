@@ -244,6 +244,12 @@ static NSInteger followersN = 12;
     [_bgSV headerEndRefreshing];
 
 }
+
+
+
+
+
+
 #pragma mark -
 #pragma mark InitFiveViews
 
@@ -280,6 +286,7 @@ static NSInteger followersN = 12;
             shotsCV.delegate = self;
             shotsCV.dataSource = self;
             shotsCV.scrollEnabled = NO;
+
             [shotsCV addFooterWithTarget:self action:@selector(shotsFootAction)];
             [shotsCV registerClass:[ShotsCell class] forCellWithReuseIdentifier:shotsCellRI];
             _shotsCV = shotsCV;
@@ -2365,4 +2372,8 @@ static NSInteger followersN = 12;
 
 
 
+
+
+
 @end
+
