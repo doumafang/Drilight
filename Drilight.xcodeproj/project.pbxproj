@@ -97,12 +97,6 @@
 		949D5EFB1A4BEA8B0002357B /* SignBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 949D5EF71A4BEA8B0002357B /* SignBG.png */; };
 		94A182F41A5D006F004A173F /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 94A182F31A5D006F004A173F /* LaunchScreen.xib */; };
 		94A182FC1A5D0373004A173F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 94A182FB1A5D0373004A173F /* Images.xcassets */; };
-		94A1830C1A5D0EE6004A173F /* RECommonFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = 94A183011A5D0EE6004A173F /* RECommonFunctions.m */; };
-		94A1830D1A5D0EE6004A173F /* REFrostedContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 94A183031A5D0EE6004A173F /* REFrostedContainerViewController.m */; };
-		94A1830E1A5D0EE6004A173F /* REFrostedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 94A183051A5D0EE6004A173F /* REFrostedViewController.m */; };
-		94A1830F1A5D0EE6004A173F /* UIImage+REFrostedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 94A183071A5D0EE6004A173F /* UIImage+REFrostedViewController.m */; };
-		94A183101A5D0EE6004A173F /* UIView+REFrostedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 94A183091A5D0EE6004A173F /* UIView+REFrostedViewController.m */; };
-		94A183111A5D0EE6004A173F /* UIViewController+REFrostedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 94A1830B1A5D0EE6004A173F /* UIViewController+REFrostedViewController.m */; };
 		94A183161A5D4D85004A173F /* signIn_1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 94A183121A5D4D85004A173F /* signIn_1@2x.png */; };
 		94A183171A5D4D85004A173F /* signIn_2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 94A183131A5D4D85004A173F /* signIn_2@2x.png */; };
 		94A183181A5D4D85004A173F /* signUp_1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 94A183141A5D4D85004A173F /* signUp_1@2x.png */; };
@@ -121,6 +115,9 @@
 		94A48EF41A62C11C00BD47AE /* IMAGES.m in Sources */ = {isa = PBXBuildFile; fileRef = 94A48EF31A62C11C00BD47AE /* IMAGES.m */; };
 		94A48EF71A62C11C00BD47AE /* COMMENTS.m in Sources */ = {isa = PBXBuildFile; fileRef = 94A48EF61A62C11C00BD47AE /* COMMENTS.m */; };
 		94A48EFA1A62C11C00BD47AE /* BUCKETS.m in Sources */ = {isa = PBXBuildFile; fileRef = 94A48EF91A62C11C00BD47AE /* BUCKETS.m */; };
+		94B390161A79EBBC007C33F6 /* RECommonFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = 94B390111A79EBBC007C33F6 /* RECommonFunctions.m */; };
+		94B390171A79EBBC007C33F6 /* RESideMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 94B390131A79EBBC007C33F6 /* RESideMenu.m */; };
+		94B390181A79EBBC007C33F6 /* UIViewController+RESideMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 94B390151A79EBBC007C33F6 /* UIViewController+RESideMenu.m */; };
 		94B4CB331A4931E800075856 /* FollowCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 94B4CB321A4931E800075856 /* FollowCell.m */; };
 		94BE01F41A413D9200334720 /* share@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 94BE01F31A413D9200334720 /* share@2x.png */; };
 		94BE02171A41469B00334720 /* MKAnnotationView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BE01F71A41469B00334720 /* MKAnnotationView+WebCache.m */; };
@@ -452,18 +449,6 @@
 		949D5EF71A4BEA8B0002357B /* SignBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SignBG.png; sourceTree = "<group>"; };
 		94A182F31A5D006F004A173F /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		94A182FB1A5D0373004A173F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		94A183001A5D0EE6004A173F /* RECommonFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RECommonFunctions.h; sourceTree = "<group>"; };
-		94A183011A5D0EE6004A173F /* RECommonFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RECommonFunctions.m; sourceTree = "<group>"; };
-		94A183021A5D0EE6004A173F /* REFrostedContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REFrostedContainerViewController.h; sourceTree = "<group>"; };
-		94A183031A5D0EE6004A173F /* REFrostedContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REFrostedContainerViewController.m; sourceTree = "<group>"; };
-		94A183041A5D0EE6004A173F /* REFrostedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REFrostedViewController.h; sourceTree = "<group>"; };
-		94A183051A5D0EE6004A173F /* REFrostedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REFrostedViewController.m; sourceTree = "<group>"; };
-		94A183061A5D0EE6004A173F /* UIImage+REFrostedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+REFrostedViewController.h"; sourceTree = "<group>"; };
-		94A183071A5D0EE6004A173F /* UIImage+REFrostedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+REFrostedViewController.m"; sourceTree = "<group>"; };
-		94A183081A5D0EE6004A173F /* UIView+REFrostedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+REFrostedViewController.h"; sourceTree = "<group>"; };
-		94A183091A5D0EE6004A173F /* UIView+REFrostedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+REFrostedViewController.m"; sourceTree = "<group>"; };
-		94A1830A1A5D0EE6004A173F /* UIViewController+REFrostedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+REFrostedViewController.h"; sourceTree = "<group>"; };
-		94A1830B1A5D0EE6004A173F /* UIViewController+REFrostedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+REFrostedViewController.m"; sourceTree = "<group>"; };
 		94A183121A5D4D85004A173F /* signIn_1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "signIn_1@2x.png"; sourceTree = "<group>"; };
 		94A183131A5D4D85004A173F /* signIn_2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "signIn_2@2x.png"; sourceTree = "<group>"; };
 		94A183141A5D4D85004A173F /* signUp_1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "signUp_1@2x.png"; sourceTree = "<group>"; };
@@ -488,6 +473,12 @@
 		94A48EF61A62C11C00BD47AE /* COMMENTS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = COMMENTS.m; sourceTree = "<group>"; };
 		94A48EF81A62C11C00BD47AE /* BUCKETS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BUCKETS.h; sourceTree = "<group>"; };
 		94A48EF91A62C11C00BD47AE /* BUCKETS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BUCKETS.m; sourceTree = "<group>"; };
+		94B390101A79EBBC007C33F6 /* RECommonFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RECommonFunctions.h; sourceTree = "<group>"; };
+		94B390111A79EBBC007C33F6 /* RECommonFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RECommonFunctions.m; sourceTree = "<group>"; };
+		94B390121A79EBBC007C33F6 /* RESideMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RESideMenu.h; sourceTree = "<group>"; };
+		94B390131A79EBBC007C33F6 /* RESideMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RESideMenu.m; sourceTree = "<group>"; };
+		94B390141A79EBBC007C33F6 /* UIViewController+RESideMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+RESideMenu.h"; sourceTree = "<group>"; };
+		94B390151A79EBBC007C33F6 /* UIViewController+RESideMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+RESideMenu.m"; sourceTree = "<group>"; };
 		94B4CB311A4931E800075856 /* FollowCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FollowCell.h; sourceTree = "<group>"; };
 		94B4CB321A4931E800075856 /* FollowCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FollowCell.m; sourceTree = "<group>"; };
 		94B6854D1A4038F600FBDB33 /* DEFINE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DEFINE.h; sourceTree = "<group>"; };
@@ -929,9 +920,9 @@
 		94234AD51A3C6AAA00330AEA /* Frame */ = {
 			isa = PBXGroup;
 			children = (
+				94B3900F1A79EBBC007C33F6 /* RESideMenu */,
 				94970FB91A5B9702009DCF58 /* HTMLLabel.h */,
 				94970FBA1A5B9702009DCF58 /* HTMLLabel.m */,
-				94A182FF1A5D0EE6004A173F /* REFrostedViewController */,
 				941B5D211A430B49009367FE /* include */,
 				941B5DC71A430B4A009367FE /* lib */,
 				94BE01F51A41469B00334720 /* SDWebImage */,
@@ -1058,25 +1049,6 @@
 			name = VC;
 			sourceTree = "<group>";
 		};
-		94A182FF1A5D0EE6004A173F /* REFrostedViewController */ = {
-			isa = PBXGroup;
-			children = (
-				94A183001A5D0EE6004A173F /* RECommonFunctions.h */,
-				94A183011A5D0EE6004A173F /* RECommonFunctions.m */,
-				94A183021A5D0EE6004A173F /* REFrostedContainerViewController.h */,
-				94A183031A5D0EE6004A173F /* REFrostedContainerViewController.m */,
-				94A183041A5D0EE6004A173F /* REFrostedViewController.h */,
-				94A183051A5D0EE6004A173F /* REFrostedViewController.m */,
-				94A183061A5D0EE6004A173F /* UIImage+REFrostedViewController.h */,
-				94A183071A5D0EE6004A173F /* UIImage+REFrostedViewController.m */,
-				94A183081A5D0EE6004A173F /* UIView+REFrostedViewController.h */,
-				94A183091A5D0EE6004A173F /* UIView+REFrostedViewController.m */,
-				94A1830A1A5D0EE6004A173F /* UIViewController+REFrostedViewController.h */,
-				94A1830B1A5D0EE6004A173F /* UIViewController+REFrostedViewController.m */,
-			);
-			path = REFrostedViewController;
-			sourceTree = "<group>";
-		};
 		94A48EE01A60EBE000BD47AE /* Main */ = {
 			isa = PBXGroup;
 			children = (
@@ -1106,6 +1078,19 @@
 				9433FB341A4AC538000D99A2 /* ListVC.m */,
 			);
 			name = List;
+			sourceTree = "<group>";
+		};
+		94B3900F1A79EBBC007C33F6 /* RESideMenu */ = {
+			isa = PBXGroup;
+			children = (
+				94B390101A79EBBC007C33F6 /* RECommonFunctions.h */,
+				94B390111A79EBBC007C33F6 /* RECommonFunctions.m */,
+				94B390121A79EBBC007C33F6 /* RESideMenu.h */,
+				94B390131A79EBBC007C33F6 /* RESideMenu.m */,
+				94B390141A79EBBC007C33F6 /* UIViewController+RESideMenu.h */,
+				94B390151A79EBBC007C33F6 /* UIViewController+RESideMenu.m */,
+			);
+			path = RESideMenu;
 			sourceTree = "<group>";
 		};
 		94BE01F51A41469B00334720 /* SDWebImage */ = {
@@ -1319,10 +1304,10 @@
 				945388341A593F210083E62C /* ShotsCell.m in Sources */,
 				94210F651A3E891100D40E18 /* AFURLConnectionOperation.m in Sources */,
 				94BE02181A41469B00334720 /* NSData+ImageContentType.m in Sources */,
+				94B390181A79EBBC007C33F6 /* UIViewController+RESideMenu.m in Sources */,
 				94A48EFA1A62C11C00BD47AE /* BUCKETS.m in Sources */,
 				94234B061A3C7AC600330AEA /* MJRefreshFooterView.m in Sources */,
 				94210F881A3E8C9800D40E18 /* UIWebView+AFNetworking.m in Sources */,
-				94A1830D1A5D0EE6004A173F /* REFrostedContainerViewController.m in Sources */,
 				94210F621A3E891100D40E18 /* AFHTTPSessionManager.m in Sources */,
 				94210F631A3E891100D40E18 /* AFNetworkReachabilityManager.m in Sources */,
 				94BE021A1A41469B00334720 /* SDWebImageCompat.m in Sources */,
@@ -1332,6 +1317,7 @@
 				94BE021B1A41469B00334720 /* SDWebImageDecoder.m in Sources */,
 				94210F641A3E891100D40E18 /* AFSecurityPolicy.m in Sources */,
 				94BE021C1A41469B00334720 /* SDWebImageDownloader.m in Sources */,
+				94B390171A79EBBC007C33F6 /* RESideMenu.m in Sources */,
 				9445FF251A63E97700698A61 /* BucketsDetailVC.m in Sources */,
 				94210F861A3E8C9800D40E18 /* UIProgressView+AFNetworking.m in Sources */,
 				94A48EEE1A62C11B00BD47AE /* SHOTS.m in Sources */,
@@ -1340,7 +1326,6 @@
 				94BE02231A41469B00334720 /* UIImage+WebP.m in Sources */,
 				94210F841A3E8C9800D40E18 /* UIButton+AFNetworking.m in Sources */,
 				94234AA91A3C681B00330AEA /* AppDelegate.m in Sources */,
-				94A183111A5D0EE6004A173F /* UIViewController+REFrostedViewController.m in Sources */,
 				94B4CB331A4931E800075856 /* FollowCell.m in Sources */,
 				94A48EF11A62C11C00BD47AE /* USER.m in Sources */,
 				94234B0A1A3C7AC600330AEA /* UIView+MJExtension.m in Sources */,
@@ -1353,7 +1338,6 @@
 				94234B091A3C7AC600330AEA /* UIScrollView+MJRefresh.m in Sources */,
 				94210F831A3E8C9800D40E18 /* UIAlertView+AFNetworking.m in Sources */,
 				94BE02261A41469B00334720 /* UIView+WebCacheOperation.m in Sources */,
-				94A1830E1A5D0EE6004A173F /* REFrostedViewController.m in Sources */,
 				94BE021F1A41469B00334720 /* SDWebImagePrefetcher.m in Sources */,
 				94234AA61A3C681B00330AEA /* main.m in Sources */,
 				94234B051A3C7AC600330AEA /* MJRefreshConst.m in Sources */,
@@ -1365,15 +1349,13 @@
 				94210F661A3E891100D40E18 /* AFURLRequestSerialization.m in Sources */,
 				946E29181A57E01C00713B4E /* ShotsVC.m in Sources */,
 				94BE021D1A41469B00334720 /* SDWebImageDownloaderOperation.m in Sources */,
-				94A1830C1A5D0EE6004A173F /* RECommonFunctions.m in Sources */,
-				94A183101A5D0EE6004A173F /* UIView+REFrostedViewController.m in Sources */,
+				94B390161A79EBBC007C33F6 /* RECommonFunctions.m in Sources */,
 				94068FEB1A5EA86D00543FF1 /* BucketsCell.m in Sources */,
 				94210F811A3E8C9800D40E18 /* AFNetworkActivityIndicatorManager.m in Sources */,
 				94210F601A3E891100D40E18 /* AFHTTPRequestOperation.m in Sources */,
 				94BE02251A41469B00334720 /* UIImageView+WebCache.m in Sources */,
 				94210F821A3E8C9800D40E18 /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				94210F671A3E891100D40E18 /* AFURLResponseSerialization.m in Sources */,
-				94A1830F1A5D0EE6004A173F /* UIImage+REFrostedViewController.m in Sources */,
 				94A48EF71A62C11C00BD47AE /* COMMENTS.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1493,7 +1475,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Drilight/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1511,7 +1493,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Drilight/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

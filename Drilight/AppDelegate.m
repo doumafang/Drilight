@@ -7,7 +7,7 @@
 
 #import "SignVC.h"
 
-#import "REFrostedViewController.h"
+#import "RESideMenu.h"
 
 #import "AFNetworkActivityIndicatorManager.h"
 
@@ -44,10 +44,7 @@
 //    [[NSUserDefaults standardUserDefaults]setObject:@"757ba868501cb304d88db72cc2d005b4d59392c5ad734f9938668198d5842596" forKey:@"access_token"];
 //    [[NSUserDefaults standardUserDefaults]synchronize];
     
-    REFrostedViewController *sideV = [[REFrostedViewController alloc]initWithContentViewController:navC menuViewController:self.listVC];
- 
-    sideV.menuViewSize = CGSizeMake(SCREENX * 4/5, SCREENY);
- 
+    RESideMenu *sideV = [[RESideMenu alloc]initWithContentViewController:navC leftMenuViewController:self.listVC rightMenuViewController:nil];
     self.window.rootViewController = sideV;
     
     

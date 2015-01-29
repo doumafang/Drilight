@@ -17,7 +17,7 @@
 
 //frame
 #import "MJRefresh.h"
-#import "REFrostedViewController.h"
+#import "RESideMenu.h"
 #import "AFNetworking.h"
 #import "UIImageView+WebCache.h"
 #import "UIImageView+AFNetworking.h"
@@ -152,7 +152,7 @@
 
 -(void)leftAction
 {
-    [self.frostedViewController presentMenuViewController];
+    [self.sideMenuViewController presentLeftMenuViewController];
 }
 
 

@@ -4,7 +4,8 @@
 #import "AFNetworking.h"
 #import "UIImageView+AFNetworking.h"
 #import "USER.h"
-#import "REFrostedViewController.h"
+#import "RESideMenu.h"
+
 #import "DEFINE.h"
 #import "ShotsVC.h"
 
@@ -266,8 +267,8 @@
         case 0:
             switch (indexPath.row) {
                 case 0:
-                    [self.frostedViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:[[ShotsVC alloc]init]]];
-                    [self.frostedViewController hideMenuViewController];
+                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:[[ShotsVC alloc]init]]];
+                    [self.sideMenuViewController hideMenuViewController];
                     break;
                 case 1:
                     
