@@ -31,8 +31,10 @@
 
 @property AppDelegate *myDelegate;
 @property NSString *access_token;
+@property NSString *sortStr;
 @property NSUserDefaults *userDefaults;
 @property UICollectionView *CV;
+@property UIView *selectView;
 @property (nonatomic)  NSFetchedResultsController *fRC;
 
 @end
@@ -70,18 +72,26 @@
     
     [super viewDidLoad];
     
+    
+    if (self.listStr == nil) {
+        self.listStr = @"completed";
+    }
+    if (self.sortStr == nil) {
+        self.sortStr = @"popularity";
+    }
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:@"refresh" object:nil];
 
     self.myDelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
     self.userDefaults = [NSUserDefaults standardUserDefaults];
     self.access_token = [self.userDefaults objectForKey:@"access_token"];
 
-
     self.view.backgroundColor = BG_COLOR;
     self.automaticallyAdjustsScrollViewInsets = NO;
 
     
     [self setNav];
+    
     [self setCV];
     
     NSLog(@"%@",NSHomeDirectory());
@@ -95,33 +105,65 @@
 
 -(void) setCV
 {
-    UICollectionViewFlowLayout *popularVFL = [[UICollectionViewFlowLayout alloc]init];
-    popularVFL.itemSize = CGSizeMake((SCREENX/2)-9, (SCREENX/2)-9);
-    popularVFL.sectionInset = UIEdgeInsetsMake(6, 6, 6, 6);
-    popularVFL.minimumInteritemSpacing = 3;
-    popularVFL.minimumLineSpacing = 6;
+    UICollectionViewFlowLayout *shotsVFL = [[UICollectionViewFlowLayout alloc]init];
+    shotsVFL.itemSize = CGSizeMake((SCREENX/2)-9, (SCREENX/2)-9);
+    shotsVFL.sectionInset = UIEdgeInsetsMake(6, 6, 6, 6);
+    shotsVFL.minimumInteritemSpacing = 3;
+    shotsVFL.minimumLineSpacing = 6;
     
-    UICollectionView *popularCV = [[UICollectionView alloc]initWithFrame:self.view.frame collectionViewLayout:popularVFL];
-    popularCV.backgroundColor = BG_COLOR;
-    popularCV.delegate = self;
-    popularCV.dataSource = self;
+    UICollectionView *shotsCV = [[UICollectionView alloc]initWithFrame:self.view.frame collectionViewLayout:shotsVFL];
+    shotsCV.backgroundColor = BG_COLOR;
+    shotsCV.delegate = self;
+    shotsCV.dataSource = self;
     
-    static NSString * POPULAR_REStr = @"POPULAR_RE";
+    static NSString * SHOTS_RE = @"SHOTS_RE";
 
-    [popularCV registerClass:[ShotsCell class] forCellWithReuseIdentifier:POPULAR_REStr];
-    [popularCV addHeaderWithTarget:self action:@selector(headerNetAction)];
-    [popularCV addFooterWithTarget:self action:@selector(footerNetAction)];
-    _CV = popularCV;
-    popularCV.drilight.bounds = CGRectMake(0, 0, 0, 0);
+    [shotsCV registerClass:[ShotsCell class] forCellWithReuseIdentifier:SHOTS_RE];
+    [shotsCV addHeaderWithTarget:self action:@selector(headerNetAction)];
+    [shotsCV addFooterWithTarget:self action:@selector(footerNetAction)];
+    _CV = shotsCV;
+    shotsCV.drilight.bounds = CGRectMake(0, 0, 0, 0);
     
     
     if (self.access_token) {
-        [popularCV headerBeginRefreshing];
+        [shotsCV headerBeginRefreshing];
     }
     
     self.view = self.CV;
 
+    
+    UIView *selectView = [[UIView alloc]initWithFrame:CGRectMake(6, 6 - 50, SCREENX - 12 , 0)];
+    selectView.backgroundColor = [UIColor whiteColor];
+    selectView.alpha = 0.0f;
+    
+    NSArray *array = @[@"popularity",@"views",@"comments",@"recent"];
+    float sumX = 20;
+    for (NSInteger i = 0 ; i < array.count; i ++ ) {
+        UIButton *button = [[UIButton alloc]init];
+        
+        UIFont *font = [UIFont fontWithName:@"Nexa Bold" size:15];
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+        paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+        NSDictionary *attributes = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:paragraphStyle.copy};
+        CGSize size = [array[i] boundingRectWithSize:CGSizeMake(SCREENX - 32, 10000) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
+        button.tag = i;
+        [button addTarget:self action:@selector(chooseSort:) forControlEvents:UIControlEventTouchUpInside];
+        button.frame = CGRectMake(sumX ,10, size.width+10, 30);
+
+        [button setTitle:array[i] forState:UIControlStateNormal];
+        [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [button.titleLabel setFont:font];
+        [button.titleLabel setTextAlignment:NSTextAlignmentCenter];
+        
+        [selectView addSubview:button];
+        sumX = sumX + size.width + 30;
+    }
+    [self.CV addSubview:_selectView = selectView];
+    
 }
+
+
+
 
 #pragma mark -
 #pragma mark SetNav
@@ -129,15 +171,24 @@
 -(void)setNav
 {
     UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, UI_NAVIGATION_BAR_HEIGHT, UI_NAVIGATION_BAR_HEIGHT)];
-    titleLabel.text = @"Popular";
+    
+    NSString *str = [self.listStr capitalizedStringWithLocale:[NSLocale currentLocale]];
+    
+    titleLabel.text = str;
     titleLabel.textColor = [UIColor whiteColor];
     titleLabel.userInteractionEnabled = YES;
-    [titleLabel setFont:[UIFont fontWithName:@"Honduro" size:20]];
+    [titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:18]];
     self.navigationItem.titleView = titleLabel;
     
     
     UIBarButtonItem *leftBBI = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"leftBBI"] landscapeImagePhone:nil style:UIBarButtonItemStylePlain target:self action:@selector(leftAction)];
     self.navigationItem.leftBarButtonItem = leftBBI;
+    
+    
+    
+    UIBarButtonItem *rightBBI = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(selectAction)];
+    self.navigationItem.rightBarButtonItem = rightBBI;
+    
     
     
     NSDictionary * attributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName, nil];
@@ -155,7 +206,44 @@
     [self.sideMenuViewController presentLeftMenuViewController];
 }
 
+-(void)selectAction
+{
+    BOOL hiden = self.CV.drilight.hidden;
+    if (hiden) {
+        [UIView animateWithDuration:0.4f animations:^{
+            self.CV.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+            self.CV.contentOffset = CGPointMake(0, 0);
+            self.selectView.alpha = 0.0f;
+            
+            self.selectView.frame = CGRectMake(6, 6, SCREENX - 12 , 0);
+        }];
+        self.CV.drilight.hidden = NO;
 
+    }
+    else
+    {
+        self.CV.drilight.hidden = YES;
+        [UIView animateWithDuration:0.5f animations:^{
+            self.CV.contentInset = UIEdgeInsetsMake(50, 0, 0, 0);
+            self.CV.contentOffset = CGPointMake(0, -50);
+            self.selectView.alpha = 0.7f;
+            self.selectView.frame = CGRectMake(6, 6 - 50, SCREENX - 12 , 44);
+        }];
+
+    }
+    
+    
+}
+
+
+-(void)chooseSort:(UIButton *)button
+{
+    NSArray *array = @[@"popularity",@"views",@"comments",@"recent"];
+
+
+    self.sortStr = array[button.tag];
+    [self headerNetAction];
+}
 #pragma mark -
 #pragma mark NetAction
 
@@ -163,7 +251,8 @@
 {
     BACK((^{
 
-        NSString *str = [POPULAR_API stringByAppendingString:self.access_token];
+        NSString *str = [NSString stringWithFormat: @"https://api.dribbble.com/v1/shots?list=%@&access_token=%@&sort=%@",self.listStr,self.access_token,self.sortStr];
+        
         NSURL *url = [NSURL URLWithString:[str stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         NSURLRequest * request = [NSURLRequest requestWithURL:url];
         
@@ -171,20 +260,6 @@
         operation.responseSerializer = [AFJSONResponseSerializer serializer];
         [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
             NSArray *array = (NSArray *)responseObject;
-            
-            NSString *lastModified = [[operation.response allHeaderFields] valueForKey:@"Last-Modified"];
-            NSString *oldModified = [self.userDefaults objectForKey:@"POPULAR_OLD"];
-            
-            if ([lastModified isEqualToString:oldModified]) {
-                
-                MAIN(^{
-                    [self.CV headerEndRefreshing];
-                });
-                
-                return;
-            }
-            
-            [self.userDefaults setObject:lastModified forKey:@"POPULAR_OLD"];
             
             NSInteger x = 0;
             
@@ -199,7 +274,7 @@
                     object.shot_description = [dic objectForKey:@"description"];
                 }
                 
-                object.source = @"POPULAR";
+                object.source = self.listStr;
                 object.title = [dic objectForKey:@"title"];
                 object.likes_count = [[dic objectForKey:@"likes_count"]stringValue];
                 object.comments_count = [[dic objectForKey:@"comments_count"]stringValue];
@@ -281,7 +356,7 @@
     __block NSInteger itmes = [sectionInfo numberOfObjects];
     NSInteger numbers = itmes/12+1;
     
-    NSString *footAPIStr = [NSString stringWithFormat:@"https://api.dribbble.com/v1/shots?access_token=%@&page=%lu",self.access_token,numbers];
+    NSString *footAPIStr = [NSString stringWithFormat:@"https://api.dribbble.com/v1/shots?access_token=%@&page=%lu&list=%@&sort=%@",self.access_token,numbers,self.listStr,self.sortStr];
     
     BACK((^{
         NSURL *url = [NSURL URLWithString:[footAPIStr stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
@@ -303,7 +378,7 @@
                     object.shot_description = [dic objectForKey:@"description"];
                 }
                 
-                object.source = @"POPULAR";
+                object.source = self.listStr;
                 object.title = [dic objectForKey:@"title"];
                 object.likes_count = [[dic objectForKey:@"likes_count"]stringValue];
                 object.comments_count = [[dic objectForKey:@"comments_count"]stringValue];
@@ -384,9 +459,9 @@
 
 -(UICollectionViewCell * )collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString * POPULAR_REStr = @"POPULAR_RE";
+    static NSString * SHOTS_RE = @"SHOTS_RE";
     
-    ShotsCell *shotsCell = (ShotsCell *)[collectionView dequeueReusableCellWithReuseIdentifier:POPULAR_REStr forIndexPath:indexPath];
+    ShotsCell *shotsCell = (ShotsCell *)[collectionView dequeueReusableCellWithReuseIdentifier:SHOTS_RE forIndexPath:indexPath];
     [self configureCell:shotsCell atIndexPath:indexPath];
     return shotsCell;
 }
@@ -474,7 +549,6 @@
 }
 
 
-
 -(void)drilightBeginScale :(CGFloat )y
 {
     CGFloat drilightX = _CV.frame.origin.x;
@@ -497,7 +571,7 @@
     
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc]init];
     
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"SHOTS"inManagedObjectContext:self.myDelegate.managedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"SHOTS" inManagedObjectContext:self.myDelegate.managedObjectContext];
     
     [fetchRequest setEntity:entity];
     
@@ -507,11 +581,10 @@
     [fetchRequest setSortDescriptors:sortDescriptors];
     
     //属性
-    NSString *str = @"POPULAR";
-    NSPredicate * cdt = [NSPredicate predicateWithFormat:@"source = %@",str];
+    NSPredicate * cdt = [NSPredicate predicateWithFormat:@"source = %@",self.listStr];
     [fetchRequest setPredicate:cdt];
 
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:fetchRequest managedObjectContext:self.myDelegate.managedObjectContext sectionNameKeyPath:nil cacheName:@"POPULAR"];
+    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:fetchRequest managedObjectContext:self.myDelegate.managedObjectContext sectionNameKeyPath:nil cacheName:self.listStr];
     
     aFetchedResultsController.delegate = self;
     

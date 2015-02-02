@@ -24,9 +24,7 @@
 	<true/>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Honduro.otf</string>
 		<string>Nexa Bold.otf</string>
-		<string>Nexa Light.otf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

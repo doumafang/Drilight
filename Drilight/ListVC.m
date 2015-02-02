@@ -8,6 +8,9 @@
 
 #import "DEFINE.h"
 #import "ShotsVC.h"
+#import "SettingVC.h"
+
+
 
 @interface ListVC ()<UITableViewDataSource,UITableViewDelegate>
 {
@@ -32,7 +35,6 @@
     self.myDelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
 
 
-    
     UIImageView *avatarV = [[UIImageView alloc]initWithFrame:CGRectMake(viewX/3,viewX/2-50 , viewX/3, viewX/3)];
     avatarV.layer.borderColor = [UIColor whiteColor].CGColor;
     avatarV.layer.borderWidth = 2.0f;
@@ -53,7 +55,7 @@
     userL.textAlignment = NSTextAlignmentCenter;
     userL.userInteractionEnabled = YES;
     userL.textColor = [UIColor whiteColor];
-    userL.font = [UIFont fontWithName:@"Nexa Light" size:13];
+    userL.font = [UIFont fontWithName:@"Nexa Bold" size:13];
     [self.view addSubview:userL];
     _userL = userL;
     
@@ -175,26 +177,23 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    int number = 3;
+    int number = 6;
     
     switch (section) {
         case 0:
-            number = 3;
+            number = 6;
             break;
         case 1:
-            number = 3;
-            break;
-        case 2:
             number = 1;
             break;
-    }
+         }
     return number;
 }
 
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 3;
+    return 2;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
@@ -210,7 +209,7 @@
 {
     UIView *footV = [[UIView alloc]init];
     footV.backgroundColor = [UIColor clearColor];
-    if (section == 0|section == 1) {
+    if (section == 0) {
         UIView *lineV =[[UIView alloc]initWithFrame:CGRectMake(15, 10, 90, 0.5)];
         lineV.backgroundColor = [UIColor whiteColor];
         [footV addSubview:lineV];
@@ -220,20 +219,12 @@
 }
 -(UITableViewCell * )tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSArray * menuArray1 = [NSArray arrayWithObjects:@"Popular",@"Recent",@"Debuts",nil];
-    NSArray * menuArray2 = [NSArray arrayWithObjects:@"Home",@"Likes",@"Bucket",nil];
-    NSArray * menuArray3 = [NSArray arrayWithObjects:@"Setting", nil];
-    NSArray *menyArray  = [NSArray arrayWithObjects:menuArray1, menuArray2,menuArray3,nil];
-    NSArray * imageArray1_1 = @[@"popular_1", @"recent_1", @"debuts_1"];
-    NSArray * imageArray1_2 = @[@"following_1", @"likes_1",@"bucket_1"];
-    NSArray * imageArray1_3 = @[@"settings_1"];
+    NSArray * menuArray1 = [NSArray arrayWithObjects:@"Completed",@"Animated",@"Debuts",@"Playoffs",@"Rebounds",@"Teams",nil];
+    NSArray * menuArray2 = [NSArray arrayWithObjects:@"Setting", nil];
     
-    NSArray *imageArray1 = [NSArray arrayWithObjects:imageArray1_1,imageArray1_2,imageArray1_3, nil];
-    NSArray * imageArray2_1 = @[@"popular_2", @"recent_2", @"debuts_2"];
-    NSArray * imageArray2_2 = @[@"following_2", @"likes_2",@"bucket_2"];
-    NSArray * imageArray2_3 = @[@"settings_2"];
+    NSArray *menuArray  = [NSArray arrayWithObjects:menuArray1, menuArray2,nil];
     
-    NSArray *imageArray2 = [NSArray arrayWithObjects:imageArray2_1,imageArray2_2,imageArray2_3, nil];
+    
     
     static NSString *douma = @"douma";
     
@@ -243,16 +234,12 @@
     }
     listCells.backgroundColor = [UIColor clearColor];
     listCells.tintColor = [UIColor whiteColor];
-    listCells.textLabel.font = [UIFont fontWithName:@"Nexa Light" size:15];
+    listCells.textLabel.font = [UIFont systemFontOfSize:15];
     listCells.textLabel.textColor = [UIColor whiteColor];
     listCells.textLabel.highlightedTextColor = [UIColor colorWithRed:254/255.0 green:142/255.0 blue:185/255.0 alpha:1.0];
-    NSArray *array_1 = [imageArray1 objectAtIndex:indexPath.section];
-    listCells.imageView.image = [UIImage imageNamed:[array_1 objectAtIndex:indexPath.row]];
-    NSArray *array_2 = [imageArray2 objectAtIndex:indexPath.section];
-    listCells.imageView.highlightedImage =[UIImage imageNamed:[array_2 objectAtIndex:indexPath.row]];
     
-    NSArray *array1 = [menyArray objectAtIndex:indexPath.section];
-    listCells.textLabel.text = [array1 objectAtIndex:indexPath.row];
+   
+    listCells.textLabel.text = [[menuArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
     listCells.selectionStyle = UITableViewCellSelectionStyleBlue;
     listCells.selectedBackgroundView = [[UIView alloc]initWithFrame:listCells.frame];
     listCells.selectedBackgroundView.backgroundColor = [UIColor clearColor];
@@ -267,33 +254,73 @@
         case 0:
             switch (indexPath.row) {
                 case 0:
-                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:[[ShotsVC alloc]init]]];
+                {
+                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
+                    shotsVC.listStr = @"completed";
+                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
+                    
                     [self.sideMenuViewController hideMenuViewController];
+                }
                     break;
                 case 1:
+                {
+                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
+                    shotsVC.listStr = @"animated";
+                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
                     
+                    [self.sideMenuViewController hideMenuViewController];
+                }
+
                     break;
                 case 2:
+                {
+                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
+                    shotsVC.listStr = @"debuts";
+                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
+                    
+                    [self.sideMenuViewController hideMenuViewController];
+                }
                     break;
+                case 3:
+                {
+                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
+                    shotsVC.listStr = @"playoffs";
+                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
+                    
+                    [self.sideMenuViewController hideMenuViewController];
+                }
+                    break;
+                case 4:
+                {
+                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
+                    shotsVC.listStr = @"rebounds";
+                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
+                    
+                    [self.sideMenuViewController hideMenuViewController];
+                }
+
+
+                    break;
+                case 5:
+                {
+                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
+                    shotsVC.listStr = @"teams";
+                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
+                    [self.sideMenuViewController hideMenuViewController];
+                }
+                    break;
+
             }
             break;
         case 1:
-            switch (indexPath.row) {
-                case 0:
-                   
-                    
-                    break;
-                case 1:
-                    
-                    break;
-                case 2:
+        {
+            SettingVC *settingVC =[[SettingVC alloc]init];
+            [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:settingVC] animated:YES ];
+            [self.sideMenuViewController hideMenuViewController];
 
-                    break;
-            }
-            break;
-        case 2:
-                    break;
-    }
+        }
+                break;
+       }
     
 }
 

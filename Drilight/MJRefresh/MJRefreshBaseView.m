@@ -155,8 +155,7 @@
             } else {
                 
                 [self drilightEndAnimation];
-                // 停止转圈圈
-//                [self drilightEndAnimation];
+
 
             }
 			break;

@@ -6,6 +6,7 @@
 #import "UserVC.h"
 #import "DetailVC.h"
 #import "BucketsDetailVC.h"
+#import "BucketsVC.h"
 
 
 //model
@@ -18,6 +19,7 @@
 #import "ShotsCell.h"
 #import "FollowCell.h"
 #import "BucketsCell.h"
+
 
 //frame
 #import "MJRefresh.h"
@@ -558,7 +560,6 @@ static NSInteger followersN = 12;
             bucketsCV.delegate = self;
             bucketsCV.dataSource = self;
             bucketsCV.scrollEnabled = NO;
-            [bucketsCV addFooterWithTarget:self action:nil];
             [bucketsCV registerClass:[BucketsCell class] forCellWithReuseIdentifier:bucketsRI];
             _bucketsCV = bucketsCV;
             [view addSubview:bucketsCV];
@@ -582,6 +583,7 @@ static NSInteger followersN = 12;
             seeAllB.layer.cornerRadius = 2;
             seeAllB.titleLabel.textAlignment = NSTextAlignmentCenter;
             seeAllB.titleLabel.adjustsFontSizeToFitWidth = YES;
+            [seeAllB addTarget:self action:@selector(seeAllButtonAction) forControlEvents:UIControlEventTouchUpInside];
             [seeAllB setTitle:@"See all" forState:UIControlStateNormal];
             [seeAllB setTitleColor:headerL.textColor forState:UIControlStateNormal];
             seeAllB.titleLabel.font = [UIFont fontWithName:@"Nexa Bold" size:11];
@@ -637,6 +639,17 @@ static NSInteger followersN = 12;
     }
     
     
+}
+
+-(void)seeAllButtonAction
+{
+    BucketsVC *bucketsVC = [[BucketsVC alloc]init];
+    NSManagedObjectID * userObjectID= [self.user objectID];
+    bucketsVC.userObjectID  = userObjectID;
+    bucketsVC.userID = self.userID;
+    [self.navigationController pushViewController:bucketsVC animated:YES];
+    
+
 }
 
 #pragma mark - NetAction
@@ -975,6 +988,7 @@ static NSInteger followersN = 12;
             for (NSDictionary *dic in array) {
                 BUCKETS *buckets = EntityObjects(@"BUCKETS");
                 buckets.user = self.user;
+
                 if ([[dic objectForKey:@"description"]class] != [NSNull class]) {
                     buckets.bucketdescription = [dic objectForKey:@"description"];
                 }
@@ -1022,7 +1036,7 @@ static NSInteger followersN = 12;
                 object.created_at = [shotDic objectForKey:@"created_at"];
                 object.i = [NSNumber numberWithInteger:x];
                 object.buckets = buckets;
-                
+                object.source = @"page_user";
                 USER *user = EntityObjects(@"USER");
                 object.user = user;
                 
@@ -1689,6 +1703,22 @@ static NSInteger followersN = 12;
         userVC.userObjectID = userObjectID;
         [self.navigationController pushViewController:userVC animated:YES];
     }
+    
+    if (collectionView == _bucketsCV) {
+        
+        BucketsDetailVC *bucketsDetailVC = [[BucketsDetailVC alloc]init];
+        BUCKETS *buckets = [_bucketsFRC objectAtIndexPath:indexPath];
+        NSManagedObjectID *bucketsObjectID = [buckets objectID];
+        bucketsDetailVC.bucketsID = buckets.bucketID;
+        bucketsDetailVC.bucketsObjectID = bucketsObjectID;
+        [self.navigationController pushViewController:bucketsDetailVC animated:YES];
+        
+        
+        
+    }
+    
+    
+    
 }
 
 
@@ -1943,11 +1973,11 @@ static NSInteger followersN = 12;
 -(void)setNavigationBar
 {
     
-    UILabel *titlLabel = [[UILabel alloc]initWithFrame:CGRectMake(150, 0, 30, 40)];
-    titlLabel.text = self.user.name;
-    titlLabel.textColor = [UIColor whiteColor];
-    [titlLabel setFont:[UIFont fontWithName:@"Honduro" size:20]];
-    self.navigationItem.titleView = titlLabel;
+    UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(150, 0, 30, 40)];
+    titleLabel.text = self.user.name;
+    titleLabel.textColor = [UIColor whiteColor];
+    [titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:18]];
+    self.navigationItem.titleView = titleLabel;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
     
 

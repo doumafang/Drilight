@@ -148,7 +148,7 @@
     [self hideMenuViewControllerAnimated:YES];
 }
 
-- (void)setContentViewController:(UIViewController *)contentViewController animated:(BOOL)animated
+- (void)setContentViewController:(UIViewController *)contentViewController animated:(BOOL)animated 
 {
     if (_contentViewController == contentViewController)
     {
@@ -161,6 +161,7 @@
         [self addChildViewController:contentViewController];
         contentViewController.view.alpha = 0;
         contentViewController.view.frame = self.contentViewContainer.bounds;
+        
         [self.contentViewContainer addSubview:contentViewController.view];
         [UIView animateWithDuration:self.animationDuration animations:^{
             contentViewController.view.alpha = 1;

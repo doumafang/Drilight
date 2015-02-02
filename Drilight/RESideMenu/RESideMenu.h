@@ -25,6 +25,7 @@
 
 #import <UIKit/UIKit.h>
 #import "UIViewController+RESideMenu.h"
+#import "ShotsVC.h"
 
 #ifndef IBInspectable
 #define IBInspectable

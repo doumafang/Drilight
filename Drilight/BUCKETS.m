@@ -17,6 +17,8 @@
 @dynamic bucketID;
 @dynamic name;
 @dynamic shots_count;
+@dynamic source;
+@dynamic shots_lastmodified;
 @dynamic user;
 @dynamic shots;
 

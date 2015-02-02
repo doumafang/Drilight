@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14C81h" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14C94b" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="BUCKETS" representedClassName="BUCKETS" syncable="YES">
         <attribute name="bucketdescription" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="bucketID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="shots_count" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="shots_lastmodified" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="source" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="shots" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SHOTS" inverseName="buckets" inverseEntity="SHOTS" syncable="YES"/>
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="USER" inverseName="buckets" inverseEntity="USER" syncable="YES"/>
     </entity>
@@ -76,7 +78,7 @@
         <relationship name="shots" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SHOTS" inverseName="user" inverseEntity="SHOTS" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BUCKETS" positionX="-270" positionY="117" width="128" height="135"/>
+        <element name="BUCKETS" positionX="-270" positionY="117" width="128" height="163"/>
         <element name="COMMENTS" positionX="-252" positionY="99" width="128" height="163"/>
         <element name="IMAGES" positionX="18" positionY="117" width="128" height="105"/>
         <element name="SHOTS" positionX="-470" positionY="23" width="128" height="313"/>

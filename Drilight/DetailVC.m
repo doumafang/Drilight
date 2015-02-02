@@ -89,7 +89,7 @@ static NSString *cellRe = @"cell";
     titleLabel.text = self.shot.title;
     titleLabel.textColor = [UIColor whiteColor];
     titleLabel.adjustsFontSizeToFitWidth = YES;
-    [titleLabel setFont:[UIFont fontWithName:@"Honduro" size:20]];
+    [titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:18]];
     self.navigationItem.titleView = titleLabel;
     titleLabel.userInteractionEnabled = YES;
     
@@ -339,7 +339,6 @@ static NSString *cellRe = @"cell";
     if (shotLike) {
         
         [self cancelLike:button];
-        
     }
     else
     {
