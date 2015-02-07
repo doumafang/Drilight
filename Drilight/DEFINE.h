@@ -4,7 +4,7 @@
 #define Drilight_DEFINE_h
 
 //颜色
-#define BG_COLOR [UIColor colorWithRed:220/255.0f green:220/255.0f blue:220/255.0f alpha:1.0]
+#define BG_COLOR [UIColor colorWithRed:239/255.0f green:239/255.0f blue:244/255.0f alpha:1.0]
 #define TEXTCOLOR [UIColor colorWithRed:200/255.0 green:200/255.0 blue:200/255.0 alpha:1.0]
 
 

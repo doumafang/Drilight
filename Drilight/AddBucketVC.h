@@ -7,10 +7,6 @@
 
 @interface AddBucketVC : UIViewController
 
-
-+ (AddBucketVC *)mainAdd;
-
 +(void)addBucketShow:(SHOTS *)shots inButton:(UIButton *)button;
-
 
 @end

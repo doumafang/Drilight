@@ -20,17 +20,15 @@
 #import "AvatarV.h"
 
 //frame
-#import "UIImageView+WebCache.h"
 #import "AFNetworking.h"
-
+#import "FLAnimatedImage.h"
+#import "FLAnimatedImageView+AFNetworking.h"
+#import "MJRefresh.h"
 
 @interface DetailVC ()<UITableViewDataSource,UITableViewDelegate,NSFetchedResultsControllerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate>
 {
     UIView * _bigBG;
     UIButton *_likeB;
-    
-
-
 }
 @property AppDelegate * myDelegate;
 @property UITableView * commentsView;
@@ -73,9 +71,12 @@ static NSString *cellRe = @"cell";
     [self.commentsView registerClass:[CommentsCell class] forCellReuseIdentifier:cellRe];
     self.commentsView.tableHeaderView = _bigBG;
     self.commentsView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
+    [self.commentsView addHeaderWithTarget:self action:@selector(commentsRefresh)];
     self.view = self.commentsView;
-    [self commentsAction];
+    
+    [self.commentsView performSelector:@selector(headerBeginRefreshing) withObject:self afterDelay:0.6f];
+    
+
     
 }
 
@@ -95,16 +96,13 @@ static NSString *cellRe = @"cell";
     
     UIBarButtonItem *leftBBI = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"back"] landscapeImagePhone:nil style:UIBarButtonItemStylePlain target:self action:@selector(backAction)];
     self.navigationItem.leftBarButtonItem = leftBBI;
-    
-    UIBarButtonItem *rightBBI = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"share"] landscapeImagePhone:nil style:UIBarButtonItemStylePlain target:self action:nil];
-    self.navigationItem.rightBarButtonItem = rightBBI;
-    
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
 }
 
 -(void)backAction
 {
     [self.navigationController popViewControllerAnimated:YES];
+    self.view = nil;
 }
 
 #pragma mark -
@@ -122,35 +120,66 @@ static NSString *cellRe = @"cell";
     whiteBG.layer.cornerRadius = 1.5f;
     [bigBG addSubview:whiteBG];
     
-    
-    UIImageView *shotsV = [[UIImageView alloc]initWithFrame:CGRectMake(4, 4, whiteBG.frame.size.width-8, (whiteBG.frame.size.width-8)*3/4)];
+    IMAGES *images = _shot.images;
+    NSURL *normalUrl = [NSURL URLWithString:images.normal];
+
+
+    FLAnimatedImageView *shotsV = [[FLAnimatedImageView alloc]initWithFrame:CGRectMake(4, 4, whiteBG.frame.size.width-8, (whiteBG.frame.size.width-8)*3/4)];
     shotsV.layer.masksToBounds = YES;
     shotsV.layer.cornerRadius = 2.0f;
     shotsV.userInteractionEnabled = YES;
+    
+
+    NSRange range = [images.teaser rangeOfString:@"teaser"];
+    NSString *str = [images.teaser substringFromIndex:range.location+6];
+    
+    if ([str isEqualToString:@".gif"]) {
+        
+        if (images.hidpi != nil) {
+            NSURL *hidpiURL = [NSURL URLWithString:images.hidpi];
+            NSURLRequest *request = [NSURLRequest requestWithURL:hidpiURL];
+            [shotsV setAnimatedImageWithURLRequest:request
+                                  placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]
+                                           success:nil
+                                           failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
+                                           }];
+            
+        }
+        else
+        {
+            NSURLRequest *request = [NSURLRequest requestWithURL:normalUrl];
+            [shotsV setAnimatedImageWithURLRequest:request
+                                  placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]
+                                           success:nil
+                                           failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
+                                           }];
+        }
+
+    }
+    else
+    {
+        if (images.hidpi != nil) {
+            NSURL *hidpiURL = [NSURL URLWithString:images.hidpi];
+            [shotsV setImageWithURL:hidpiURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+            
+        }
+        else
+        {
+            [shotsV setImageWithURL:normalUrl placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        }
+        
+    }
+    
+    
+    
     
     
     UITapGestureRecognizer *likeGR = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doubleLike)];
     likeGR.numberOfTapsRequired = 2;
     [shotsV addGestureRecognizer:likeGR];
-    
-    
-    
-    IMAGES *images = _shot.images;
-    NSURL *normalUrl = [NSURL URLWithString:images.normal];
-    
-    if (images.hidpi != nil) {
-        NSURL *hidpiURL = [NSURL URLWithString:images.hidpi];
-        [shotsV sd_setImageWithPreviousCachedImageWithURL:hidpiURL andPlaceholderImage:[UIImage imageNamed:@"shotsPlaceHolder"] options:SDWebImageRetryFailed | SDWebImageLowPriority  |SDWebImageProgressiveDownload progress:nil completed:nil];
-    }
-    else
-    {
-        [shotsV sd_setImageWithPreviousCachedImageWithURL:normalUrl andPlaceholderImage:[UIImage imageNamed:@"shotsPlaceHolder"] options:SDWebImageRetryFailed | SDWebImageLowPriority  |SDWebImageProgressiveDownload progress:nil completed:nil];
-    }
-    
     [whiteBG addSubview:shotsV];
-    
-    
-    
+
+ 
     NSArray *buttonArray = @[@"detail_comment",@"detail_bucket",@"detail_like"];
     
     float sum = 40;
@@ -179,11 +208,9 @@ static NSString *cellRe = @"cell";
     lineV.backgroundColor = RGBA(200, 200, 200, 1);
     lineV.opaque = YES ;
     [bigBG addSubview:lineV];
-
-    
-    
     
 }
+
 
 -(void)userV
 {
@@ -194,10 +221,10 @@ static NSString *cellRe = @"cell";
     CGSize descriptionSize = [self.shot.shot_description boundingRectWithSize:CGSizeMake(SCREENX - 90, 10000) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:descriptionA context:nil].size;
     
     AvatarV *avatarV = [[AvatarV alloc]initWithFrame:CGRectMake(0, (SCREENX-8)*3/4+66 , SCREENX, descriptionSize.height+110)];
-    
     NSURL *avatarURL = [NSURL URLWithString:self.shot.user.avatar_url];
     
-    [avatarV.avatarIV sd_setImageWithURL:avatarURL];
+    [avatarV.avatarIV setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
+    
     [avatarV.userL setText:self.shot.user.name];
     NSRange range = [self.shot.created_at rangeOfString:@"T"];
     
@@ -232,7 +259,7 @@ static NSString *cellRe = @"cell";
 #pragma mark - 
 #pragma mark  NetAction
 
--(void)commentsAction
+-(void)commentsRefresh
 {
     BACK((^{
 
@@ -248,9 +275,8 @@ static NSString *cellRe = @"cell";
             NSString *lastModified = [[operation.response allHeaderFields] valueForKey:@"Last-Modified"];
             
             if ([self.shot.commentslastmodified isEqualToString:lastModified]) {
-
+                [self.commentsView headerEndRefreshing];
                 return ;
-                
             }
             self.shot.commentslastmodified = lastModified;
             
@@ -311,8 +337,14 @@ static NSString *cellRe = @"cell";
 
                 [self douma_save];
         };
+            MAIN(^{
+                [self.commentsView headerEndRefreshing];
+            });
             
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            MAIN(^{
+                [self.commentsView headerEndRefreshing];
+            });
             NSLog(@"Error:%@ ___ %@",error ,[error userInfo]);
         }];
         [operation start];
@@ -345,6 +377,7 @@ static NSString *cellRe = @"cell";
         [self makeLike:button];
     }
 }
+
 -(void)doubleLike
 {
     BOOL shotLike = _likeB.selected;
@@ -513,13 +546,14 @@ static NSString *cellRe = @"cell";
         button.selected = YES;
     }];
 }
+
 #pragma mark -
 #pragma mark BucketsSeries
 
 -(void)addToBuckets:(UIButton *)button
 {
     [AddBucketVC addBucketShow:self.shot inButton:button];
-    [self.commentsView scrollRectToVisible:self.view.frame animated:NO];
+    [self.commentsView scrollRectToVisible:CGRectMake(0, -64, SCREENX, SCREENY) animated:NO];
 }
 
 #pragma mark -
@@ -626,7 +660,7 @@ static NSString *cellRe = @"cell";
     cell.timeL.frame = CGRectMake(self.view.frame.size.width - 120, commentSize.height+40 , 100 , 20);
     cell.lineV.frame = CGRectMake(cell.userL.frame.origin.x, commentSize.height+69, self.view.frame.size.width, 0.7f);
     NSURL *avatarURL = [NSURL URLWithString:object.user.avatar_url];
-    [cell.avatarIV sd_setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
+    [cell.avatarIV setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
     UITapGestureRecognizer *avatarTap = (UITapGestureRecognizer *)[cell.avatarIV.gestureRecognizers objectAtIndex:0];
     [avatarTap addTarget:self action:@selector(avatarAction:)];
         

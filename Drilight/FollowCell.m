@@ -22,6 +22,7 @@
         self.avatarV.layer.masksToBounds = YES;
         self.avatarV.layer.cornerRadius = _avatarV.frame.size.height/2;
          self.avatarV.opaque = YES;
+        self.avatarV.backgroundColor = [UIColor whiteColor];
         [self addSubview:_avatarV];
         
         

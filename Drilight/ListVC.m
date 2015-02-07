@@ -9,13 +9,13 @@
 #import "DEFINE.h"
 #import "ShotsVC.h"
 #import "SettingVC.h"
-
+#import "UserVC.h"
 
 
 @interface ListVC ()<UITableViewDataSource,UITableViewDelegate>
 {
     UIImageView *_avatarV;
-    UILabel *_userL;
+    UIButton *_userB;
 }
 @property  NSString * access_token;
 @property  AppDelegate * myDelegate;
@@ -25,7 +25,7 @@
 @implementation ListVC
 - (void)viewDidLoad {
     
-    float viewX = self.view.frame.size.width / 5*4 ;
+    float viewX = self.view.frame.size.width *0.67 ;
     float viewY = self.view.frame.size.height;
     
     [super viewDidLoad];
@@ -42,47 +42,56 @@
     avatarV.layer.cornerRadius = viewX/6;
     avatarV.userInteractionEnabled = YES;
     avatarV.opaque = YES;
+    [avatarV addGestureRecognizer:[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(avatarAction)]];
     [self.view addSubview:avatarV];
 
     
-    
-    
+
     _avatarV = avatarV;
     
     
-    
-    UILabel *userL = [[UILabel alloc]initWithFrame:CGRectMake(0, avatarV.frame.size.height+avatarV.frame.origin.y+10, viewX, 20)];
-    userL.textAlignment = NSTextAlignmentCenter;
-    userL.userInteractionEnabled = YES;
-    userL.textColor = [UIColor whiteColor];
-    userL.font = [UIFont fontWithName:@"Nexa Bold" size:13];
-    [self.view addSubview:userL];
-    _userL = userL;
+
     
     
-    UIView *lineV = [[UIView alloc]initWithFrame:CGRectMake(40, userL.frame.origin.y+userL.frame.size.height, viewX-80, 0.5)];
-    lineV.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:lineV];
-    
-    
-    
-    UITableView *listV = [[UITableView alloc]initWithFrame:CGRectMake(avatarV.frame.origin.x-15, userL.frame.size.height+userL.frame.origin.y+15, viewX/7*5, viewY-userL.frame.size.height-userL.frame.origin.y) style:UITableViewStyleGrouped];
+    UITableView *listV = [[UITableView alloc]initWithFrame:CGRectMake(viewX/7, viewY/3 - 20 , viewX/7*5, viewY-viewY/3) style:UITableViewStyleGrouped];
     listV.delegate = self;
     listV.dataSource = self;
     listV.scrollEnabled = NO;
     listV.backgroundColor = [UIColor clearColor];
     listV.separatorStyle = UITableViewCellSelectionStyleNone;
+//    listV.layer.borderColor = [UIColor yellowColor].CGColor;
+//    listV.layer.borderWidth = 0.5f;
     [self.view addSubview:listV];
+    
     
     if (self.access_token) {
         [self userNerAction];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userNerAction) name:@"refresh" object:nil];
-
     
 }
 
+-(void)avatarAction
+
+{
+    UserVC *userVC =[[UserVC alloc]init];
+    userVC.userID = self.user.userid;
+    userVC.userObjectID = [self.user objectID];
+    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:userVC] animated:YES ];
+    [self.sideMenuViewController hideMenuViewController];
+
+}
+
+-(CGFloat )sizeOfName:(NSString *)str
+{
+    UIFont *font = [UIFont systemFontOfSize:13];
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    NSDictionary *attributes = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:paragraphStyle.copy};
+    CGSize size = [str boundingRectWithSize:CGSizeMake(1000, 20) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
+    return size.width;
+}
 
 -(void)userNerAction
 {
@@ -103,23 +112,16 @@
             USER *user = EntityObjects(@"USER");
             
             user.source = @"self";
-            
             user.avatar_url = [dic objectForKey:@"avatar_url"];
-            
             user.name = [dic  objectForKey:@"name"];
-            
             user.userid = [[dic objectForKey:@"id"]stringValue];
-            
             user.shots_count = [[dic objectForKey:@"shots_count"]stringValue];
             user.likes_count = [[dic objectForKey:@"likes_count"]stringValue];
             user.buckets_count = [[dic objectForKey:@"buckets_count"]stringValue];
-            
             user.followers_count = [[dic objectForKey:@"followers_count"]stringValue];
             user.followings_count = [[dic objectForKey:@"followings_count"]stringValue];
-            
             user.pro = [[dic objectForKey:@"pro"]stringValue];
             user.bio = [dic objectForKey:@"user"];
-            
             if ( [[[dic objectForKey:@"links"] objectForKey:@"web"] class] != [NSNull class])
             {
                 user.web = [[dic objectForKey:@"links"] objectForKey:@"web"];
@@ -140,7 +142,27 @@
             MAIN((^{
                 NSURL *url = [NSURL URLWithString:[user.avatar_url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
                 [_avatarV setImageWithURL:url];
-                [_userL setText:user.name];
+                
+                float viewX = self.view.frame.size.width *0.67 ;
+
+                
+                if (!_userB) {
+                    UIButton *userB = [[UIButton alloc]initWithFrame:CGRectMake((viewX - [self sizeOfName:user.name] - 10)/2, viewX/3 + viewX/2 - 40, [self sizeOfName:user.name] + 10, 24)];
+                    
+                    [userB setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                    [userB.titleLabel setFont:[UIFont systemFontOfSize:13]];
+                    [userB setTitle:user.name forState:UIControlStateNormal];
+                    [userB addTarget:self action:@selector(avatarAction) forControlEvents:UIControlEventTouchUpInside];
+                    
+                    _userB = userB;
+                    
+
+                }
+                
+                [self.view addSubview:_userB ];
+
+                
+                
             }));
             
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -173,6 +195,10 @@
     [self douma_save];
 }
 
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50.f;
+}
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -196,31 +222,32 @@
     return 2;
 }
 
+
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    return 10;
+    return 1.0f;
 }
+
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 1;
+    return 20.f;
 }
 
--(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    UIView *footV = [[UIView alloc]init];
-    footV.backgroundColor = [UIColor clearColor];
-    if (section == 0) {
-        UIView *lineV =[[UIView alloc]initWithFrame:CGRectMake(15, 10, 90, 0.5)];
-        lineV.backgroundColor = [UIColor whiteColor];
-        [footV addSubview:lineV];
-    }
-    return footV;
+    UIView *headerV = [[UIView alloc]init];
+    headerV.backgroundColor = [UIColor clearColor];
+    UIView *lineV =[[UIView alloc]initWithFrame:CGRectMake(tableView.frame.size.width/10, 10, tableView.frame.size.width *4/5, 0.5)];
+    lineV.backgroundColor = [UIColor whiteColor];
+    [headerV addSubview:lineV];
+    return headerV;
 
 }
+
 -(UITableViewCell * )tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSArray * menuArray1 = [NSArray arrayWithObjects:@"Completed",@"Animated",@"Debuts",@"Playoffs",@"Rebounds",@"Teams",nil];
-    NSArray * menuArray2 = [NSArray arrayWithObjects:@"Setting", nil];
+    NSArray * menuArray1 = [NSArray arrayWithObjects:@"completed",@"animated",@"debuts",@"playoffs",@"rebounds",@"teams",nil];
+    NSArray * menuArray2 = [NSArray arrayWithObjects:@"setting", nil];
     
     NSArray *menuArray  = [NSArray arrayWithObjects:menuArray1, menuArray2,nil];
     
@@ -236,10 +263,18 @@
     listCells.tintColor = [UIColor whiteColor];
     listCells.textLabel.font = [UIFont systemFontOfSize:15];
     listCells.textLabel.textColor = [UIColor whiteColor];
-    listCells.textLabel.highlightedTextColor = [UIColor colorWithRed:254/255.0 green:142/255.0 blue:185/255.0 alpha:1.0];
+    listCells.textLabel.highlightedTextColor = [UIColor colorWithRed:241/255.0f green:92/255.0f blue:149/255.0f alpha:1.0];
     
-   
-    listCells.textLabel.text = [[menuArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    NSString *name = [[menuArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+
+    NSString *imageName = [NSString stringWithFormat:@"%@_slide_1",name];
+    NSString *imageHighlightName = [NSString stringWithFormat:@"%@_slide_2",name];
+    NSString *str = [name capitalizedStringWithLocale:[NSLocale currentLocale]];
+
+    listCells.imageView.image = [UIImage imageNamed:imageName];
+    listCells.imageView.highlightedImage = [UIImage imageNamed:imageHighlightName];
+    listCells.textLabel.text = str;
+    
     listCells.selectionStyle = UITableViewCellSelectionStyleBlue;
     listCells.selectedBackgroundView = [[UIView alloc]initWithFrame:listCells.frame];
     listCells.selectedBackgroundView.backgroundColor = [UIColor clearColor];
@@ -258,7 +293,6 @@
                     ShotsVC *shotsVC =[[ShotsVC alloc]init];
                     shotsVC.listStr = @"completed";
                     [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
-                    
                     [self.sideMenuViewController hideMenuViewController];
                 }
                     break;
@@ -267,7 +301,7 @@
                     ShotsVC *shotsVC =[[ShotsVC alloc]init];
                     shotsVC.listStr = @"animated";
                     [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
-                    
+
                     [self.sideMenuViewController hideMenuViewController];
                 }
 
@@ -337,7 +371,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end

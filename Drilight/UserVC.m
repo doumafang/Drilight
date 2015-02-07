@@ -25,7 +25,6 @@
 #import "MJRefresh.h"
 #import "HTMLLabel.h"
 #import "GPUImage.h"
-#import "UIImageView+WebCache.h"
 #import "UIImageView+AFNetworking.h"
 #import "AFNetworking.h"
 
@@ -49,6 +48,8 @@ static NSInteger followersN = 12;
     UIImageView *_avatarBG;
     UIImageView *_avatarIV;
     
+    UIView *_successV;
+    
     UIScrollView *_listSV;
     UIScrollView *_mainSV;
     UIScrollView *_bgSV;
@@ -66,7 +67,6 @@ static NSInteger followersN = 12;
     NSMutableArray *_bucketsChanges;
     NSMutableArray *_sectionChanges;
 }
-
 @property AppDelegate * myDelegate;
 @property USER *user;
 @property NSString *access_token;
@@ -75,6 +75,9 @@ static NSInteger followersN = 12;
 @property (nonatomic)  NSFetchedResultsController *followingFRC;
 @property (nonatomic)  NSFetchedResultsController *followersFRC;
 @property (nonatomic)  NSFetchedResultsController *bucketsFRC;
+
+@property UIImage *barFollow;
+@property UIImage *barFollowed;
 @end
 
 @implementation UserVC
@@ -88,7 +91,7 @@ static NSInteger followersN = 12;
     [self.navigationController.navigationBar setBarStyle:UIBarStyleBlackTranslucent];
     self.navigationController.interactivePopGestureRecognizer.delegate = self;
     
-    if ([self.navigationController.navigationBar respondsToSelector:@selector( setBackgroundImage:forBarMetrics:)]){
+    if ([self.navigationController.navigationBar respondsToSelector:@selector(setBackgroundImage:forBarMetrics:)]){
         NSArray *list=self.navigationController.navigationBar.subviews;
         for (id obj in list) {
             if ([obj isKindOfClass:[UIImageView class]]) {
@@ -138,7 +141,7 @@ static NSInteger followersN = 12;
     NSURL *avatar_url = [NSURL URLWithString:self.user.avatar_url];
     
     UIImageView *avatarIV = [[UIImageView alloc ]init];
-    [avatarIV sd_setImageWithURL:avatar_url];
+    [avatarIV setImageWithURL:avatar_url];
     avatarIV.frame = CGRectMake(viewX * 3/8, viewX/4-10, viewX/4, viewX/4);
     avatarIV.layer.masksToBounds = YES;
     avatarIV.layer.cornerRadius = viewX/8;
@@ -177,9 +180,8 @@ static NSInteger followersN = 12;
     UIView *lineL = [[UIView alloc]initWithFrame:CGRectMake(-200,0, 1000, 0.5)];
     lineL.backgroundColor = [UIColor whiteColor];
     lineL.opaque = YES;
-    [listSV addSubview:lineL];
-    [blackIV addSubview:listSV];
-    _listSV = listSV;
+//    [listSV addSubview:lineL];
+    [blackIV addSubview:_listSV = listSV];
     
     float sum = 20;
     for (int i = 0; i < listArray.count; i ++ ) {
@@ -196,10 +198,11 @@ static NSInteger followersN = 12;
         sum = sum + listSize.width + viewX * 3/32;
         listB.layer.masksToBounds = YES;
         listB.layer.cornerRadius = viewX * 3/80;
+        listB.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+        listB.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         [listB setTitle:[listArray objectAtIndex:i] forState:UIControlStateNormal];
         [listB setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         listB.titleLabel.font = listButtonFont;
-        listB.titleLabel.textAlignment = NSTextAlignmentCenter;
         [listB addTarget:self action:@selector(listButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         listB.tag = i + 1;
         if(i==0)
@@ -1085,7 +1088,7 @@ static NSInteger followersN = 12;
 -(void)shotsFootAction
 {
     BACK((^{
-        NSLog(@"%@",shotsFootURL);
+
         
         NSInteger numbersItem = 1;
         
@@ -1160,7 +1163,6 @@ static NSInteger followersN = 12;
 {
     BACK((^{
         
-        NSLog(@"%@",likesFootURL);
         
         NSInteger numbersItem = 1;
         
@@ -1255,7 +1257,6 @@ static NSInteger followersN = 12;
 {
     BACK((^{
         
-        NSLog(@"%@",followingFootURL);
         
         NSInteger numbersItem = 1;
         
@@ -1361,7 +1362,6 @@ static NSInteger followersN = 12;
             });
             return;
         }
-        NSLog(@"%@",followersFootURL);
         NSURL *url = [NSURL URLWithString:[followersFootURL stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         
@@ -1540,8 +1540,8 @@ static NSInteger followersN = 12;
     NSRange range = [images.teaser rangeOfString:@"teaser"];
     NSString *str = [images.teaser substringFromIndex:range.location+6];
     
-    [cell.shotsIV sd_setImageWithURL:shotsURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-    [cell.avatarIV sd_setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
+    [cell.shotsIV setImageWithURL:shotsURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+    [cell.avatarIV setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
     
     [cell.views_countL setText:object.views_count];
     [cell.comments_countL setText:object.comments_count];
@@ -1573,7 +1573,7 @@ static NSInteger followersN = 12;
     NSURL *avatarURL = [NSURL URLWithString:object.avatar_url];
 
     
-    [cell.avatarV sd_setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
+    [cell.avatarV setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
     [cell.userL setText:object.name];
     [cell.descriptionL setText:object.web];
     
@@ -1591,7 +1591,7 @@ static NSInteger followersN = 12;
         
         SHOTS *mainShots = [array objectAtIndex:0];
         NSURL *mainURL = [NSURL URLWithString:mainShots.images.teaser];
-        [cell.mainIV sd_setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.mainIV setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
 
         
     }
@@ -1603,8 +1603,8 @@ static NSInteger followersN = 12;
         SHOTS *fShots = [array objectAtIndex:1];
         NSURL *fURL = [NSURL URLWithString:fShots.images.teaser];
         
-        [cell.mainIV sd_setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-        [cell.fIV sd_setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.mainIV setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.fIV setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
 
         
         
@@ -1620,10 +1620,10 @@ static NSInteger followersN = 12;
         SHOTS *sShots = [array objectAtIndex:2];
         NSURL *sURL = [NSURL URLWithString:sShots.images.teaser];
         
-        [cell.mainIV sd_setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.mainIV setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
         
-        [cell.fIV sd_setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-        [cell.sIV sd_setImageWithURL:sURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.fIV setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.sIV setImageWithURL:sURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
         
         
     }
@@ -1642,10 +1642,10 @@ static NSInteger followersN = 12;
         NSURL *tURL = [NSURL URLWithString:tShots.images.teaser];
         
         
-        [cell.mainIV sd_setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-        [cell.fIV sd_setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-        [cell.sIV sd_setImageWithURL:sURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-        [cell.tIV sd_setImageWithURL:tURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.mainIV setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.fIV setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.sIV setImageWithURL:sURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.tIV setImageWithURL:tURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
         
         
     }
@@ -1985,6 +1985,37 @@ static NSInteger followersN = 12;
     self.navigationItem.leftBarButtonItem = backItem;
     
     
+    self.barFollow = [UIImage imageNamed:@"barFollow"];
+    self.barFollowed = [UIImage imageNamed:@"barFollowed"];
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    NSString *bearerStr =[NSString stringWithFormat:@"Bearer %@",self.access_token];
+    [manager.requestSerializer setValue:bearerStr forHTTPHeaderField:@"Authorization"];
+    NSString *str = [NSString stringWithFormat:@"https://api.dribbble.com/v1/user/following/%@",self.user.userid];
+    [manager GET:str parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+//        NSLog(@"%lu",operation.response.statusCode);
+        
+        UIBarButtonItem *followItem = [[UIBarButtonItem alloc]initWithImage:self.barFollowed style:UIBarButtonItemStylePlain target:self action:@selector(followUserAction)];
+        self.navigationItem.rightBarButtonItem = followItem;
+
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+
+//        NSLog(@"%lu",operation.response.statusCode);
+        
+        UIBarButtonItem *followItem = [[UIBarButtonItem alloc]initWithImage:self.barFollow style:UIBarButtonItemStylePlain target:self action:@selector(followUserAction)];
+        self.navigationItem.rightBarButtonItem = followItem;
+
+        
+    }];
+
+    
+    
+    
+    
+  
+    
 }
 
 -(void)backAction
@@ -1992,8 +2023,93 @@ static NSInteger followersN = 12;
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+-(void)followUserAction
+{
+    if (self.navigationItem.rightBarButtonItem.image == self.barFollow) {
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        manager.requestSerializer = [AFJSONRequestSerializer serializer];
+        NSString *bearerStr =[NSString stringWithFormat:@"Bearer %@",self.access_token];
+        [manager.requestSerializer setValue:bearerStr forHTTPHeaderField:@"Authorization"];
+        NSString *str = [NSString stringWithFormat:@"https://api.dribbble.com/v1/users/%@/follow",self.user.userid];
+        [manager PUT:str parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            
+            [self followSuccessView];
+            self.navigationItem.rightBarButtonItem.image = self.barFollowed;
+
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            
+            
+        }];
+
+    }
+    else{
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        manager.requestSerializer = [AFJSONRequestSerializer serializer];
+        NSString *bearerStr =[NSString stringWithFormat:@"Bearer %@",self.access_token];
+        [manager.requestSerializer setValue:bearerStr forHTTPHeaderField:@"Authorization"];
+        NSString *str = [NSString stringWithFormat:@"https://api.dribbble.com/v1/users/%@/follow",self.user.userid];
+        [manager DELETE:str parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            
+            self.navigationItem.rightBarButtonItem.image = self.barFollow;
+
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            
+            
+        }];
+
+    }
+
+}
 
 
+-(void)followSuccessView
+{
+    
+    
+    if (!_successV) {
+        UIView * successV = [[UIView alloc ]initWithFrame:CGRectMake(SCREENX/2, SCREENX *3 /2, 0, 0)];
+        successV.backgroundColor  = RGBA(0, 0, 0, 0.8);
+        successV.layer.masksToBounds = YES;
+        successV.layer.cornerRadius = 10.0f;
+        
+        float itemX = SCREENX * 3/5;
+        float itemY = SCREENX * 5/12;
+        
+        
+        
+        UIImageView *successImageV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"followedView"]];
+        successImageV.frame = CGRectMake(itemX/4, itemY/10, itemX/2, itemX/2);
+        
+        
+        UILabel *successL = [[UILabel alloc]initWithFrame:CGRectMake(0, successImageV.frame.size.height + successImageV.frame.origin.y - 20 , itemX, 30)];
+        successL.font = [UIFont systemFontOfSize:15];
+        successL.textColor = [UIColor whiteColor];
+        successL.textAlignment = NSTextAlignmentCenter;
+        successL.text = @"Follow Successed";
+        [successV addSubview:successImageV];
+        [successV addSubview:successL];
+        _successV = successV;
+    }
+    
+    [UIView animateWithDuration:0.2f animations:^{
+        
+        _successV.frame =  CGRectMake(SCREENX/5, SCREENX * 2/3, SCREENX*3/5, SCREENX*5/12);
+        [self.view addSubview:_successV];
+        
+    }completion:^(BOOL finished)
+    {
+        [self performSelector:@selector(successRemove) withObject:self afterDelay:1.5f];
+        
+    }];
+    
+}
+
+-(void)successRemove
+{
+    [UIView animateWithDuration:0.2f animations:^{
+        [_successV removeFromSuperview];
+    }];
+}
 #pragma mark - NSFetchedResultsControllerDelegate
 
 - (NSFetchedResultsController *)likesFRC

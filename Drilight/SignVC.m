@@ -10,6 +10,8 @@
 
 #import "AFNetworking.h"
 #import "AppDelegate.h"
+#import "RESideMenu.h"
+
 
 @interface SignVC ()<UIWebViewDelegate>
 {
@@ -23,7 +25,6 @@
 
 @implementation SignVC
 
-@synthesize animating = _animating;
 
 -(id)init
 {
@@ -235,33 +236,29 @@
 
 -(void)leftAction
 {
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.4f];
-    [UIView setAnimationDelegate:self];
-    [UIView setAnimationDidStopSelector:@selector(remove)];
-    _signinV.frame = [self offscreenFrame];
-    [UIView commitAnimations];
+    [UIView animateWithDuration:0.3f animations:^{
+        _signinV.frame = [self offscreenFrame];
 
+    }completion:^(BOOL finished){
+        [_signinV removeFromSuperview];
+
+    }];
 }
--(void)remove
-{
-    [_signinV removeFromSuperview];
-    
-}
+
 
 #pragma -mark WebViewDelegate
 
 -(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
     NSString *string = [request.URL absoluteString];
-    
+    NSLog(@"%@",request.URL);
     NSRange range = [string rangeOfString:@"code="];
 
+
+    
     if (range.length > 0) {
         
         NSString *postURlStr = TOKEN_URL;
-
         NSString *code = [string substringFromIndex:range.location + 5];
-        
         NSDictionary *kv = @{@"client_id":CLIENT_ID,@"client_secret":CLIENT_SECRET,@"code":code};
         
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
@@ -271,13 +268,19 @@
             NSDictionary *dic = (NSDictionary * )responseObject;
             
             NSString *access_token = [dic objectForKey:@"access_token"];
-            
             [[NSUserDefaults standardUserDefaults]setObject:access_token forKey:@"access_token"];
             [[NSUserDefaults standardUserDefaults]synchronize];
-            
             [self userNerAction:access_token];
             
-            [self hideGuide];
+            // clear cookie
+            NSHTTPCookie *cookie;
+            NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+            for (cookie in [storage cookies])
+            {
+                [storage deleteCookie:cookie];
+            }
+            
+            [self hideView];
             
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"%@",error);
@@ -302,20 +305,14 @@
             USER *user = EntityObjects(@"USER");
             
             user.source = @"self";
-            
             user.avatar_url = [dic objectForKey:@"avatar_url"];
-            
             user.name = [dic  objectForKey:@"name"];
-            
             user.userid = [[dic objectForKey:@"id"]stringValue];
-            
             user.shots_count = [[dic objectForKey:@"shots_count"]stringValue];
             user.likes_count = [[dic objectForKey:@"likes_count"]stringValue];
             user.buckets_count = [[dic objectForKey:@"buckets_count"]stringValue];
-            
             user.followers_count = [[dic objectForKey:@"followers_count"]stringValue];
             user.followings_count = [[dic objectForKey:@"followings_count"]stringValue];
-            
             user.pro = [[dic objectForKey:@"pro"]stringValue];
             user.bio = [dic objectForKey:@"user"];
             
@@ -393,54 +390,44 @@
 
 + (void)show
 {
-    [[SignVC sharedSignin] showGuide];
+    [[SignVC sharedSignin] showView];
 }
 
 
-- (void)showGuide
+- (void)showView
 {
-    if (!_animating && self.view.superview == nil)
+    if (self.view.superview == nil)
     {
         [SignVC sharedSignin].view.frame = [self offscreenFrame];
-        
         [[self mainWindow] addSubview:[SignVC sharedSignin].view];
-        
-        _animating = YES;
 
-        [SignVC sharedSignin].view.frame = [self onscreenFrame];
+//        [UIView animateWithDuration:0.4f animations:^{
+            [SignVC sharedSignin].view.frame = [self onscreenFrame];
+//        }];
+        
     }
 }
 
-- (void)guideShown
-{
-    _animating = NO;
-}
 
-+ (void)hide
+
+- (void)hideView
 {
 
-    [[SignVC sharedSignin] hideGuide];
+    
+    [UIView animateWithDuration:0.2f animations:^{
+        
+        [SignVC sharedSignin].view.frame = [self offscreenFrame];
+
+    }
+    completion:^(BOOL finished){
+        
+        [[SignVC sharedSignin].view removeFromSuperview];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"refresh" object:nil];
+
+    }];
+    
 }
 
-- (void)hideGuide
-{
-    _animating = YES;
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.2f];
-    [UIView setAnimationDelegate:self];
-    [UIView setAnimationDidStopSelector:@selector(guideHidden)];
-    [SignVC sharedSignin].view.frame = [self offscreenFrame];
-    [UIView commitAnimations];
-}
-
-- (void)guideHidden
-{
-    _animating = NO;
-    [[[SignVC sharedSignin] view] removeFromSuperview];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"refresh" object:nil];
-
-
-}
 
 
 - (void)didReceiveMemoryWarning {

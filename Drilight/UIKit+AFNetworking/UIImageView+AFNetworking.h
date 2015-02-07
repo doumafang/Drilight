@@ -35,6 +35,8 @@
  */
 @interface UIImageView (AFNetworking)
 
+
+
 ///----------------------------
 /// @name Accessing Image Cache
 ///----------------------------
@@ -138,6 +140,8 @@
  */
 - (void)cacheImage:(UIImage *)image
         forRequest:(NSURLRequest *)request;
+
+
 @end
 
 #endif

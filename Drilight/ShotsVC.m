@@ -5,7 +5,7 @@
 #import "ShotsVC.h"
 #import "DetailVC.h"
 #import "UserVC.h"
-
+#import "SelectVC.h"
 
 //Model
 #import "SHOTS.h"
@@ -19,7 +19,6 @@
 #import "MJRefresh.h"
 #import "RESideMenu.h"
 #import "AFNetworking.h"
-#import "UIImageView+WebCache.h"
 #import "UIImageView+AFNetworking.h"
 
 
@@ -34,7 +33,6 @@
 @property NSString *sortStr;
 @property NSUserDefaults *userDefaults;
 @property UICollectionView *CV;
-@property UIView *selectView;
 @property (nonatomic)  NSFetchedResultsController *fRC;
 
 @end
@@ -50,21 +48,13 @@
         for (id obj in list) {
             if ([obj isKindOfClass:[UIImageView class]]) {
                 UIImageView *imageView=(UIImageView *)obj;
-                imageView.hidden=NO;
+                imageView.hidden = NO;
             }
         }
     }
     self.navigationController.interactivePopGestureRecognizer.delegate = self;
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"bg.png"] forBarMetrics:UIBarMetricsDefault];
     [self.navigationController.navigationBar setBarStyle:UIBarStyleDefault];
-}
--(void)viewWillDisappear:(BOOL)animated
-{
-    
-    self.navigationController.interactivePopGestureRecognizer.delegate = self;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"bg.png"] forBarMetrics:UIBarMetricsDefault];
-    [self.navigationController.navigationBar setBarStyle:UIBarStyleDefault];
-    
 }
 
 
@@ -80,8 +70,8 @@
         self.sortStr = @"popularity";
     }
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:@"refresh" object:nil];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh:) name:@"refresh" object:nil];
+    
     self.myDelegate = (AppDelegate *)[[UIApplication sharedApplication]delegate];
     self.userDefaults = [NSUserDefaults standardUserDefaults];
     self.access_token = [self.userDefaults objectForKey:@"access_token"];
@@ -94,7 +84,7 @@
     
     [self setCV];
     
-    NSLog(@"%@",NSHomeDirectory());
+//    NSLog(@"%@",NSHomeDirectory());
 
 
 
@@ -124,42 +114,13 @@
     _CV = shotsCV;
     shotsCV.drilight.bounds = CGRectMake(0, 0, 0, 0);
     
-    
     if (self.access_token) {
         [shotsCV headerBeginRefreshing];
     }
     
     self.view = self.CV;
 
-    
-    UIView *selectView = [[UIView alloc]initWithFrame:CGRectMake(6, 6 - 50, SCREENX - 12 , 0)];
-    selectView.backgroundColor = [UIColor whiteColor];
-    selectView.alpha = 0.0f;
-    
-    NSArray *array = @[@"popularity",@"views",@"comments",@"recent"];
-    float sumX = 20;
-    for (NSInteger i = 0 ; i < array.count; i ++ ) {
-        UIButton *button = [[UIButton alloc]init];
-        
-        UIFont *font = [UIFont fontWithName:@"Nexa Bold" size:15];
-        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
-        paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
-        NSDictionary *attributes = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:paragraphStyle.copy};
-        CGSize size = [array[i] boundingRectWithSize:CGSizeMake(SCREENX - 32, 10000) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
-        button.tag = i;
-        [button addTarget:self action:@selector(chooseSort:) forControlEvents:UIControlEventTouchUpInside];
-        button.frame = CGRectMake(sumX ,10, size.width+10, 30);
 
-        [button setTitle:array[i] forState:UIControlStateNormal];
-        [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        [button.titleLabel setFont:font];
-        [button.titleLabel setTextAlignment:NSTextAlignmentCenter];
-        
-        [selectView addSubview:button];
-        sumX = sumX + size.width + 30;
-    }
-    [self.CV addSubview:_selectView = selectView];
-    
 }
 
 
@@ -185,10 +146,9 @@
     self.navigationItem.leftBarButtonItem = leftBBI;
     
     
-    
-    UIBarButtonItem *rightBBI = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(selectAction)];
+    NSString *sortNameBar = [NSString stringWithFormat:@"%@_bar",self.sortStr];
+    UIBarButtonItem *rightBBI = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:sortNameBar] style:UIBarButtonItemStylePlain target:self action:@selector(selectAction)];
     self.navigationItem.rightBarButtonItem = rightBBI;
-    
     
     
     NSDictionary * attributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName, nil];
@@ -208,51 +168,27 @@
 
 -(void)selectAction
 {
-    BOOL hiden = self.CV.drilight.hidden;
-    if (hiden) {
-        [UIView animateWithDuration:0.4f animations:^{
-            self.CV.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
-            self.CV.contentOffset = CGPointMake(0, 0);
-            self.selectView.alpha = 0.0f;
-            
-            self.selectView.frame = CGRectMake(6, 6, SCREENX - 12 , 0);
-        }];
-        self.CV.drilight.hidden = NO;
-
-    }
-    else
-    {
-        self.CV.drilight.hidden = YES;
-        [UIView animateWithDuration:0.5f animations:^{
-            self.CV.contentInset = UIEdgeInsetsMake(50, 0, 0, 0);
-            self.CV.contentOffset = CGPointMake(0, -50);
-            self.selectView.alpha = 0.7f;
-            self.selectView.frame = CGRectMake(6, 6 - 50, SCREENX - 12 , 44);
-        }];
-
-    }
-    
-    
+    [SelectVC selectShow :self.navigationItem.rightBarButtonItem ];
 }
 
-
--(void)chooseSort:(UIButton *)button
+-(void)refresh :(NSNotification *)notification
 {
-    NSArray *array = @[@"popularity",@"views",@"comments",@"recent"];
-
-
-    self.sortStr = array[button.tag];
-    [self headerNetAction];
+    NSDictionary *dic = [notification userInfo];
+    
+    if ([[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"]) {
+        self.access_token = [[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"];
+        self.sortStr = [dic objectForKey:@"sort"];
+        [self.CV headerBeginRefreshing];
+    }
 }
+
 #pragma mark -
 #pragma mark NetAction
 
 -(void)headerNetAction
 {
     BACK((^{
-
         NSString *str = [NSString stringWithFormat: @"https://api.dribbble.com/v1/shots?list=%@&access_token=%@&sort=%@",self.listStr,self.access_token,self.sortStr];
-        
         NSURL *url = [NSURL URLWithString:[str stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         NSURLRequest * request = [NSURLRequest requestWithURL:url];
         
@@ -356,7 +292,7 @@
     __block NSInteger itmes = [sectionInfo numberOfObjects];
     NSInteger numbers = itmes/12+1;
     
-    NSString *footAPIStr = [NSString stringWithFormat:@"https://api.dribbble.com/v1/shots?access_token=%@&page=%lu&list=%@&sort=%@",self.access_token,numbers,self.listStr,self.sortStr];
+    NSString *footAPIStr = [NSString stringWithFormat:@"https://api.dribbble.com/v1/shots?access_token=%@&page=%lu&list=%@&sort=%@",self.access_token,(long)numbers,self.listStr,self.sortStr];
     
     BACK((^{
         NSURL *url = [NSURL URLWithString:[footAPIStr stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
@@ -458,9 +394,8 @@
 #pragma mark UICollectionDelegate
 
 -(UICollectionViewCell * )collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
+{                
     static NSString * SHOTS_RE = @"SHOTS_RE";
-    
     ShotsCell *shotsCell = (ShotsCell *)[collectionView dequeueReusableCellWithReuseIdentifier:SHOTS_RE forIndexPath:indexPath];
     [self configureCell:shotsCell atIndexPath:indexPath];
     return shotsCell;
@@ -475,9 +410,10 @@
     NSURL *avatarURL = [NSURL URLWithString:user.avatar_url];
     NSRange range = [images.teaser rangeOfString:@"teaser"];
     NSString *str = [images.teaser substringFromIndex:range.location+6];
-    
-    [cell.shotsIV sd_setImageWithURL:shotsURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-    [cell.avatarIV sd_setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
+
+    [cell.shotsIV setImageWithURL:shotsURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+    [cell.avatarIV setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
+
     [[cell.avatarIV.gestureRecognizers objectAtIndex:0] addTarget:self action:@selector(avatarAction:)];
     [cell.views_countL setText:object.views_count];
     [cell.comments_countL setText:object.comments_count];
@@ -519,7 +455,6 @@
     NSManagedObjectID *objectID = [object objectID];
     detailVC.shotsID = object.shotsid;
     detailVC.objectID = objectID;
-    
     [self.navigationController pushViewController:detailVC animated:YES];
     
 }
@@ -584,7 +519,7 @@
     NSPredicate * cdt = [NSPredicate predicateWithFormat:@"source = %@",self.listStr];
     [fetchRequest setPredicate:cdt];
 
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:fetchRequest managedObjectContext:self.myDelegate.managedObjectContext sectionNameKeyPath:nil cacheName:self.listStr];
+    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:fetchRequest managedObjectContext:self.myDelegate.managedObjectContext sectionNameKeyPath:nil cacheName:nil];
     
     aFetchedResultsController.delegate = self;
     
@@ -693,14 +628,7 @@
 #pragma mark Other
 
 
--(void)refresh
-{
-    if ([[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"]) {
-        self.access_token = [[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"];
-        NSLog(@"%@",self.access_token);
-        [self.CV headerBeginRefreshing];
-    }
-}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

@@ -16,7 +16,6 @@
 
 //frame
 #import "AFNetworking.h"
-#import "UIImageView+WebCache.h"
 
 @interface AddBucketVC ()<UICollectionViewDelegate,UICollectionViewDataSource,NSFetchedResultsControllerDelegate,UITextViewDelegate>
 {
@@ -79,14 +78,12 @@
 }
 
 #pragma mark
-// pass button
 
 -(void)bucketButton :(UIButton *)button
 {
     _bucketB = button;
 }
 
-//get window
 - (UIWindow *)mainWindow
 {
     UIApplication *app = [UIApplication sharedApplication];
@@ -123,7 +120,6 @@
     return frame;
 }
 
-// init method
 -(id)init
 {
     self = [super init];
@@ -157,7 +153,7 @@
     [UIView setAnimationDuration:0.15f];
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(guideHidden)];
-    _bgV.frame = CGRectMake(SCREENX / 7, SCREENY, SCREENX*5/7, SCREENX*8/7);
+    _bgV.frame = CGRectMake(SCREENX / 8, SCREENY, SCREENX*3/4, SCREENX*4/3);
     [UIView commitAnimations];
 }
 
@@ -165,19 +161,12 @@
 {
     _animating = NO;
     [AddBucketVC mainAdd].view.frame = [self offscreenFrame];
-
     [[AddBucketVC mainAdd].view removeFromSuperview];
+
     
 }
--(void)bgVAnimation
-{
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.05f];
-    [UIView setAnimationDelegate:self];
-    _bgV.frame = CGRectMake(SCREENX / 7, SCREENX*6/14, SCREENX*5/7, SCREENX*8/7);
-    [UIView commitAnimations];
 
-}
+
 #pragma mark -
 #pragma mark View
 
@@ -190,16 +179,23 @@
     if ( _selectedChanges == nil) {
         [[NSNotificationCenter defaultCenter]postNotificationName:@"dismissDone" object:nil];
     }
+    _bgV.frame = CGRectMake(SCREENX/8, SCREENY, SCREENX*3/4, SCREENY - SCREENX /2);
     
-    _bgV.frame = CGRectMake(SCREENX / 7, SCREENY, SCREENX*5/7, SCREENX*8/7);
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.3f];
-    [UIView setAnimationDelegate:self];
-    [UIView setAnimationDidStopSelector:@selector(bgVAnimation)];
-    _bgV.frame = CGRectMake(SCREENX / 7, SCREENX*5/14, SCREENX*5/7, SCREENX*8/7);
-    [UIView commitAnimations];
+    [UIView animateWithDuration:0.3 animations:^{
+        _bgV.frame = CGRectMake(SCREENX/8, SCREENX /4, SCREENX*3/4, SCREENY - SCREENX /2);
+
+    }completion:^(BOOL finished){
+        if (finished) {
+            [UIView animateWithDuration:0.05f animations:^{
+                _bgV.frame = CGRectMake(SCREENX/8, SCREENX /3, SCREENX*3/4, SCREENY - SCREENX /2);
+
+            }];
+        }
+    }];
 
 }
+
+
 
 
 - (void)viewDidLoad {
@@ -213,31 +209,26 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissDone) name:@"dismissDone" object:nil];
 
   
-    
     UIButton *alphaB = [[UIButton alloc]initWithFrame:self.view.frame];
     alphaB.backgroundColor = RGBA(0, 0, 0, 0.5);
     [alphaB addTarget:self action:@selector(touchAlphaV:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:alphaB];
     
     if (!_bgV) {
-        UIView *bgV = [[UIView alloc]initWithFrame:CGRectMake(SCREENX / 7, SCREENY, SCREENX*5/7, SCREENX*8/7)];
+        UIView *bgV = [[UIView alloc]initWithFrame:CGRectMake(SCREENX/ 8, SCREENY, SCREENX*3/4, SCREENY - SCREENX /2)];
         bgV.backgroundColor = BG_COLOR;
         bgV.layer.masksToBounds = YES;
-        bgV.layer.cornerRadius = 8;
+        bgV.layer.cornerRadius = 6;
         _bgV = bgV;
 
     }
-   [alphaB addSubview:_bgV];
-
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.3f];
-    [UIView setAnimationDelegate:self];
-    [UIView setAnimationDidStopSelector:@selector(bgVAnimation)];
-    _bgV.frame = CGRectMake(SCREENX / 7, SCREENX*5/14, SCREENX*5/7, SCREENX*8/7);
-    [UIView commitAnimations];
-
+    [alphaB addSubview:_bgV];
     
-    float itemX = SCREENX*5/7;
+    [UIView animateWithDuration:0.05f animations:^{
+        _bgV.frame = CGRectMake(SCREENX/8, SCREENX /3, SCREENX*3/4, SCREENY - SCREENX /2);
+    }];
+
+    float itemX = SCREENX*3/4;
     
     UILabel *inforL = [[UILabel alloc]initWithFrame:CGRectMake(20, 20, itemX- 20, 20)];
     inforL.text = @"Add this shot to a bucket";
@@ -250,26 +241,6 @@
     lineOne.backgroundColor = [UIColor grayColor];
     [_bgV addSubview:lineOne];
     
-    if (!_addButton) {
-        UIButton *addB = [[UIButton alloc]initWithFrame:CGRectMake(itemX/4, _bgV.frame.size.height*8/9, itemX/2, 30)];
-        addB.backgroundColor = RGBA(241, 92, 149, 1);
-        addB.layer.masksToBounds = YES;
-        addB.layer.cornerRadius = addB.frame.size.height/2;
-        [addB addTarget:self action:@selector(addBucketAction:) forControlEvents:UIControlEventTouchUpInside];
-        [addB setTitle:@"Create a new bucket" forState:UIControlStateNormal];
-        [addB setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        addB.titleLabel.font = [UIFont fontWithName:@"Nexa Bold" size:10];
-       _addButton  = addB;
-
-    }
-    [_bgV addSubview:_addButton];
-
-    
-    UIView *lineTwo = [[UIView alloc]initWithFrame:CGRectMake(15, _addButton.frame.origin.y - 10 , itemX-30, 0.5f)];
-    lineTwo.backgroundColor = [UIColor grayColor];
-    [_bgV addSubview:lineTwo];
-    
-    
     if (!_bucketsV) {
         
         UICollectionViewFlowLayout *bucketVFL = [[UICollectionViewFlowLayout alloc]init];
@@ -277,8 +248,8 @@
         bucketVFL.sectionInset = UIEdgeInsetsMake(20, 20, 20, 20);
         bucketVFL.minimumInteritemSpacing = 20;
         bucketVFL.minimumLineSpacing = 20;
-
-        UICollectionView *bucketV = [[UICollectionView alloc]initWithFrame:CGRectMake(0, lineOne.frame.origin.y+1, itemX, lineTwo.frame.origin.y - lineOne.frame.origin.y-1) collectionViewLayout:bucketVFL];
+        
+        UICollectionView *bucketV = [[UICollectionView alloc]initWithFrame:CGRectMake(0, lineOne.frame.origin.y+1, itemX, itemX * 4/3) collectionViewLayout:bucketVFL];
         bucketV.delegate = self;
         bucketV.dataSource = self;
         bucketV.backgroundColor = BG_COLOR;
@@ -293,6 +264,30 @@
     }
     [_bgV addSubview:_bucketsV];
 
+    
+    UIView *lineTwo = [[UIView alloc]initWithFrame:CGRectMake(15, _bucketsV.frame.size.height + _bucketsV.frame.origin.y , itemX-30, 0.5f)];
+    lineTwo.backgroundColor = [UIColor grayColor];
+    [_bgV addSubview:lineTwo];
+    
+
+
+    if (!_addButton) {
+        UIButton *addB = [[UIButton alloc]initWithFrame:CGRectMake(itemX/4, lineTwo.frame.origin.y + 15 , itemX/2, 30)];
+        addB.backgroundColor = RGBA(241, 92, 149, 1);
+        addB.layer.masksToBounds = YES;
+        addB.layer.cornerRadius = addB.frame.size.height/2;
+        [addB addTarget:self action:@selector(addBucketAction:) forControlEvents:UIControlEventTouchUpInside];
+        [addB setTitle:@"Create a new bucket" forState:UIControlStateNormal];
+        [addB setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        addB.titleLabel.font = [UIFont fontWithName:@"Nexa Bold" size:10];
+       _addButton  = addB;
+
+    }
+    [_bgV addSubview:_addButton];
+
+    
+    
+    
     [self bucketAction];
     
     if (! _doneV) {
@@ -345,10 +340,7 @@
     UIView *bgV = button.superview;
     UILabel *inforL = [bgV.subviews objectAtIndex:0];
     inforL.text = @"Create a new bucket";
-    
     float itemX = bgV.frame.size.width;
-
-    //SecondView Create
     
     if (!_cancelButton) {
         UIButton *cancelB = [[UIButton alloc]initWithFrame:CGRectMake(30, button.frame.origin.y, button.frame.size.width * 3/4, button.frame.size.height)];
@@ -519,7 +511,7 @@
             restLength = 0;
         }
         
-        NSString *str = [NSString stringWithFormat:@"%lu",restLength];
+        NSString *str = [NSString stringWithFormat:@"%lu",(long)restLength];
         _nameLengthL.text = str;
     }
     else
@@ -545,7 +537,7 @@
             restLength = 0;
         }
         
-        NSString *str = [NSString stringWithFormat:@"%lu",restLength];
+        NSString *str = [NSString stringWithFormat:@"%lu",(long)restLength];
         _descriptionLengthL.text = str;
 
     }
@@ -631,15 +623,13 @@
     if (array.count != 0) {
         SHOTS *shots = [array objectAtIndex:array.count - 1];
         NSURL *url = [NSURL URLWithString:shots.images.teaser];
-        [cell.imageV sd_setImageWithURL:url placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-        
+        [cell.imageV setImageWithURL:url placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
     }
     else
     {
         [cell.imageV setImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
 
     }
-    
     [cell.bucketNameL setText:buckets.name];
     [cell.bucketNumberL setText:[NSString stringWithFormat:@"%@ shots",buckets.shots_count]];
 }
@@ -662,16 +652,13 @@
             // one shots
             for (NSDictionary *dic in array) {
                 SHOTS *shots = EntityObjects(@"SHOTS");
-                
                 IMAGES*images = EntityObjects(@"IMAGES");
-                
                 if ([[[dic objectForKey:@"images"]objectForKey:@"hidpi"]class] != [NSNull class]) {
                     images.hidpi = [[dic objectForKey:@"images"]objectForKey:@"hidpi"];
                 }
                 
                 images.normal = [[dic objectForKey:@"images"]objectForKey:@"normal"];
                 images.teaser = [[dic objectForKey:@"images"]objectForKey:@"teaser"];
-                
                 shots.images = images;
                 shots.buckets = buckets;
                 [self douma_save];
@@ -687,7 +674,6 @@
 
 -(void)bucketAction
 {
-    NSLog(@"bucketAction");
     BACK((^{
         NSString *str = [[NSString stringWithFormat:@"https://api.dribbble.com/v1/user/buckets?access_token=%@&per_page=20",self.access_token]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         NSURL *url = [NSURL URLWithString:str];
@@ -752,7 +738,7 @@
     
     [fetchRequest setSortDescriptors:sortDescriptors];
     
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.myDelegate.managedObjectContext sectionNameKeyPath:nil cacheName:nil];
+    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.myDelegate.managedObjectContext sectionNameKeyPath:nil cacheName:@"self.buckets"];
     aFetchedResultsController.delegate = self;
     self.bucketsFRC = aFetchedResultsController;
     

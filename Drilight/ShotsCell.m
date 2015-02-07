@@ -41,6 +41,7 @@
         self.avatarIV.layer.masksToBounds = YES;
         self.avatarIV.layer.cornerRadius = (frame.size.height - 18 - (frame.size.height - 4)*3/4)/2;
         self.avatarIV.opaque = YES;
+        self.avatarIV.backgroundColor = [UIColor whiteColor];
         [self.avatarIV addGestureRecognizer:[[UITapGestureRecognizer alloc]initWithTarget:self action:nil]];
         self.avatarIV.userInteractionEnabled = YES;
         [self addSubview:self.avatarIV];

@@ -9,12 +9,11 @@
 
 #import "RESideMenu.h"
 
+
 #import "AFNetworkActivityIndicatorManager.h"
 
 @interface AppDelegate ()
 
-@property ListVC *listVC;
-@property ShotsVC *shotsVC;
 @end
 
 @implementation AppDelegate
@@ -28,27 +27,27 @@
     
     [AFNetworkActivityIndicatorManager sharedManager].enabled =YES;
     
+
+    
     self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
     
-    self.listVC = [[ListVC alloc]init];
-    self.shotsVC = [[ShotsVC alloc]init];
     
-    UINavigationController *navC = [[UINavigationController alloc]initWithRootViewController:self.shotsVC];
-    navC.interactivePopGestureRecognizer.enabled = YES;
+    UINavigationController *navC = [[UINavigationController alloc]initWithRootViewController:[[ShotsVC alloc]init]];
+    
+    
     NSDictionary * attributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName, nil];
     [navC.navigationBar setTitleTextAttributes:attributes];
     [navC.navigationBar setTintColor:[UIColor whiteColor]];
     [navC.navigationBar setBackgroundImage:[UIImage imageNamed:@"bg"] forBarMetrics:UIBarMetricsDefault];
     
     
-    RESideMenu *sideV = [[RESideMenu alloc]initWithContentViewController:navC leftMenuViewController:self.listVC rightMenuViewController:nil];
+    RESideMenu *sideV = [[RESideMenu alloc]initWithContentViewController:navC leftMenuViewController:[[ListVC alloc]init] rightMenuViewController:nil];
     sideV.backgroundImage = [UIImage imageNamed:@"slide"];
     sideV.scaleMenuView = NO;
-
-    
+    sideV.contentViewInPortraitOffsetCenterX = -SCREENX*2/3 + SCREENX*0.670;
+    sideV.contentViewScaleValue = 0.65f;
     self.window.rootViewController = sideV;
-    
     
     [self.window makeKeyAndVisible];
 

@@ -14,7 +14,7 @@
         self.avatarIV.opaque = YES;
         self.avatarIV.layer.cornerRadius = 25;
         self.avatarIV.userInteractionEnabled = YES;
-        self.avatarIV.backgroundColor = [UIColor blackColor];
+        self.avatarIV.backgroundColor = [UIColor whiteColor];
         [self addSubview:self.avatarIV];
         
         

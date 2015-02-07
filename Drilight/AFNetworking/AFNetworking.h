@@ -22,6 +22,8 @@
 
 #import <Foundation/Foundation.h>
 #import <Availability.h>
+#import "UIImageView+AFNetworking.h"
+
 
 #ifndef _AFNETWORKING_
     #define _AFNETWORKING_

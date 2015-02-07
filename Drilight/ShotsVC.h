@@ -6,6 +6,8 @@
 
 
 @interface ShotsVC : UIViewController
+
 @property NSString *listStr;
+
 
 @end

@@ -58,12 +58,16 @@
     objc_setAssociatedObject(self, @selector(af_imageRequestOperation), imageRequestOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+
 @end
+
 
 #pragma mark -
 
 @implementation UIImageView (AFNetworking)
 @dynamic imageResponseSerializer;
+
+
 
 + (id <AFImageCache>)sharedImageCache {
     static AFImageCache *_af_defaultImageCache = nil;
@@ -73,6 +77,7 @@
 
         [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * __unused notification) {
             [_af_defaultImageCache removeAllObjects];
+            NSLog(@"UIApplicationDidReceiveMemoryWarningNotification");
         }];
     });
 
@@ -199,7 +204,7 @@ static inline NSString * AFImageCacheKeyFromURLRequest(NSURLRequest *request) {
         default:
             break;
     }
-
+    
 	return [self objectForKey:AFImageCacheKeyFromURLRequest(request)];
 }
 
@@ -208,8 +213,10 @@ static inline NSString * AFImageCacheKeyFromURLRequest(NSURLRequest *request) {
 {
     if (image && request) {
         [self setObject:image forKey:AFImageCacheKeyFromURLRequest(request)];
+
     }
 }
+
 
 @end
 

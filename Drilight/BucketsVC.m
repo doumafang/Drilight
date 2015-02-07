@@ -17,7 +17,6 @@
 #import "SHOTS.h"
 
 //frame
-#import "UIImageView+WebCache.h"
 #import "AFNetworking.h"
 #import "MJRefresh.h"
 
@@ -259,7 +258,7 @@
         
         SHOTS *mainShots = [array objectAtIndex:0];
         NSURL *mainURL = [NSURL URLWithString:mainShots.images.teaser];
-        [cell.mainIV sd_setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.mainIV setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
         
         
     }
@@ -271,8 +270,8 @@
         SHOTS *fShots = [array objectAtIndex:1];
         NSURL *fURL = [NSURL URLWithString:fShots.images.teaser];
         
-        [cell.mainIV sd_setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-        [cell.fIV sd_setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.mainIV setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.fIV setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
         
         
         
@@ -288,10 +287,10 @@
         SHOTS *sShots = [array objectAtIndex:2];
         NSURL *sURL = [NSURL URLWithString:sShots.images.teaser];
         
-        [cell.mainIV sd_setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.mainIV setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
         
-        [cell.fIV sd_setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-        [cell.sIV sd_setImageWithURL:sURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.fIV setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.sIV setImageWithURL:sURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
         
         
     }
@@ -310,10 +309,10 @@
         NSURL *tURL = [NSURL URLWithString:tShots.images.teaser];
         
         
-        [cell.mainIV sd_setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-        [cell.fIV sd_setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-        [cell.sIV sd_setImageWithURL:sURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-        [cell.tIV sd_setImageWithURL:tURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.mainIV setImageWithURL:mainURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.fIV setImageWithURL:fURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.sIV setImageWithURL:sURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+        [cell.tIV setImageWithURL:tURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
         
         
     }

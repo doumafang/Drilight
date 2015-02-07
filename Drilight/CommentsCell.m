@@ -25,6 +25,7 @@
         self.avatarIV.layer.cornerRadius = 25;
         self.avatarIV.userInteractionEnabled = YES;
         self.avatarIV.opaque = YES;
+        self.avatarIV.backgroundColor = [UIColor whiteColor];
         UITapGestureRecognizer *avatarTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:nil];
         [self.avatarIV addGestureRecognizer:avatarTap];
         [self addSubview:self.avatarIV];

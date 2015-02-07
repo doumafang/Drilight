@@ -15,7 +15,6 @@
 #import "SHOTS.h"
 
 //frame
-#import "UIImageView+WebCache.h"
 #import "AFNetworking.h"
 #import "MJRefresh.h"
 
@@ -316,8 +315,8 @@
     NSRange range = [images.teaser rangeOfString:@"teaser"];
     NSString *str = [images.teaser substringFromIndex:range.location+6];
     
-    [cell.shotsIV sd_setImageWithURL:shotsURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
-    [cell.avatarIV sd_setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
+    [cell.shotsIV setImageWithURL:shotsURL placeholderImage:[UIImage imageNamed:@"shotsPlaceHolder"]];
+    [cell.avatarIV setImageWithURL:avatarURL placeholderImage:[UIImage imageNamed:@"avatarPlaceHolder"]];
     [[cell.avatarIV.gestureRecognizers objectAtIndex:0] addTarget:self action:@selector(avatarAction:)];
     [cell.views_countL setText:object.views_count];
     [cell.comments_countL setText:object.comments_count];
