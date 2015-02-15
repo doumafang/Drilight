@@ -370,13 +370,11 @@
                 
             }
             MAIN((^{
-                
                 [self.CV footerEndRefreshing];
                 
             }));
             
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            
             NSLog(@"ERROR_%@:%@",error,[error userInfo]);
             MAIN((^{
                 

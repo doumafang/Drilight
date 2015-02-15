@@ -127,7 +127,20 @@
     
 }
 
+#pragma mark - UIScrollViewDelegate
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    [self drilightBeginScale:scrollView.contentOffset.y];
+}
 
+
+-(void)drilightBeginScale :(CGFloat )y
+{
+    CGFloat drilightX = _bucketsV.frame.origin.x;
+    CGFloat drilightY = _bucketsV.frame.origin.y;
+    float scaleX = MIN(30, -y);
+    _bucketsV.drilight.bounds = CGRectMake(drilightX, drilightY, scaleX, scaleX);
+}
 -(void)test
 {
     [self performSelector:@selector(test1) withObject:self afterDelay:1.0f];
@@ -146,22 +159,30 @@
         AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc]initWithRequest:request];
         operation.responseSerializer = [AFJSONResponseSerializer serializer];
         [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSString *lastModified = [[operation.response allHeaderFields]objectForKey:@"Last-Modified"];
+            if([self.user.bucket_lastmodified isEqualToString:lastModified])
+            {
+                return ;
+            }
+            self.user.bucket_lastmodified = lastModified;
+            [self douma_save];
+            
             NSArray *array = (NSArray *)responseObject;
+            
             for (NSDictionary *dic in array) {
                 BUCKETS *buckets = EntityObjects(@"BUCKETS");
                 buckets.user = self.user;
                 if ([[dic objectForKey:@"description"]class] != [NSNull class]) {
                     buckets.bucketdescription = [dic objectForKey:@"description"];
                 }
-                buckets.source = @"buckets";
+                buckets.source = @"BucketsVC";
                 buckets.bucketID = [[dic objectForKey:@"id"]stringValue];
                 buckets.name = [dic objectForKey:@"name"];
                 buckets.shots_count = [[dic objectForKey:@"shots_count"]stringValue];
-                
                 [self douma_save];
                 [self bucketsShots:buckets];
             }
-            
+
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             
         }];
@@ -370,7 +391,7 @@
     [fetchRequest setSortDescriptors:sortDescriptors];
     
     //属性
-    NSString *str = @"buckets";
+    NSString *str = @"BucketsVC";
     
     NSPredicate * cdt = [NSPredicate predicateWithFormat:@"(user = %@) AND (source = %@)",self.user,str];
     [fetchRequest setPredicate:cdt];

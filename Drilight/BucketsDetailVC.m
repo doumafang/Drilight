@@ -69,7 +69,6 @@
     NSManagedObject *bucketsObject = [self.myDelegate.managedObjectContext existingObjectWithID:self.bucketsObjectID error:&objectError];
     _buckets = (BUCKETS *)bucketsObject;
     
-    [self headerNetAction];
 
     [self setNav];
     [self setShotsV];
@@ -79,7 +78,6 @@
 #pragma mark Nav
 -(void)setNav
 {
-    
     UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, UI_NAVIGATION_BAR_HEIGHT, UI_NAVIGATION_BAR_HEIGHT)];
     titleLabel.text = self.buckets.name;
     titleLabel.textColor = [UIColor whiteColor];
@@ -100,12 +98,11 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-
 #pragma mark -
 #pragma mark ShotsV
+
 -(void)setShotsV
 {
-    
     UIFont *font = [UIFont fontWithName:@"Nexa Bold" size:14];
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
@@ -117,7 +114,7 @@
     shotsVFL.itemSize = CGSizeMake((SCREENX/2)-9, (SCREENX/2)-9);
     shotsVFL.sectionInset = UIEdgeInsetsMake(6, 6, 6, 6);
     shotsVFL.minimumInteritemSpacing = 3;
-    shotsVFL.headerReferenceSize = CGSizeMake(SCREENX, size.height + 60);
+    shotsVFL.headerReferenceSize = CGSizeMake(SCREENX, size.height + 30);
     shotsVFL.minimumLineSpacing = 6;
     
     static NSString * shotsRE = @"shotsRE";
@@ -129,7 +126,7 @@
     [shotsV registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"reusableView"];
     
     
-    [shotsV addHeaderWithTarget:self action:@selector(test)];
+    [shotsV addHeaderWithTarget:self action:@selector(headerNetAction)];
     [shotsV addFooterWithTarget:self action:nil];
     shotsV.header.frame = CGRectMake(0, - 20 , SCREENX, 50);
     shotsV.drilight.bounds = CGRectMake(0, 0, 0, 0);
@@ -138,18 +135,9 @@
     _shotsV = shotsV;
     self.view = shotsV;
     
-    
+    [self.shotsV performSelector:@selector(headerBeginRefreshing) withObject:self afterDelay:0.6f];
+    }
 
-    
-}
--(void)test
-{
-    [self performSelector:@selector(test1) withObject:self afterDelay:1.0f];
-}
--(void)test1
-{
-    [self.shotsV headerEndRefreshing];
-}
 
 #pragma mark - UIScrollViewDelegate
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -185,87 +173,86 @@
         AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc]initWithRequest:request];
         operation.responseSerializer = [AFJSONResponseSerializer serializer];
         [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-            NSArray *array = (NSArray *)responseObject;
-            
-            
              NSString *lastModified = [[operation.response allHeaderFields]objectForKey:@"Last-Modified"];
-            if (self.buckets.shots_lastmodified != lastModified) {
-                
-
-                NSInteger x = 0;
-                
-                for (NSDictionary *dic in array) {
-                    SHOTS *object = EntityObjects(@"SHOTS");
-                    object.shotsid = [[dic objectForKey:@"id"] stringValue];
-                    
-                    if ([[dic objectForKey:@"description"]class] != [NSNull class]) {
-                        object.shot_description = [dic objectForKey:@"description"];
-                    }
-                    object.source = @"buckets";
-                    object.title = [dic objectForKey:@"title"];
-                    object.likes_count = [[dic objectForKey:@"likes_count"]stringValue];
-                    object.comments_count = [[dic objectForKey:@"comments_count"]stringValue];
-                    object.views_count = [[dic objectForKey:@"views_count"]stringValue];
-                    object.attachments_count = [[dic objectForKey:@"attachments_count"]stringValue];
-                    object.created_at = [dic objectForKey:@"created_at"];
-                    object.i = [NSNumber numberWithInteger:x];
-                    object.buckets = self.buckets;
-                    NSData *tagsData = [NSKeyedArchiver archivedDataWithRootObject:[dic objectForKey:@"tags"]];
-                    object.tags = tagsData;
-                    
-                    IMAGES*images = EntityObjects(@"IMAGES");
-                    object.images = images;
-                    
-                    if ([[[dic objectForKey:@"images"]objectForKey:@"hidpi"]class] != [NSNull class]) {
-                        images.hidpi = [[dic objectForKey:@"images"]objectForKey:@"hidpi"];
-                    }
-                    
-                    images.normal = [[dic objectForKey:@"images"]objectForKey:@"normal"];
-                    images.teaser = [[dic objectForKey:@"images"]objectForKey:@"teaser"];
-                    
-                    USER *user = EntityObjects(@"USER");
-                    object.user = user;
-                    user.shots_count = [[[dic objectForKey:@"user"]objectForKey:@"shots_count"]stringValue];
-                    user.buckets_count = [[[dic objectForKey:@"user"]objectForKey:@"buckets_count"]stringValue];
-                    user.likes_count = [[[dic objectForKey:@"user"]objectForKey:@"likes_count"]stringValue];
-                    user.followers_count = [[[dic objectForKey:@"user"]objectForKey:@"followers_count"]stringValue];
-                    user.bio = [[dic objectForKey:@"user"]objectForKey:@"bio"];
-                    user.followings_count = [[[dic objectForKey:@"user"]objectForKey:@"followings_count"]stringValue];
-                    user.avatar_url = [[dic objectForKey:@"user"]objectForKey:@"avatar_url"];
-                    user.name = [[dic objectForKey:@"user"]objectForKey:@"name"];
-                    user.pro = [[[dic objectForKey:@"user"]objectForKey:@"pro"]stringValue];
-                    
-                    if ( [[[dic objectForKey:@"user"]objectForKey:@"location"]class] != [NSNull class])
-                    {
-                        user.location = [[dic objectForKey:@"user"]objectForKey:@"location"];
-                    }
-                    
-                    if ( [[[[dic objectForKey:@"user"]objectForKey:@"links"] objectForKey:@"web"] class] != [NSNull class])
-                    {
-                        user.web = [[[dic objectForKey:@"user"]objectForKey:@"links"] objectForKey:@"web"];
-                    }
-                    if ( [[[[dic objectForKey:@"user"]objectForKey:@"links"] objectForKey:@"twitter"] class] != [NSNull class])
-                    {
-                        user.twitter = [[[dic objectForKey:@"user"]objectForKey:@"links"] objectForKey:@"twitter"];
-                    }
-                    user.userid = [[[dic objectForKey:@"user"]objectForKey:@"id"]stringValue];
-                    
-                    x ++;
-                    self.buckets.shots_lastmodified = lastModified;
-                    [self douma_save];
-                    
-                }
-                MAIN(^{
-                    [self.shotsV headerEndRefreshing];
-                });
+            if ([self.buckets.shots_lastmodified isEqualToString: lastModified]) {
+                [self.shotsV headerEndRefreshing];
+                return ;
             }
+            NSInteger x = 0;
+            
+            self.buckets.shots_lastmodified = lastModified;
+            
+            NSArray *array = (NSArray *)responseObject;
+
+            for (NSDictionary *dic in array) {
+                SHOTS *object = EntityObjects(@"SHOTS");
+                object.shotsid = [[dic objectForKey:@"id"] stringValue];
+                
+                if ([[dic objectForKey:@"description"]class] != [NSNull class]) {
+                    object.shot_description = [dic objectForKey:@"description"];
+                }
+                object.source = @"buckets";
+                object.title = [dic objectForKey:@"title"];
+                object.likes_count = [[dic objectForKey:@"likes_count"]stringValue];
+                object.comments_count = [[dic objectForKey:@"comments_count"]stringValue];
+                object.views_count = [[dic objectForKey:@"views_count"]stringValue];
+                object.attachments_count = [[dic objectForKey:@"attachments_count"]stringValue];
+                object.created_at = [dic objectForKey:@"created_at"];
+                object.i = [NSNumber numberWithInteger:x];
+                object.buckets = self.buckets;
+                NSData *tagsData = [NSKeyedArchiver archivedDataWithRootObject:[dic objectForKey:@"tags"]];
+                object.tags = tagsData;
+                
+                IMAGES*images = EntityObjects(@"IMAGES");
+                object.images = images;
+                
+                if ([[[dic objectForKey:@"images"]objectForKey:@"hidpi"]class] != [NSNull class]) {
+                    images.hidpi = [[dic objectForKey:@"images"]objectForKey:@"hidpi"];
+                }
+                
+                images.normal = [[dic objectForKey:@"images"]objectForKey:@"normal"];
+                images.teaser = [[dic objectForKey:@"images"]objectForKey:@"teaser"];
+                
+                USER *user = EntityObjects(@"USER");
+                object.user = user;
+                user.shots_count = [[[dic objectForKey:@"user"]objectForKey:@"shots_count"]stringValue];
+                user.buckets_count = [[[dic objectForKey:@"user"]objectForKey:@"buckets_count"]stringValue];
+                user.likes_count = [[[dic objectForKey:@"user"]objectForKey:@"likes_count"]stringValue];
+                user.followers_count = [[[dic objectForKey:@"user"]objectForKey:@"followers_count"]stringValue];
+                user.bio = [[dic objectForKey:@"user"]objectForKey:@"bio"];
+                user.followings_count = [[[dic objectForKey:@"user"]objectForKey:@"followings_count"]stringValue];
+                user.avatar_url = [[dic objectForKey:@"user"]objectForKey:@"avatar_url"];
+                user.name = [[dic objectForKey:@"user"]objectForKey:@"name"];
+                user.pro = [[[dic objectForKey:@"user"]objectForKey:@"pro"]stringValue];
+                
+                if ( [[[dic objectForKey:@"user"]objectForKey:@"location"]class] != [NSNull class])
+                {
+                    user.location = [[dic objectForKey:@"user"]objectForKey:@"location"];
+                }
+                
+                if ( [[[[dic objectForKey:@"user"]objectForKey:@"links"] objectForKey:@"web"] class] != [NSNull class])
+                {
+                    user.web = [[[dic objectForKey:@"user"]objectForKey:@"links"] objectForKey:@"web"];
+                }
+                if ( [[[[dic objectForKey:@"user"]objectForKey:@"links"] objectForKey:@"twitter"] class] != [NSNull class])
+                {
+                    user.twitter = [[[dic objectForKey:@"user"]objectForKey:@"links"] objectForKey:@"twitter"];
+                }
+                user.userid = [[[dic objectForKey:@"user"]objectForKey:@"id"]stringValue];
+                
+                x ++;
+                self.buckets.shots_lastmodified = lastModified;
+                [self douma_save];
+            }
+            MAIN(^{
+                [self.shotsV headerEndRefreshing];
+            });
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             
             NSLog(@"ERROR%@:%@",error,[error userInfo]);
             MAIN(^{
                 [self.shotsV headerEndRefreshing];
             });
-            
         }];
         
         [operation start];
@@ -336,6 +323,7 @@
 
     UICollectionReusableView *reusableview = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"reusableView" forIndexPath:indexPath];
     
+    
     UIFont *font = [UIFont fontWithName:@"Nexa Bold" size:14];
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
@@ -362,13 +350,13 @@
     descriptionV.clipsToBounds = YES;
     [reusableview addSubview:descriptionV];
 
-    UILabel *descriptionL = [[UILabel alloc]initWithFrame:CGRectMake(6, 10, SCREENX - 32, size.height + 2)];
+    
+    UILabel *descriptionL = [[UILabel alloc]initWithFrame:CGRectMake(6, 10, SCREENX - 32, MIN(size.height, 1)* (size.height+2))];
     descriptionL.text = _buckets.bucketdescription;
     descriptionL.textColor = RGBA(85, 85, 85, 1);
     descriptionL.font = font;
     descriptionL.textAlignment = NSTextAlignmentLeft;
     [descriptionV addSubview:descriptionL];
-
     
     return reusableview;
 }

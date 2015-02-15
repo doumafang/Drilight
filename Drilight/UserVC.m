@@ -176,11 +176,6 @@ static NSInteger followersN = 12;
     [listSV setShowsHorizontalScrollIndicator:NO];
     listSV.userInteractionEnabled = YES;
     listSV.scrollEnabled = YES;
-    
-    UIView *lineL = [[UIView alloc]initWithFrame:CGRectMake(-200,0, 1000, 0.5)];
-    lineL.backgroundColor = [UIColor whiteColor];
-    lineL.opaque = YES;
-//    [listSV addSubview:lineL];
     [blackIV addSubview:_listSV = listSV];
     
     float sum = 20;
