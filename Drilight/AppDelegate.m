@@ -8,8 +8,6 @@
 #import "SignVC.h"
 
 #import "RESideMenu.h"
-
-
 #import "AFNetworkActivityIndicatorManager.h"
 
 @interface AppDelegate ()
@@ -34,8 +32,6 @@
     
     
     UINavigationController *navC = [[UINavigationController alloc]initWithRootViewController:[[ShotsVC alloc]init]];
-    
-    
     NSDictionary * attributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName, nil];
     [navC.navigationBar setTitleTextAttributes:attributes];
     [navC.navigationBar setTintColor:[UIColor whiteColor]];

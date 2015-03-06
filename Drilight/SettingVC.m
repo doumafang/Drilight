@@ -17,7 +17,6 @@
     self.view.backgroundColor = BG_COLOR;
     
     [self setNav];
-    
     [self setListV];
     
     
@@ -26,7 +25,7 @@
 -(void)setListV
 {
     UIImageView *imageV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"drilight_setting"]];
-    imageV.frame = CGRectMake(SCREENX*3/8, SCREENX/4, SCREENX/4, SCREENX/4);
+    imageV.frame = CGRectMake(SCREENX*3/8, SCREENX/6, SCREENX/4, SCREENX/4);
     [self.view addSubview:imageV];
     
     UILabel *drilightL = [[UILabel alloc]initWithFrame:CGRectMake(0, imageV.frame.size.height + imageV.frame.origin.y + 20, SCREENX, 20)];
@@ -39,7 +38,7 @@
     
     
     
-    UITableView *listV = [[UITableView alloc]initWithFrame:CGRectMake(0, 300, SCREENX, 300) style:UITableViewStyleGrouped];
+    UITableView *listV = [[UITableView alloc]initWithFrame:CGRectMake(0, SCREENY/3, SCREENX, 300) style:UITableViewStyleGrouped];
     listV.delegate = self;
     listV.dataSource = self;
     listV.backgroundColor = [UIColor clearColor];
@@ -50,7 +49,7 @@
     [self.view addSubview:listV];
     
     UIImageView *uniquestudioV = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"uniquestudio_setting"]];
-    uniquestudioV.frame = CGRectMake(SCREENX*3/8, SCREENY * 4/5, SCREENX/4, SCREENX/4);
+    uniquestudioV.frame = CGRectMake(SCREENX*3/8, SCREENY * 9/12, SCREENY/6, SCREENY/6);
     [self.view addSubview:uniquestudioV];
     
 }

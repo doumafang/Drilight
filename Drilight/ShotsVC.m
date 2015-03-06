@@ -83,8 +83,7 @@
     [self setNav];
     
     [self setCV];
-    
-//    NSLog(@"%@",NSHomeDirectory());
+    NSLog(@"%@",NSHomeDirectory());
 
 
 
@@ -541,9 +540,11 @@
 - (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo
            atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type
 {
+    
     NSMutableDictionary *change = [[NSMutableDictionary alloc] init];
     change[@(type)] = @(sectionIndex);
     [_sectionChanges addObject:change];
+    
 }
 
 - (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject

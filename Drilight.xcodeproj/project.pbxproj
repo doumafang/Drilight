@@ -911,7 +911,6 @@
 		94234AA31A3C681B00330AEA /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				94234AA41A3C681B00330AEA /* Info.plist */,
 				94A182F31A5D006F004A173F /* LaunchScreen.xib */,
 				94A182FB1A5D0373004A173F /* Images.xcassets */,
 				94234AA51A3C681B00330AEA /* main.m */,
@@ -949,6 +948,7 @@
 		94234AD51A3C6AAA00330AEA /* Frame */ = {
 			isa = PBXGroup;
 			children = (
+				94234AA41A3C681B00330AEA /* Info.plist */,
 				949B4F681A83930500F19D93 /* FLAnimatedImageView+AFNetworking.h */,
 				949B4F691A83930500F19D93 /* FLAnimatedImageView+AFNetworking.m */,
 				949B4F611A838EB300F19D93 /* FLAnimatedImage */,
@@ -1528,10 +1528,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: XI FANG (J9D296U3J9)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: XI FANG (J9D296U3J9)";
 				INFOPLIST_FILE = Drilight/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1539,8 +1539,9 @@
 					"$(PROJECT_DIR)/Drilight/UMengFeedback_SDK_2.1",
 					"$(PROJECT_DIR)/Drilight/UMengFeedback_SDK_2.1/UMOpus",
 				);
+				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "9c4887e1-e46b-41c2-9560-c66f8a80c0fe";
 			};
 			name = Debug;
 		};
@@ -1549,10 +1550,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: XI FANG (J9D296U3J9)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: XI FANG (J9D296U3J9)";
 				INFOPLIST_FILE = Drilight/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1560,8 +1561,9 @@
 					"$(PROJECT_DIR)/Drilight/UMengFeedback_SDK_2.1",
 					"$(PROJECT_DIR)/Drilight/UMengFeedback_SDK_2.1/UMOpus",
 				);
+				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "9c4887e1-e46b-41c2-9560-c66f8a80c0fe";
 			};
 			name = Release;
 		};

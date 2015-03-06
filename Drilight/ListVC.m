@@ -13,10 +13,12 @@
 
 
 @interface ListVC ()<UITableViewDataSource,UITableViewDelegate>
+
 {
     UIImageView *_avatarV;
     UIButton *_userB;
 }
+
 @property  NSString * access_token;
 @property  AppDelegate * myDelegate;
 @property USER *user;
@@ -25,7 +27,7 @@
 @implementation ListVC
 - (void)viewDidLoad {
     
-    float viewX = self.view.frame.size.width *0.67 ;
+    float viewX = self.view.frame.size.width *  0.67 ;
     float viewY = self.view.frame.size.height;
     
     [super viewDidLoad];
@@ -45,22 +47,16 @@
     [avatarV addGestureRecognizer:[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(avatarAction)]];
     [self.view addSubview:avatarV];
 
-    
 
     _avatarV = avatarV;
     
     
-
-    
-    
-    UITableView *listV = [[UITableView alloc]initWithFrame:CGRectMake(viewX/7, viewY/3 - 20 , viewX/7*5, viewY-viewY/3) style:UITableViewStyleGrouped];
+    UITableView *listV = [[UITableView alloc] initWithFrame:CGRectMake(viewX/7, viewY/3 - 20 , viewX/7*5, viewY-viewY/3) style: UITableViewStyleGrouped];
     listV.delegate = self;
     listV.dataSource = self;
     listV.scrollEnabled = NO;
     listV.backgroundColor = [UIColor clearColor];
     listV.separatorStyle = UITableViewCellSelectionStyleNone;
-//    listV.layer.borderColor = [UIColor yellowColor].CGColor;
-//    listV.layer.borderWidth = 0.5f;
     [self.view addSubview:listV];
     
     
@@ -143,11 +139,10 @@
                 NSURL *url = [NSURL URLWithString:[user.avatar_url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
                 [_avatarV setImageWithURL:url];
                 
-                float viewX = self.view.frame.size.width *0.67 ;
+                float viewX = self.view.frame.size.width * 0.67 ;
 
-                
                 if (!_userB) {
-                    UIButton *userB = [[UIButton alloc]initWithFrame:CGRectMake((viewX - [self sizeOfName:user.name] - 10)/2, viewX/3 + viewX/2 - 40, [self sizeOfName:user.name] + 10, 24)];
+                    UIButton *userB = [[UIButton alloc]initWithFrame:CGRectMake((viewX - [self sizeOfName:user.name] - 10)/2, viewX/3 + viewX/2 - 50, [self sizeOfName:user.name] + 10, 24)];
                     
                     [userB setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
                     [userB.titleLabel setFont:[UIFont systemFontOfSize:13]];
@@ -160,9 +155,6 @@
                 }
                 
                 [self.view addSubview:_userB ];
-
-                
-                
             }));
             
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -197,7 +189,7 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 50.f;
+    return 40.f;
 }
 
 
@@ -248,7 +240,6 @@
 {
     NSArray * menuArray1 = [NSArray arrayWithObjects:@"completed",@"animated",@"debuts",@"playoffs",@"rebounds",@"teams",nil];
     NSArray * menuArray2 = [NSArray arrayWithObjects:@"setting", nil];
-    
     NSArray *menuArray  = [NSArray arrayWithObjects:menuArray1, menuArray2,nil];
     
     
@@ -259,9 +250,10 @@
     if (listCells == nil) {
         listCells = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:douma];
     }
+    
     listCells.backgroundColor = [UIColor clearColor];
     listCells.tintColor = [UIColor whiteColor];
-    listCells.textLabel.font = [UIFont systemFontOfSize:15];
+    listCells.textLabel.font = [UIFont systemFontOfSize:13];
     listCells.textLabel.textColor = [UIColor whiteColor];
     listCells.textLabel.highlightedTextColor = [UIColor colorWithRed:241/255.0f green:92/255.0f blue:149/255.0f alpha:1.0];
     
@@ -349,7 +341,7 @@
         case 1:
         {
             SettingVC *settingVC =[[SettingVC alloc]init];
-            [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:settingVC] animated:YES ];
+            [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:settingVC] animated:YES];
             [self.sideMenuViewController hideMenuViewController];
 
         }
