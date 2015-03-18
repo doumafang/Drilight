@@ -1,12 +1,12 @@
 
 #import "AppDelegate.h"
 
+//Classes
 #import "ListVC.h"
-
 #import "ShotsVC.h"
-
 #import "SignVC.h"
 
+//Vendors
 #import "RESideMenu.h"
 #import "AFNetworkActivityIndicatorManager.h"
 
@@ -19,14 +19,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-
-    
-
     
     [AFNetworkActivityIndicatorManager sharedManager].enabled =YES;
-    
 
-    
     self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
     
@@ -51,7 +46,6 @@
     if (![[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"]) {
         [SignVC show];
     }
-
     [application setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 
     return YES;

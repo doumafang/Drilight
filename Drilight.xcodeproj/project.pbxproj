@@ -495,8 +495,8 @@
 		949B4F631A838EB300F19D93 /* FLAnimatedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImage.m; sourceTree = "<group>"; };
 		949B4F641A838EB300F19D93 /* FLAnimatedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImageView.h; sourceTree = "<group>"; };
 		949B4F651A838EB300F19D93 /* FLAnimatedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImageView.m; sourceTree = "<group>"; };
-		949B4F681A83930500F19D93 /* FLAnimatedImageView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FLAnimatedImageView+AFNetworking.h"; sourceTree = "<group>"; };
-		949B4F691A83930500F19D93 /* FLAnimatedImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "FLAnimatedImageView+AFNetworking.m"; sourceTree = "<group>"; };
+		949B4F681A83930500F19D93 /* FLAnimatedImageView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "FLAnimatedImageView+AFNetworking.h"; path = "Drilight/FLAnimatedImageView+AFNetworking.h"; sourceTree = SOURCE_ROOT; };
+		949B4F691A83930500F19D93 /* FLAnimatedImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "FLAnimatedImageView+AFNetworking.m"; path = "Drilight/FLAnimatedImageView+AFNetworking.m"; sourceTree = SOURCE_ROOT; };
 		949B99811A5F7652001FA8DD /* avatarPlaceHolder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "avatarPlaceHolder@2x.png"; sourceTree = "<group>"; };
 		949D5EF11A4BD3700002357B /* SignVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignVC.h; sourceTree = "<group>"; };
 		949D5EF21A4BD3700002357B /* SignVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignVC.m; sourceTree = "<group>"; };
@@ -768,13 +768,17 @@
 			path = lib;
 			sourceTree = "<group>";
 		};
-		94210F4B1A3E88E300D40E18 /* Resource */ = {
+		94210F4B1A3E88E300D40E18 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				94234AB01A3C681B00330AEA /* Main.storyboard */,
+				94210FA81A3E98B500D40E18 /* Drilight.xcdatamodeld */,
+				94A182F31A5D006F004A173F /* LaunchScreen.xib */,
+				94A182FB1A5D0373004A173F /* Images.xcassets */,
 				94234AE31A3C6DA900330AEA /* Font */,
 				94234AE01A3C6B2F00330AEA /* Pictures */,
 			);
-			name = Resource;
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		94210F4C1A3E891100D40E18 /* AFNetworking */ = {
@@ -854,15 +858,17 @@
 			name = Views;
 			sourceTree = "<group>";
 		};
-		94210F8B1A3E8FB600D40E18 /* Controllers */ = {
+		94210F8B1A3E8FB600D40E18 /* General */ = {
 			isa = PBXGroup;
 			children = (
-				946E291A1A57E07900713B4E /* VC */,
+				94210F891A3E8FA800D40E18 /* Models */,
+				94210F8A1A3E8FB100D40E18 /* Views */,
+				946E291A1A57E07900713B4E /* Classes */,
 			);
-			name = Controllers;
+			name = General;
 			sourceTree = "<group>";
 		};
-		94210F951A3E92A000D40E18 /* Frameworks */ = {
+		94210F951A3E92A000D40E18 /* CocoaFrameworks */ = {
 			isa = PBXGroup;
 			children = (
 				94792AEA1A80D84300EEF7FF /* MessageUI.framework */,
@@ -870,7 +876,7 @@
 				94210F6B1A3E8A8E00D40E18 /* MobileCoreServices.framework */,
 				94210F691A3E8A8800D40E18 /* SystemConfiguration.framework */,
 			);
-			name = Frameworks;
+			name = CocoaFrameworks;
 			sourceTree = "<group>";
 		};
 		94234A971A3C681B00330AEA = {
@@ -894,15 +900,12 @@
 		94234AA21A3C681B00330AEA /* Drilight */ = {
 			isa = PBXGroup;
 			children = (
-				94210F951A3E92A000D40E18 /* Frameworks */,
-				94210F8B1A3E8FB600D40E18 /* Controllers */,
-				94210F8A1A3E8FB100D40E18 /* Views */,
-				94210F891A3E8FA800D40E18 /* Models */,
-				94210F4B1A3E88E300D40E18 /* Resource */,
-				94234AD51A3C6AAA00330AEA /* Frame */,
-				94234ACC1A3C698400330AEA /* DELEGATE+DEFINE */,
-				94234AB01A3C681B00330AEA /* Main.storyboard */,
-				94210FA81A3E98B500D40E18 /* Drilight.xcdatamodeld */,
+				94210F951A3E92A000D40E18 /* CocoaFrameworks */,
+				949531EA1AA9677B00739908 /* AppDelegate */,
+				94210F8B1A3E8FB600D40E18 /* General */,
+				94210F4B1A3E88E300D40E18 /* Resources */,
+				94234AD51A3C6AAA00330AEA /* Vendors */,
+				94234ACC1A3C698400330AEA /* Macro */,
 				94234AA31A3C681B00330AEA /* Supporting Files */,
 			);
 			path = Drilight;
@@ -911,9 +914,8 @@
 		94234AA31A3C681B00330AEA /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				94A182F31A5D006F004A173F /* LaunchScreen.xib */,
-				94A182FB1A5D0373004A173F /* Images.xcassets */,
 				94234AA51A3C681B00330AEA /* main.m */,
+				94234AA41A3C681B00330AEA /* Info.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -935,22 +937,17 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		94234ACC1A3C698400330AEA /* DELEGATE+DEFINE */ = {
+		94234ACC1A3C698400330AEA /* Macro */ = {
 			isa = PBXGroup;
 			children = (
 				94B6854D1A4038F600FBDB33 /* DEFINE.h */,
-				94234AA71A3C681B00330AEA /* AppDelegate.h */,
-				94234AA81A3C681B00330AEA /* AppDelegate.m */,
 			);
-			name = "DELEGATE+DEFINE";
+			name = Macro;
 			sourceTree = "<group>";
 		};
-		94234AD51A3C6AAA00330AEA /* Frame */ = {
+		94234AD51A3C6AAA00330AEA /* Vendors */ = {
 			isa = PBXGroup;
 			children = (
-				94234AA41A3C681B00330AEA /* Info.plist */,
-				949B4F681A83930500F19D93 /* FLAnimatedImageView+AFNetworking.h */,
-				949B4F691A83930500F19D93 /* FLAnimatedImageView+AFNetworking.m */,
 				949B4F611A838EB300F19D93 /* FLAnimatedImage */,
 				94B3900F1A79EBBC007C33F6 /* RESideMenu */,
 				94970FB91A5B9702009DCF58 /* HTMLLabel.h */,
@@ -961,7 +958,7 @@
 				94210F4C1A3E891100D40E18 /* AFNetworking */,
 				94234AF21A3C7AC600330AEA /* MJRefresh */,
 			);
-			name = Frame;
+			name = Vendors;
 			sourceTree = "<group>";
 		};
 		94234AE01A3C6B2F00330AEA /* Pictures */ = {
@@ -1097,20 +1094,31 @@
 			name = Layer;
 			sourceTree = "<group>";
 		};
-		946E291A1A57E07900713B4E /* VC */ = {
+		946E291A1A57E07900713B4E /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				94A48EE01A60EBE000BD47AE /* Main */,
 				9445FF221A63E95200698A61 /* Layer */,
 				94A48EE21A60EC0D00BD47AE /* Sign */,
-				94A48EE01A60EBE000BD47AE /* Main */,
 				94A48EE31A60EC1B00BD47AE /* List */,
 			);
-			name = VC;
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		949531EA1AA9677B00739908 /* AppDelegate */ = {
+			isa = PBXGroup;
+			children = (
+				94234AA71A3C681B00330AEA /* AppDelegate.h */,
+				94234AA81A3C681B00330AEA /* AppDelegate.m */,
+			);
+			name = AppDelegate;
 			sourceTree = "<group>";
 		};
 		949B4F611A838EB300F19D93 /* FLAnimatedImage */ = {
 			isa = PBXGroup;
 			children = (
+				949B4F681A83930500F19D93 /* FLAnimatedImageView+AFNetworking.h */,
+				949B4F691A83930500F19D93 /* FLAnimatedImageView+AFNetworking.m */,
 				949B4F621A838EB300F19D93 /* FLAnimatedImage.h */,
 				949B4F631A838EB300F19D93 /* FLAnimatedImage.m */,
 				949B4F641A838EB300F19D93 /* FLAnimatedImageView.h */,
@@ -1542,6 +1550,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "9c4887e1-e46b-41c2-9560-c66f8a80c0fe";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1564,6 +1573,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "9c4887e1-e46b-41c2-9560-c66f8a80c0fe";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

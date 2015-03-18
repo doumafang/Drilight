@@ -335,6 +335,7 @@
     headerV.image = [UIImage imageNamed:@"shotsTag"];
     [reusableview addSubview:headerV];
 
+    
     UILabel *headerL = [[UILabel alloc]initWithFrame:CGRectMake(40, 5  , SCREENX, 30)];
     headerL.text =[NSString stringWithFormat:@"%@ shots",self.buckets.shots_count];
     headerL.textColor = RGBA(146, 146, 146, 1);
@@ -357,6 +358,7 @@
     descriptionL.font = font;
     descriptionL.textAlignment = NSTextAlignmentLeft;
     [descriptionV addSubview:descriptionL];
+    
     
     return reusableview;
 }

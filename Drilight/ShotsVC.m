@@ -1,21 +1,21 @@
-//define
+//Macro
 #import "DEFINE.h"
 
-//VC
+//Classes
 #import "ShotsVC.h"
 #import "DetailVC.h"
 #import "UserVC.h"
 #import "SelectVC.h"
 
-//Model
+//Models
 #import "SHOTS.h"
 #import "IMAGES.h"
 #import "USER.h"
 
-//views
+//Views
 #import "ShotsCell.h"
 
-//frame
+//Vendors
 #import "MJRefresh.h"
 #import "RESideMenu.h"
 #import "AFNetworking.h"
@@ -81,7 +81,6 @@
 
     
     [self setNav];
-    
     [self setCV];
     NSLog(@"%@",NSHomeDirectory());
 
@@ -116,10 +115,7 @@
     if (self.access_token) {
         [shotsCV headerBeginRefreshing];
     }
-    
     self.view = self.CV;
-
-
 }
 
 
