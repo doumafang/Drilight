@@ -60,6 +60,8 @@
 
 - (void)viewDidLoad {
     
+    NSLog(@"%@",NSHomeDirectory());
+
     [super viewDidLoad];
     
     
@@ -82,7 +84,6 @@
     
     [self setNav];
     [self setCV];
-    NSLog(@"%@",NSHomeDirectory());
 
 
 

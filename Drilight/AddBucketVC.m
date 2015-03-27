@@ -586,10 +586,9 @@
     [_selectedChanges removeObject:indexPath];
 
     if (_selectedChanges.count == 0| _selectedChanges == nil) {
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"dismissDone" object:nil];
+        [[NSNotificationCenter defaultCenter]postNotificationName: @"dismissDone" object:nil];
     }
 }
-
 
 
 

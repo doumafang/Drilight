@@ -3,13 +3,13 @@
 #import "ListVC.h"
 #import "AFNetworking.h"
 #import "UIImageView+AFNetworking.h"
-#import "USER.h"
 #import "RESideMenu.h"
 
+#import "USER.h"
 #import "DEFINE.h"
 #import "ShotsVC.h"
 #import "SettingVC.h"
-#import "UserVC.h"
+#import "DFUserVC.h"
 
 
 @interface ListVC ()<UITableViewDataSource,UITableViewDelegate>
@@ -21,13 +21,16 @@
 
 @property  NSString * access_token;
 @property  AppDelegate * myDelegate;
-@property USER *user;
+@property  NSIndexPath * recordIndexPath;
+@property  UITableView *listV;
+@property  USER *user;
+
 @end
 
 @implementation ListVC
 - (void)viewDidLoad {
     
-    float viewX = self.view.frame.size.width *  0.67 ;
+    float viewX = self.view.frame.size.width *  2/3 ;
     float viewY = self.view.frame.size.height;
     
     [super viewDidLoad];
@@ -57,12 +60,12 @@
     listV.scrollEnabled = NO;
     listV.backgroundColor = [UIColor clearColor];
     listV.separatorStyle = UITableViewCellSelectionStyleNone;
-    [self.view addSubview:listV];
+    [self.view addSubview:self.listV = listV];
     
     
     if (self.access_token) {
         [self userNerAction];
-    }
+    }//第一次登陆之后
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userNerAction) name:@"refresh" object:nil];
     
@@ -71,7 +74,9 @@
 -(void)avatarAction
 
 {
-    UserVC *userVC =[[UserVC alloc]init];
+    NSLog(@"%@",self.user.userid);
+    DFUserVC *userVC =[[DFUserVC alloc]init];
+    [self.listV deselectRowAtIndexPath:self.recordIndexPath animated:YES];
     userVC.userID = self.user.userid;
     userVC.userObjectID = [self.user objectID];
     [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:userVC] animated:YES ];
@@ -92,6 +97,7 @@
 -(void)userNerAction
 {
     self.access_token = [[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"];
+    
     BACK((^{
         NSString *str = [[NSString stringWithFormat:@"https://api.dribbble.com/v1/user?access_token=%@",self.access_token]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
                                     
@@ -100,10 +106,11 @@
         AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc]initWithRequest:request];
         operation.responseSerializer = [AFJSONResponseSerializer serializer];
         
-        [self userDelete];
         
         [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
             
+            [self userDelete];
+
             NSDictionary *dic = (NSDictionary *)responseObject;
             USER *user = EntityObjects(@"USER");
             
@@ -136,6 +143,7 @@
             self.user = user;
             
             MAIN((^{
+                
                 NSURL *url = [NSURL URLWithString:[user.avatar_url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
                 [_avatarV setImageWithURL:url];
                 
@@ -150,7 +158,6 @@
                     [userB addTarget:self action:@selector(avatarAction) forControlEvents:UIControlEventTouchUpInside];
                     
                     _userB = userB;
-                    
 
                 }
                 
@@ -187,31 +194,12 @@
     [self douma_save];
 }
 
+#pragma mark -
+#pragma mark UITableViewDelegate
+
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 40.f;
-}
-
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    int number = 6;
-    
-    switch (section) {
-        case 0:
-            number = 6;
-            break;
-        case 1:
-            number = 1;
-            break;
-         }
-    return number;
-}
-
-
--(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 2;
 }
 
 
@@ -236,6 +224,98 @@
 
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    switch (indexPath.section) {
+        case 0:
+            switch (indexPath.row) {
+                case 0:
+                {
+                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
+                    shotsVC.listStr = @"completed";
+                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
+                    [self.sideMenuViewController hideMenuViewController];
+                    self.recordIndexPath = indexPath;
+                }
+                    break;
+                case 1:
+                {
+                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
+                    shotsVC.listStr = @"animated";
+                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
+                    
+                    [self.sideMenuViewController hideMenuViewController];
+                    self.recordIndexPath = indexPath;
+
+                }
+                    
+                    break;
+                case 2:
+                {
+                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
+                    shotsVC.listStr = @"debuts";
+                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
+                    
+                    [self.sideMenuViewController hideMenuViewController];
+                    self.recordIndexPath = indexPath;
+
+                }
+                    break;
+                case 3:
+                {
+                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
+                    shotsVC.listStr = @"playoffs";
+                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
+                    
+                    [self.sideMenuViewController hideMenuViewController];
+                    self.recordIndexPath = indexPath;
+
+                }
+                    break;
+                case 4:
+                {
+                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
+                    shotsVC.listStr = @"rebounds";
+                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
+                    
+                    [self.sideMenuViewController hideMenuViewController];
+                    self.recordIndexPath = indexPath;
+
+                }
+                    
+                    
+                    break;
+                case 5:
+                {
+                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
+                    shotsVC.listStr = @"teams";
+                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
+                    [self.sideMenuViewController hideMenuViewController];
+                    self.recordIndexPath = indexPath;
+
+                }
+                    break;
+                    
+            }
+            break;
+        case 1:
+        {
+            SettingVC *settingVC =[[SettingVC alloc]init];
+            [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:settingVC] animated:YES];
+            [self.sideMenuViewController hideMenuViewController];
+            self.recordIndexPath = indexPath;
+
+            
+        }
+            break;
+    }
+    
+}
+
+
+#pragma mark -
+#pragma mark UITableViewDataSource
+
 -(UITableViewCell * )tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSArray * menuArray1 = [NSArray arrayWithObjects:@"completed",@"animated",@"debuts",@"playoffs",@"rebounds",@"teams",nil];
@@ -255,7 +335,7 @@
     listCells.tintColor = [UIColor whiteColor];
     listCells.textLabel.font = [UIFont systemFontOfSize:13];
     listCells.textLabel.textColor = [UIColor whiteColor];
-    listCells.textLabel.highlightedTextColor = [UIColor colorWithRed:241/255.0f green:92/255.0f blue:149/255.0f alpha:1.0];
+    listCells.textLabel.highlightedTextColor = RGBA(241, 92, 149, 1);
     
     NSString *name = [[menuArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
 
@@ -275,81 +355,31 @@
 
 }
 
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    switch (indexPath.section) {
+    int number = 6;
+    
+    switch (section) {
         case 0:
-            switch (indexPath.row) {
-                case 0:
-                {
-                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
-                    shotsVC.listStr = @"completed";
-                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
-                    [self.sideMenuViewController hideMenuViewController];
-                }
-                    break;
-                case 1:
-                {
-                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
-                    shotsVC.listStr = @"animated";
-                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
-
-                    [self.sideMenuViewController hideMenuViewController];
-                }
-
-                    break;
-                case 2:
-                {
-                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
-                    shotsVC.listStr = @"debuts";
-                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
-                    
-                    [self.sideMenuViewController hideMenuViewController];
-                }
-                    break;
-                case 3:
-                {
-                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
-                    shotsVC.listStr = @"playoffs";
-                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
-                    
-                    [self.sideMenuViewController hideMenuViewController];
-                }
-                    break;
-                case 4:
-                {
-                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
-                    shotsVC.listStr = @"rebounds";
-                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
-                    
-                    [self.sideMenuViewController hideMenuViewController];
-                }
-
-
-                    break;
-                case 5:
-                {
-                    ShotsVC *shotsVC =[[ShotsVC alloc]init];
-                    shotsVC.listStr = @"teams";
-                    [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:shotsVC] animated:YES ];
-                    [self.sideMenuViewController hideMenuViewController];
-                }
-                    break;
-
-            }
+            number = 6;
             break;
         case 1:
-        {
-            SettingVC *settingVC =[[SettingVC alloc]init];
-            [self.sideMenuViewController setContentViewController:[[UINavigationController alloc]initWithRootViewController:settingVC] animated:YES];
-            [self.sideMenuViewController hideMenuViewController];
-
-        }
-                break;
-       }
-    
+            number = 1;
+            break;
+    }
+    return number;
 }
 
+
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 2;
+}
+
+
+
+#pragma mark -
+#pragma mark Other
 
 -(void)douma_save
 {

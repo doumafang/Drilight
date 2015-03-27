@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14C94b" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14C109" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="BUCKETS" representedClassName="BUCKETS" syncable="YES">
         <attribute name="bucketdescription" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="bucketID" optional="YES" attributeType="String" syncable="YES"/>
@@ -17,14 +17,14 @@
         <attribute name="i" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="likes_count" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="updated_at" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="shots" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SHOTS" inverseName="comments" inverseEntity="SHOTS" syncable="YES"/>
+        <relationship name="shots" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="SHOTS" inverseName="comments" inverseEntity="SHOTS" syncable="YES"/>
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="USER" inverseName="comments" inverseEntity="USER" syncable="YES"/>
     </entity>
     <entity name="IMAGES" representedClassName="IMAGES" syncable="YES">
         <attribute name="hidpi" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="normal" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="teaser" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="popular" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SHOTS" inverseName="images" inverseEntity="SHOTS" syncable="YES"/>
+        <relationship name="popular" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="SHOTS" inverseName="images" inverseEntity="SHOTS" syncable="YES"/>
     </entity>
     <entity name="SHOTS" representedClassName="SHOTS" syncable="YES">
         <attribute name="attachments_count" optional="YES" attributeType="String" syncable="YES"/>
@@ -40,7 +40,7 @@
         <attribute name="tags" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="views_count" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="buckets" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BUCKETS" inverseName="shots" inverseEntity="BUCKETS" syncable="YES"/>
+        <relationship name="buckets" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="BUCKETS" inverseName="shots" inverseEntity="BUCKETS" syncable="YES"/>
         <relationship name="comments" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="COMMENTS" inverseName="shots" inverseEntity="COMMENTS" syncable="YES"/>
         <relationship name="images" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="IMAGES" inverseName="popular" inverseEntity="IMAGES" syncable="YES"/>
         <relationship name="likedby" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="USER" inverseName="likes" inverseEntity="USER" syncable="YES"/>
@@ -70,18 +70,18 @@
         <attribute name="web" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="buckets" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BUCKETS" inverseName="user" inverseEntity="BUCKETS" syncable="YES"/>
         <relationship name="comments" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="COMMENTS" inverseName="user" inverseEntity="COMMENTS" syncable="YES"/>
-        <relationship name="followers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="USER" inverseName="followersby" inverseEntity="USER" syncable="YES"/>
-        <relationship name="followersby" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="USER" inverseName="followers" inverseEntity="USER" syncable="YES"/>
-        <relationship name="following" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="USER" inverseName="followingby" inverseEntity="USER" syncable="YES"/>
-        <relationship name="followingby" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="USER" inverseName="following" inverseEntity="USER" syncable="YES"/>
-        <relationship name="likes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SHOTS" inverseName="likedby" inverseEntity="SHOTS" syncable="YES"/>
-        <relationship name="shots" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SHOTS" inverseName="user" inverseEntity="SHOTS" syncable="YES"/>
+        <relationship name="followers" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="USER" inverseName="followersby" inverseEntity="USER" syncable="YES"/>
+        <relationship name="followersby" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="USER" inverseName="followers" inverseEntity="USER" syncable="YES"/>
+        <relationship name="following" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="USER" inverseName="followingby" inverseEntity="USER" syncable="YES"/>
+        <relationship name="followingby" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="USER" inverseName="following" inverseEntity="USER" syncable="YES"/>
+        <relationship name="likes" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SHOTS" inverseName="likedby" inverseEntity="SHOTS" syncable="YES"/>
+        <relationship name="shots" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SHOTS" inverseName="user" inverseEntity="SHOTS" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BUCKETS" positionX="-270" positionY="117" width="128" height="163"/>
-        <element name="COMMENTS" positionX="-252" positionY="99" width="128" height="163"/>
+        <element name="BUCKETS" positionX="-270" positionY="117" width="128" height="165"/>
+        <element name="COMMENTS" positionX="-252" positionY="99" width="128" height="165"/>
         <element name="IMAGES" positionX="18" positionY="117" width="128" height="105"/>
-        <element name="SHOTS" positionX="-470" positionY="23" width="128" height="313"/>
+        <element name="SHOTS" positionX="-470" positionY="23" width="128" height="315"/>
         <element name="USER" positionX="-72" positionY="-27" width="128" height="478"/>
     </elements>
 </model>

@@ -302,6 +302,7 @@
         [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
             
             NSDictionary *dic = (NSDictionary *)responseObject;
+            
             USER *user = EntityObjects(@"USER");
             
             user.source = @"self";
@@ -326,7 +327,7 @@
             }
             
             if ([[dic  objectForKey:@"location"]class] != [NSNull class]) {
-                user.location = [dic  objectForKey:@"location"];
+                user.location = [dic objectForKey:@"location"];
             }
             
             [self douma_save];
@@ -400,10 +401,8 @@
     {
         [SignVC sharedSignin].view.frame = [self offscreenFrame];
         [[self mainWindow] addSubview:[SignVC sharedSignin].view];
-
-//        [UIView animateWithDuration:0.4f animations:^{
             [SignVC sharedSignin].view.frame = [self onscreenFrame];
-//        }];
+
         
     }
 }

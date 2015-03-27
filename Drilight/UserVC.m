@@ -2,7 +2,6 @@
 #import "DEFINE.h"
 
 //vc+delegate
-#import "AppDelegate.h"
 #import "UserVC.h"
 #import "DetailVC.h"
 #import "BucketsDetailVC.h"
@@ -67,8 +66,6 @@ static NSInteger followersN = 12;
     NSMutableArray *_bucketsChanges;
     NSMutableArray *_sectionChanges;
 }
-@property AppDelegate * myDelegate;
-@property USER *user;
 @property NSString *access_token;
 @property (nonatomic)  NSFetchedResultsController *shotsFRC;
 @property (nonatomic)  NSFetchedResultsController *likesFRC;
@@ -111,11 +108,18 @@ static NSInteger followersN = 12;
     self.view.backgroundColor = BG_COLOR;
     
     self.access_token = [[NSUserDefaults standardUserDefaults]objectForKey:@"access_token"];
-    self.myDelegate = [[UIApplication sharedApplication]delegate];
+    self.myDelegate = [[UIApplication sharedApplication] delegate];
     
     NSError *objectError= nil;
     NSManagedObject *userObject = [self.myDelegate.managedObjectContext existingObjectWithID:self.userObjectID error:&objectError];
     self.user = (USER *)userObject;
+    
+    UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(150, 0, 30, 40)];
+    titleLabel.text = self.user.name;
+    titleLabel.textColor = [UIColor whiteColor];
+    [titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:18]];
+    self.navigationItem.titleView = titleLabel;
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
     
     [self setNavigationBar];
     float viewX = self.view.frame.size.width;
@@ -1968,14 +1972,7 @@ static NSInteger followersN = 12;
 -(void)setNavigationBar
 {
     
-    UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(150, 0, 30, 40)];
-    titleLabel.text = self.user.name;
-    titleLabel.textColor = [UIColor whiteColor];
-    [titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:18]];
-    self.navigationItem.titleView = titleLabel;
-    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
     
-
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"back"] style:UIBarButtonItemStylePlain target:self action:@selector(backAction)];
     self.navigationItem.leftBarButtonItem = backItem;
     
