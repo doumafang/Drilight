@@ -117,8 +117,8 @@
 		94792AEB1A80D84300EEF7FF /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94792AEA1A80D84300EEF7FF /* MessageUI.framework */; };
 		94792AF11A80ECB700EEF7FF /* uniquestudio_setting@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 94792AF01A80ECB700EEF7FF /* uniquestudio_setting@2x.png */; };
 		94792AF31A80F1E800EEF7FF /* drilight_setting@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 94792AF21A80F1E800EEF7FF /* drilight_setting@2x.png */; };
-		948E47421AC51C2500AEB187 /* DFUserVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 948E47411AC51C2500AEB187 /* DFUserVC.m */; };
 		948E47481AC5486A00AEB187 /* Drilight.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 948E47461AC5486A00AEB187 /* Drilight.xcdatamodeld */; };
+		948E474B1AC5561900AEB187 /* DFUserVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 948E47491AC5561900AEB187 /* DFUserVC.m */; };
 		94970FBB1A5B9702009DCF58 /* HTMLLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 94970FBA1A5B9702009DCF58 /* HTMLLabel.m */; };
 		949B4F661A838EB300F19D93 /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 949B4F631A838EB300F19D93 /* FLAnimatedImage.m */; };
 		949B4F671A838EB300F19D93 /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 949B4F651A838EB300F19D93 /* FLAnimatedImageView.m */; };
@@ -489,9 +489,9 @@
 		94792AEA1A80D84300EEF7FF /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		94792AF01A80ECB700EEF7FF /* uniquestudio_setting@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "uniquestudio_setting@2x.png"; sourceTree = "<group>"; };
 		94792AF21A80F1E800EEF7FF /* drilight_setting@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "drilight_setting@2x.png"; sourceTree = "<group>"; };
-		948E47401AC51C2500AEB187 /* DFUserVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DFUserVC.h; path = ../DFUserVC.h; sourceTree = "<group>"; };
-		948E47411AC51C2500AEB187 /* DFUserVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DFUserVC.m; path = ../DFUserVC.m; sourceTree = "<group>"; };
 		948E47471AC5486A00AEB187 /* Drilight.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Drilight.xcdatamodel; sourceTree = "<group>"; };
+		948E47491AC5561900AEB187 /* DFUserVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DFUserVC.m; sourceTree = "<group>"; };
+		948E474A1AC5561900AEB187 /* DFUserVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DFUserVC.h; sourceTree = "<group>"; };
 		94970FB91A5B9702009DCF58 /* HTMLLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTMLLabel.h; path = HTMLLabel/HTMLLabel.h; sourceTree = "<group>"; };
 		94970FBA1A5B9702009DCF58 /* HTMLLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTMLLabel.m; path = HTMLLabel/HTMLLabel.m; sourceTree = "<group>"; };
 		949B4F621A838EB300F19D93 /* FLAnimatedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
@@ -1136,11 +1136,11 @@
 				946E290F1A57E01C00713B4E /* ShotsVC.h */,
 				946E29131A57E01C00713B4E /* ShotsVC.m */,
 				946E290D1A57E01C00713B4E /* DetailVC.h */,
+				948E47491AC5561900AEB187 /* DFUserVC.m */,
+				948E474A1AC5561900AEB187 /* DFUserVC.h */,
 				946E29111A57E01C00713B4E /* DetailVC.m */,
 				946E29101A57E01C00713B4E /* UserVC.h */,
 				946E29141A57E01C00713B4E /* UserVC.m */,
-				948E47401AC51C2500AEB187 /* DFUserVC.h */,
-				948E47411AC51C2500AEB187 /* DFUserVC.m */,
 				94FEAD891A7E169500C12984 /* BucketsVC.h */,
 				94FEAD8A1A7E169500C12984 /* BucketsVC.m */,
 				9445FF231A63E97700698A61 /* BucketsDetailVC.h */,
@@ -1417,7 +1417,7 @@
 				94FEAD8B1A7E169500C12984 /* BucketsVC.m in Sources */,
 				94210F661A3E891100D40E18 /* AFURLRequestSerialization.m in Sources */,
 				946E29181A57E01C00713B4E /* ShotsVC.m in Sources */,
-				948E47421AC51C2500AEB187 /* DFUserVC.m in Sources */,
+				948E474B1AC5561900AEB187 /* DFUserVC.m in Sources */,
 				94B390161A79EBBC007C33F6 /* RECommonFunctions.m in Sources */,
 				94068FEB1A5EA86D00543FF1 /* BucketsCell.m in Sources */,
 				94210F811A3E8C9800D40E18 /* AFNetworkActivityIndicatorManager.m in Sources */,
