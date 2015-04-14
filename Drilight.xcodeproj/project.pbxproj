@@ -39,7 +39,6 @@
 		94234AA61A3C681B00330AEA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 94234AA51A3C681B00330AEA /* main.m */; };
 		94234AA91A3C681B00330AEA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 94234AA81A3C681B00330AEA /* AppDelegate.m */; };
 		94234AB21A3C681B00330AEA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94234AB01A3C681B00330AEA /* Main.storyboard */; };
-		94234AC31A3C681B00330AEA /* DrilightTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 94234AC21A3C681B00330AEA /* DrilightTests.m */; };
 		94234AE21A3C6B5600330AEA /* bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 94234AE11A3C6B5600330AEA /* bg.png */; };
 		94234AE81A3C6DBE00330AEA /* Nexa Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 94234AE51A3C6DBE00330AEA /* Nexa Bold.otf */; };
 		94234B041A3C7AC600330AEA /* MJRefreshBaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = 94234AF61A3C7AC600330AEA /* MJRefreshBaseView.m */; };
@@ -159,16 +158,6 @@
 		94F0BFE01A85E71700C82958 /* barFollow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 94F0BFDF1A85E71700C82958 /* barFollow@2x.png */; };
 		94FEAD8B1A7E169500C12984 /* BucketsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 94FEAD8A1A7E169500C12984 /* BucketsVC.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		94234ABD1A3C681B00330AEA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 94234A981A3C681B00330AEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 94234A9F1A3C681B00330AEA;
-			remoteInfo = Drilight;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		94068FE61A5E695000543FF1 /* whiteLike@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "whiteLike@2x.png"; sourceTree = "<group>"; };
@@ -393,9 +382,6 @@
 		94234AA71A3C681B00330AEA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		94234AA81A3C681B00330AEA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		94234AB11A3C681B00330AEA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		94234ABC1A3C681B00330AEA /* DrilightTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DrilightTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		94234AC11A3C681B00330AEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		94234AC21A3C681B00330AEA /* DrilightTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DrilightTests.m; sourceTree = "<group>"; };
 		94234AE11A3C6B5600330AEA /* bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg.png; sourceTree = "<group>"; };
 		94234AE51A3C6DBE00330AEA /* Nexa Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nexa Bold.otf"; sourceTree = "<group>"; };
 		94234AEF1A3C75B400330AEA /* ShotsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShotsCell.h; sourceTree = "<group>"; };
@@ -561,13 +547,6 @@
 				94210F6C1A3E8A8E00D40E18 /* MobileCoreServices.framework in Frameworks */,
 				941B5DC91A430B4A009367FE /* libGPUImage.a in Frameworks */,
 				94210F6A1A3E8A8800D40E18 /* SystemConfiguration.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		94234AB91A3C681B00330AEA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -886,7 +865,6 @@
 			isa = PBXGroup;
 			children = (
 				94234AA21A3C681B00330AEA /* Drilight */,
-				94234ABF1A3C681B00330AEA /* DrilightTests */,
 				94234AA11A3C681B00330AEA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -895,7 +873,6 @@
 			isa = PBXGroup;
 			children = (
 				94234AA01A3C681B00330AEA /* Drilight.app */,
-				94234ABC1A3C681B00330AEA /* DrilightTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -919,23 +896,6 @@
 			children = (
 				94234AA51A3C681B00330AEA /* main.m */,
 				94234AA41A3C681B00330AEA /* Info.plist */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		94234ABF1A3C681B00330AEA /* DrilightTests */ = {
-			isa = PBXGroup;
-			children = (
-				94234AC21A3C681B00330AEA /* DrilightTests.m */,
-				94234AC01A3C681B00330AEA /* Supporting Files */,
-			);
-			path = DrilightTests;
-			sourceTree = "<group>";
-		};
-		94234AC01A3C681B00330AEA /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				94234AC11A3C681B00330AEA /* Info.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1202,24 +1162,6 @@
 			productReference = 94234AA01A3C681B00330AEA /* Drilight.app */;
 			productType = "com.apple.product-type.application";
 		};
-		94234ABB1A3C681B00330AEA /* DrilightTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 94234AC91A3C681B00330AEA /* Build configuration list for PBXNativeTarget "DrilightTests" */;
-			buildPhases = (
-				94234AB81A3C681B00330AEA /* Sources */,
-				94234AB91A3C681B00330AEA /* Frameworks */,
-				94234ABA1A3C681B00330AEA /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				94234ABE1A3C681B00330AEA /* PBXTargetDependency */,
-			);
-			name = DrilightTests;
-			productName = DrilightTests;
-			productReference = 94234ABC1A3C681B00330AEA /* DrilightTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1232,10 +1174,6 @@
 					94234A9F1A3C681B00330AEA = {
 						CreatedOnToolsVersion = 6.1.1;
 						DevelopmentTeam = J9D296U3J9;
-					};
-					94234ABB1A3C681B00330AEA = {
-						CreatedOnToolsVersion = 6.1.1;
-						TestTargetID = 94234A9F1A3C681B00330AEA;
 					};
 				};
 			};
@@ -1254,7 +1192,6 @@
 			projectRoot = "";
 			targets = (
 				94234A9F1A3C681B00330AEA /* Drilight */,
-				94234ABB1A3C681B00330AEA /* DrilightTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1356,13 +1293,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		94234ABA1A3C681B00330AEA /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1429,23 +1359,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		94234AB81A3C681B00330AEA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				94234AC31A3C681B00330AEA /* DrilightTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		94234ABE1A3C681B00330AEA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 94234A9F1A3C681B00330AEA /* Drilight */;
-			targetProxy = 94234ABD1A3C681B00330AEA /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		94234AB01A3C681B00330AEA /* Main.storyboard */ = {
@@ -1583,40 +1497,6 @@
 			};
 			name = Release;
 		};
-		94234ACA1A3C681B00330AEA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = DrilightTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Drilight.app/Drilight";
-			};
-			name = Debug;
-		};
-		94234ACB1A3C681B00330AEA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = DrilightTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Drilight.app/Drilight";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1634,15 +1514,6 @@
 			buildConfigurations = (
 				94234AC71A3C681B00330AEA /* Debug */,
 				94234AC81A3C681B00330AEA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		94234AC91A3C681B00330AEA /* Build configuration list for PBXNativeTarget "DrilightTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				94234ACA1A3C681B00330AEA /* Debug */,
-				94234ACB1A3C681B00330AEA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
