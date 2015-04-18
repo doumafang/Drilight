@@ -25,6 +25,7 @@
     self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
     
+
     
     UINavigationController *navC = [[UINavigationController alloc]initWithRootViewController:[[ShotsVC alloc]init]];
     NSDictionary * attributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName, nil];
