@@ -319,7 +319,7 @@
 -(UITableViewCell * )tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSArray * menuArray1 = [NSArray arrayWithObjects:@"completed",@"animated",@"debuts",@"playoffs",@"rebounds",@"teams",nil];
-    NSArray * menuArray2 = [NSArray arrayWithObjects:@"setting", nil];
+    NSArray * menuArray2 = [NSArray arrayWithObjects:@"settings", nil];
     NSArray *menuArray  = [NSArray arrayWithObjects:menuArray1, menuArray2,nil];
     
     
